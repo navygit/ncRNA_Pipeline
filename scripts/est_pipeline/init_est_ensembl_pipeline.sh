@@ -4,7 +4,7 @@
 
 # Default coord_system is toplevel
 
-# todo: Move /nfs/panda/ensemblgenomes/production/final_steps/sql/EST_exonerate.sql to a generic place
+# Todo: Move /nfs/panda/ensemblgenomes/production/final_steps/sql/EST_exonerate.sql to a generic place in cvs
 
 if [ $# != 1 ]
 then
@@ -33,6 +33,11 @@ fi
 source $ENV_FILE
 
 echo "database server host, $DB_HOST"
+
+# Overwrite CONFIG_DIR to the generic location
+
+CONFIG_DIR="/nfs/panda/ensemblgenomes/production/ensembl_pipelines_init/Config/"
+
 echo "CONFIG_DIR: $CONFIG_DIR"
 
 

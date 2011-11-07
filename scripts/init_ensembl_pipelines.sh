@@ -41,6 +41,12 @@ source $ENV_FILE
 
 echo "database server host, $DB_HOST"
 
+# Overwrite CONFIG_DIR to the generic location
+
+CONFIG_DIR="/nfs/panda/ensemblgenomes/production/ensembl_pipelines_init/Config/"
+
+echo "CONFIG_DIR: $CONFIG_DIR
+
 
 SPECIES=`echo $DB_NAME | perl -ne '$_ =~ /^([^_]+)_([^_]+)_core.+/; $a = $1; $b = $2; print $a . "_" . $b;'`
 echo "SPECIES: $SPECIES"
@@ -51,8 +57,6 @@ SPECIES_SHORT_NAME=`echo $SPECIES | perl -ne '$_ =~ /^(\w)[^_]+_(\w+)/; $a = $1;
 echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 
 echo ""
-
-CONFIG_DIR=/nfs/panda/ensemblgenomes/production/ensembl_pipelines_init/Config
 
 PROTEIN_OUTPUT_DIR=/nfs/panda/ensemblgenomes/production/protein_pipelines/data/${SPECIES_SHORT_NAME}
 
