@@ -1,0 +1,8 @@
+[Eponine]
+condition=SubmitSlice
+[TRF]
+condition=SubmitSlice
+[Dust]
+condition=SubmitSlice
+[RepeatMask]
+condition=SubmitSlice
