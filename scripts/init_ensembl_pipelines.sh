@@ -45,7 +45,7 @@ echo "database server host, $DB_HOST"
 
 CONFIG_DIR="/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/config/generic"
 
-echo "CONFIG_DIR: $CONFIG_DIR
+echo "CONFIG_DIR: $CONFIG_DIR"
 
 
 SPECIES=`echo $DB_NAME | perl -ne '$_ =~ /^([^_]+)_([^_]+)_core.+/; $a = $1; $b = $2; print $a . "_" . $b;'`
