@@ -3,7 +3,7 @@
 if [ $# != 1 ]
 then
     echo "Wrong number of command line arguments"
-    echo "sh run_dna_pipelines_generic.sh schizosaccharomyces_pombe_core_10_63_1"
+    echo "sh run_dna_pipeline.sh schizosaccharomyces_pombe_core_10_63_1"
     exit 1
 fi
 

@@ -17,11 +17,20 @@
 NCRNA_LOGIC_NAME="ncRNA"
 PROTEIN_LOGIC_NAME="ena"
 LSF_QUEUE="production-rh6"
+COORD_SYSTEM="toplevel"
+
+###
 
 source /homes/oracle/ora920setup.sh
 
+if [ $# != 1 ]
+then
+    echo "Wrong number of command line arguments"
+    echo "sh run_ncrna_pipeline.sh schizosaccharomyces_pombe_core_10_63_1"
+    exit 1
+fi
+
 DB_NAME=$1
-COORD_SYSTEM="toplevel"
 
 # specific env variables in a user specific file now
 
