@@ -43,11 +43,6 @@ fi
 
 echo "Config Dir: $CONFIG_DIR"
 
-#DB_HOST=mysql-cluster-eg-prod-1.ebi.ac.uk
-#DB_PORT=4238
-#DB_USER=ensrw
-#DB_PASS=writ3rp1
-
 SPECIES=`echo $CORE_DB_NAME | perl -ne '$_ =~ /^([^_]+)_([^_]+)_core.+/; $a = $1; $b = $2; print $a . "_" . $b;'`
 echo "SPECIES: $SPECIES"
 
@@ -76,12 +71,15 @@ then
     mkdir -p ${DATA_OUTPUT_DIR}
 fi
 
-export PERL5LIB=${ENSEMBL_ROOT_DIR}/production/xrefs_pipeline/ensembl-head/modules:${ENSEMBL_ROOT_DIR}/apis/ensembl/pipeline/head/modules:${BIOPERL_PATH}
+ENSEMBL_PATH=${ENSEMBL_ROOT_DIR}/production/xrefs_pipeline/ensembl-head
+
+export PERL5LIB=${ENSEMBL_PATH}/modules:${ENSEMBL_ROOT_DIR}/apis/ensembl/pipeline/head/modules:${BIOPERL_PATH}
 
 # Add ensgen perl binary path
 export PATH=${PERL_PATH}/perlbrew/perls/5.14.2/bin:$PATH
 
-cd ${ENSEMBL_ROOT_DIR}/production/xrefs_pipeline/ensembl-head/misc-scripts/xref_mapping
+
+cd ${ENSEMBL_PATH}/misc-scripts/xref_mapping
 
 # Parsing stage
 
