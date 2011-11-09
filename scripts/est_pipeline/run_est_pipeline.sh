@@ -3,7 +3,7 @@
 if [ $# != 1 ]
 then
     echo "Wrong number of command line arguments"
-    echo "sh run_est_pipeline_generic.sh mycosphaerella_graminicola_core_10_63_2"
+    echo "sh run_est_pipeline.sh mycosphaerella_graminicola_core_10_63_2"
     exit 1
 fi
 

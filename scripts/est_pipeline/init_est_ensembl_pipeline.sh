@@ -9,7 +9,7 @@
 if [ $# != 1 ]
 then
     echo "Wrong number of command line arguments"
-    echo "sh init_ensembl_pipelines.sh saccharomyces_cerevisiae_core_9_62_3"
+    echo "sh init_ensembl_pipeline.sh saccharomyces_cerevisiae_core_9_62_3"
     exit 1
 fi
 
