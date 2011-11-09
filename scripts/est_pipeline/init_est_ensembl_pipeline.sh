@@ -170,7 +170,7 @@ then
     mkdir -p ${ESTs_OUTPUT_DIR}/
 fi
 
-if [ ! -f "$GENOME_FILE_PATH" ]
+if [[ ! -f "$GENOME_FILE_PATH" || ! -s "$GENOME_FILE_PATH" ]]
 then
 
     echo "Dump the genome toplevel sequences"
