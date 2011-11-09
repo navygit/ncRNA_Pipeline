@@ -22,4 +22,5 @@
  export DB_USER=ensrw
  export DB_PASS=
 
-CONFIG_DIR=/nfs/panda/ensemblgenomes/apis/ensembl/config/head/plasmodia/PC_01_11
+#CONFIG_DIR=/nfs/panda/ensemblgenomes/apis/ensembl/config/head/plasmodia/PC_01_11
+CONFIG_DIR=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/config/scerevisiae
