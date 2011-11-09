@@ -16,6 +16,7 @@
 
 NCRNA_LOGIC_NAME="ncRNA"
 PROTEIN_LOGIC_NAME="ena"
+LSF_QUEUE="production-rh6"
 
 source /homes/oracle/ora920setup.sh
 
@@ -64,10 +65,11 @@ echo ""
 
 OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/production/ncgenes_pipelines/data/${SPECIES_SHORT_NAME}
 
-NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/scripts/
-NCGENES_SCRIPTS_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/scripts/
-NCGENES_SQL_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/sql
-ENSEMBL_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/64/ensembl
+NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts
+NCGENES_SCRIPTS_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts
+NCGENES_SQL_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/sql
+#ENSEMBL_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/64/ensembl
+ENSEMBL_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/ensembl-head
 ENSEMBL_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable/
@@ -139,7 +141,7 @@ do
     
     echo "Running tRNAScan-SE and parsing its results"
     
-    bsub -q production-rh6 -J "GENEPRED"$INDEX -o $f".trnascan.lsf.out" "$TRNASCAN_PATH -o $trnascan_out $trnascan_options $f; perl ${NCGENES_SCRIPTS_PATH}/trnascan_to_gff3.pl $trnascan_out `basename $f .fa` > $trnascan_gff3"
+    bsub -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".trnascan.lsf.out" "$TRNASCAN_PATH -o $trnascan_out $trnascan_options $f; perl ${NCGENES_SCRIPTS_PATH}/trnascan_to_gff3.pl $trnascan_out `basename $f .fa` > $trnascan_gff3"
     
     INDEX=`expr $INDEX + 1`
 	
@@ -151,7 +153,7 @@ do
 
     echo "Running Rfamscan and parsing its results"
 
-    bsub -q production-rh6 -J "GENEPRED"$INDEX -o $f".rfamscan.lsf.out" "$RFAMSCAN_PATH -o $rfamscan_out --nobig -v -filter wu --masking --blastdb /nas/seqdb/integr8/production/data/mirror/data/Rfam/Rfam.fasta /nas/seqdb/integr8/production/data/mirror/data/Rfam/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_out `basename $f .fa` > $rfamscan_gff3"
+    bsub -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".rfamscan.lsf.out" "$RFAMSCAN_PATH -o $rfamscan_out --nobig -v -filter wu --masking --blastdb /nas/seqdb/integr8/production/data/mirror/data/Rfam/Rfam.fasta /nas/seqdb/integr8/production/data/mirror/data/Rfam/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_out `basename $f .fa` > $rfamscan_gff3"
 
     
 
@@ -164,7 +166,7 @@ do
 
     # touch $rnammer_gff3
 
-    bsub -q production-rh6 -J "GENEPRED"$INDEX -o $f".rnammer.lsf.out" "$RNAMMER_PATH -T /tmp/ -S euk -m lsu,ssu,tsu -gff $rnammer_out -h $rnammer_out".hmmreport" $f; perl ${NCGENES_SCRIPTS_PATH}/rnammer_to_gff3.pl $rnammer_out `basename $f .fa` > $rnammer_gff3"
+    bsub -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".rnammer.lsf.out" "$RNAMMER_PATH -T /tmp/ -S euk -m lsu,ssu,tsu -gff $rnammer_out -h $rnammer_out".hmmreport" $f; perl ${NCGENES_SCRIPTS_PATH}/rnammer_to_gff3.pl $rnammer_out `basename $f .fa` > $rnammer_gff3"
 
 
     INDEX=`expr $INDEX + 1`
