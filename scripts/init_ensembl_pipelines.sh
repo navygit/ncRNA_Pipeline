@@ -26,7 +26,7 @@ fi
 
 # One file specific for each user, based on ${USER}
 
-ENV_FILE="${USER}.env.sh"
+ENV_FILE="${HOME}/${USER}.env.sh"
 
 echo "Using env file: $ENV_FILE"
 
@@ -120,7 +120,7 @@ then
     mkdir -p ${PROTEIN_OUTPUT_DIR}/proteins
 fi
 
-if [ ! -f "$PROTEIN_FILE_PATH" ]
+if [[ ! -f "$PROTEIN_FILE_PATH" || ! -s "$PROTEIN_FILE_PATH" ]]
 then
     echo "perl ./dump_translations.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -db_id > $PROTEIN_FILE_PATH"
     perl ./dump_translations.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -db_id > $PROTEIN_FILE_PATH
