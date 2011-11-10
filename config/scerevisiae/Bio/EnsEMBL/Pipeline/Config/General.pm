@@ -3,9 +3,9 @@ package Bio::EnsEMBL::Pipeline::Config::General;
 use strict;
 use vars qw(%Config);
 %Config = (
-  BIN_DIR  => '/nas/seqdb/integr8/production/code/external/bin',
-  DATA_DIR => '/nas/seqdb/integr8/production/code/external/data',
-  LIB_DIR  => '/nas/seqdb/integr8/production/code/external/bin',
+  BIN_DIR  => '/nfs/panda/ensemblgenomes/external/bin',
+  DATA_DIR => '/nfs/panda/ensemblgenomes/external/data',
+  LIB_DIR  => '/nfs/panda/ensemblgenomes/external/bin',
   PIPELINE_WORK_DIR   => '/tmp',
 #  PIPELINE_INPUT_DIR => '/nfs/acari/jb16/projects/Anasp/chunks',
 #  PIPELINE_TARGET_DIR => '/data/blastdb/Ensembl/Large/Gallus_gallus/WASHUC1/softmasked_dusted/Gallus_gallus.WASHUC1.softmasked.fa',
