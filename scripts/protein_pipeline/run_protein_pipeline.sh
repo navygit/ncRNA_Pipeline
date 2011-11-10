@@ -11,7 +11,7 @@ DB_NAME=$1
 
 # specific env variables in a user specific file now
 
-ENV_FILE="$HOME/${USER}.env.sh"
+ENV_FILE="${HOME}/${USER}.env.sh"
 
 echo "Using env file: $ENV_FILE"
 
