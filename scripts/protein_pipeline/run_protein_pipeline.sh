@@ -97,6 +97,8 @@ then
 
 fi
 
+cd ${ENS_PIPELINE_PATH}/scripts/
+
 if [ "$RUNNING" == "1" ]
 then
 
