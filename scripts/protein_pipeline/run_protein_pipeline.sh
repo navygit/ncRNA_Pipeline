@@ -106,7 +106,7 @@ then
 
     echo "Run the Protein pipelines"
 
-    echo "perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Seg -analysis ncoils -verbose -output_dir ${OUTPUT_DIR}"
+    echo "perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Signalp -analysis tmhmm -analysis Prints -analysis Tigrfam -analysis pfscan -analysis scanprosite -analysis Seg -analysis ncoils -analysis Superfamily  -analysis Smart -analysis Pfam -verbose -output_dir ${OUTPUT_DIR}"
 
     perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Signalp -analysis tmhmm -analysis Prints -analysis Tigrfam -analysis pfscan -analysis scanprosite -analysis Seg -analysis ncoils -analysis Superfamily  -analysis Smart -analysis Pfam -verbose -output_dir ${OUTPUT_DIR}
 
