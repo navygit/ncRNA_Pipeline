@@ -19,7 +19,7 @@ echo "DB_NAME: $DB_NAME"
 
 # One file specific for each user, based on ${USER}
 
-ENV_FILE="${USER}.env.sh"
+ENV_FILE="${HOME}/${USER}.env.sh"
 
 echo "Using env file: $ENV_FILE"
 

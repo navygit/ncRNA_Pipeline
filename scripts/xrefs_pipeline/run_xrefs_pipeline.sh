@@ -17,7 +17,7 @@ echo "XREF_DB_NAME: $XREF_DB_NAME"
 
 # specific env variables in a user specific file now
 
-ENV_FILE="${USER}.env.sh"
+ENV_FILE="${HOME}/${USER}.env.sh"
 
 echo "Using env file: $ENV_FILE"
 
