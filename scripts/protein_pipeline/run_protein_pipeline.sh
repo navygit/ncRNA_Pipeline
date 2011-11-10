@@ -66,7 +66,7 @@ ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/pipeline/head
 
 BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable
 
-export PERL5LIB=${PERL5LIB}:${CONFIG_DIR}:${ENS_PATH}/modules:${ENS_ANALYSIS_PATH}/modules:${ENS_PIPELINE_PATH}/modules:${BIOPERL_PATH}
+export PERL5LIB=${CONFIG_DIR}:${ENS_PATH}/modules:${ENS_ANALYSIS_PATH}/modules:${ENS_PIPELINE_PATH}/modules:${BIOPERL_PATH}
 
 export PATH=${PERL_PATH}/perlbrew/perls/5.14.2/bin:/nfs/panda/ensemblgenomes/external/bin:$PATH
 
