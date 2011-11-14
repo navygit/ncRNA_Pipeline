@@ -10,7 +10,7 @@ fi
 TESTING=0
 
 DB_NAME=$1
-OTHERFEATURES_DB_NAME=`echo $DB_NAME | perl -ne '$a = $_; $a =~ s/core/core/; print $a'`
+OTHERFEATURES_DB_NAME=`echo $DB_NAME | perl -ne '$a = $_; $a =~ s/core/otherfeatures/; print $a'`
 
 echo "OTHERFEATURES_DB_NAME: $OTHERFEATURES_DB_NAME"
 
