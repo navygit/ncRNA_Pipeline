@@ -17,16 +17,9 @@ fi
 
 DB_NAME=$1
 
-# moved to a environment file instead so we all can use a generic script
-
-# DB_HOST=mysql-eg-staging-1.ebi.ac.uk
-# DB_PORT=4160
-# DB_USER=ensrw
-# DB_PASS=scr1b3s1
-
 # One file specific for each user, based on ${USER}
 
-ENV_FILE="${USER}.env.sh"
+ENV_FILE="${HOME}/${USER}.env.sh"
 
 echo "Using env file: $ENV_FILE"
 
@@ -51,10 +44,10 @@ echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 
 echo ""
 
-export PERL5LIB=${PERL_PATH}/cpan/core/lib/perl5/:${ENSEMBL_PATH}/modules:${CODE}/ensembl-variation-head/modules:${BIOPERL_PATH}
+export PERL5LIB=${ENSEMBL_PATH}/modules:${CODE}/ensembl-variation-head/modules:${BIOPERL_PATH}
 
 # Add ensgen perl binary path
-export PATH=${PERL_PATH}/default/bin:$PATH
+export PATH=${PERL_PATH}/perlbrew/perls/5.14.2/bin:$PATH
 
 
 # variation_density.pl
