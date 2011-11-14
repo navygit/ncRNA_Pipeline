@@ -62,8 +62,8 @@ perl variation_density.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB
 echo ""
 echo "Running seq_region_stats.pl"
 
-echo "perl seq_region_stats.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -dbname $DB_NAME -stats snp"
+echo "perl seq_region_stats.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -dbname $DB_NAME -stats snp -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro"
 
 cd ${ENSEMBL_PATH}/misc-scripts/density_feature
-perl seq_region_stats.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -dbname $DB_NAME -stats snp
+perl seq_region_stats.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -dbname $DB_NAME -stats snp -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro
 
