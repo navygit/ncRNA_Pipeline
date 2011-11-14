@@ -47,7 +47,7 @@ use vars qw(%Config);
 	   QUEUE_MANAGER       => 'LSF',
 	   DEFAULT_BATCH_SIZE  => 5,
 	   DEFAULT_RETRIES     => 0,
-	   DEFAULT_BATCH_QUEUE => 'production', # put in the queue  of your choice, eg. 'acari'
+	   DEFAULT_BATCH_QUEUE => 'production-rh6', # put in the queue  of your choice, eg. 'acari'
 	   DEFAULT_OUTPUT_DIR  => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/scerevisiae',
            DEFAULT_RESOURCE    => '',
            DEFAULT_SUB_ARGS => '',
@@ -66,7 +66,7 @@ use vars qw(%Config);
 	   SLEEP_PER_JOB => 30, # the amount of time to sleep per job when job limit 
 	   # reached
 	   DEFAULT_RUNNABLEDB_PATH => 'Bio/EnsEMBL/Pipeline/RunnableDB',      
-           DEFAULT_RETRY_QUEUE => 'production',
+           DEFAULT_RETRY_QUEUE => 'production-rh6',
            DEFAULT_RETRY_SUB_ARGS => '',
            DEFAULT_RETRY_RESOURCE => '',
 	   DEFAULT_RUNNER => '/lustre/work1/ensembl/fsk/project_data/yeast/cvs/ensembl-pipeline/modules/Bio/EnsEMBL/Pipeline/runner.pl', 
@@ -77,8 +77,8 @@ use vars qw(%Config);
            # We're currently running the pre-exec with a different perl. lsf currently unsets the LD_LIBRARY_PATH 
            # which we need for certain 64bit libraries in pre-exec commands. (more info see LSF_LD_SECURITY variable )
 
-           DEFAULT_LSF_PRE_EXEC_PERL =>'/nfs/panda/ensemblgenomes/perl/default/bin/perl', # ONLY use 32bit perl for lsf -pre-exec jobs
-           DEFAULT_LSF_PERL =>'/nfs/panda/ensemblgenomes/perl/default/bin/perl', # ONLY use ensembl64/bin/perl for memory jobs > 4 gb
+           DEFAULT_LSF_PRE_EXEC_PERL =>'/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin/perl', # ONLY use 32bit perl for lsf -pre-exec jobs
+           DEFAULT_LSF_PERL =>'/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin/perl', # ONLY use ensembl64/bin/perl for memory jobs > 4 gb
 
 	   QUEUE_CONFIG => [
 
@@ -89,7 +89,7 @@ use vars qw(%Config);
 			     retries    => 3,
 			     sub_args   => '',
 			     runner     => '',
-			     queue => 'production',
+			     queue => 'production-rh6',
 			     output_dir => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/scerevisiae',
 			     cleanup => 'yes',        
 			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
@@ -150,7 +150,7 @@ use vars qw(%Config);
 			     retries    => 3,
 			     sub_args   => '',
 			     runner     => '',
-			     queue => 'production',
+			     queue => 'production-rh6',
 			     output_dir => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/scerevisiae',
 			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			     cleanup => 'no',
@@ -245,7 +245,7 @@ use vars qw(%Config);
 			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/scerevisiae/Seg',
                              runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			     verbosity => 'INFO',
-			     retry_queue => 'production',
+			     retry_queue => 'production-rh6',
 			     retry_resource => '',
 			     retry_sub_args => '',
 			    },    
@@ -275,7 +275,7 @@ use vars qw(%Config);
 			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/scerevisiae/ncoils',
                              runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			     verbosity => 'INFO',
-			     retry_queue => 'production',
+			     retry_queue => 'production-rh6',
 			     retry_resource => '',
 			     retry_sub_args => '',
 			    },
@@ -319,7 +319,7 @@ use vars qw(%Config);
                            sub_args   => '',
                            runner     => '',
                            cleanup    => 'yes',
-                           queue      => 'production',
+                           queue      => 'production-rh6',
                            runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			   verbosity => 'INFO',
 			   retry_queue => '',
@@ -335,7 +335,7 @@ use vars qw(%Config);
                           sub_args   => '',
                           runner     => '',
                           cleanup    => 'yes',
-                          queue      => 'production',
+                          queue      => 'production-rh6',
                           runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
                           output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/scerevisiae/pirsf',
 			  verbosity => 'INFO',
@@ -350,11 +350,11 @@ use vars qw(%Config);
                          retries    => 2,
                          sub_args   => '',
                          runner     => '',
-                         queue => 'production',
+                         queue => 'production-rh6',
                          output_dir => '/nfs/panda/ensemblgenomes/production/est_pipeline/data/scerevisiae',
                          runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			 verbosity => 'INFO',
-			 retry_queue => 'production',
+			 retry_queue => 'production-rh6',
 			 retry_resource => '',
 			 retry_sub_args => '',
                          cleanup => 'no',
