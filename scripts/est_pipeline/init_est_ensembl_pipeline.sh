@@ -170,17 +170,18 @@ then
     mkdir -p ${ESTs_OUTPUT_DIR}/
 fi
 
-if [[ ! -f "$GENOME_FILE_PATH" || ! -s "$GENOME_FILE_PATH" ]]
+if [ -f "$GENOME_FILE_PATH" ]
 then
-
-    echo "Dump the genome toplevel sequences"
-
-    echo "perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat Dust -mask_repeat RepeatMask"
-    perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat Dust -mask_repeat RepeatMask
-
-    echo ""
+    echo "rm -f $GENOME_FILE_PATH"
+    rm -f $GENOME_FILE_PATH
 fi
 
+echo "Dump the genome toplevel sequences"
+    
+echo "perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat Dust -mask_repeat RepeatMask"
+perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat Dust -mask_repeat RepeatMask
+
+echo ""
 
 # 9/ Chunk the ESTs
 
