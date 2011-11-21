@@ -138,3 +138,13 @@ module=ProteinAnnotation/PIRSF
 gff_source=PIRSF
 gff_feature=domain
 input_id_type=CHUNK
+
+[PANTHER]
+db=pantherdb
+gff_source=PANTHER
+gff_feature=domain
+
+[Gene3D]
+db=gene3d
+gff_source=Gene3D
+gff_feature=domain
