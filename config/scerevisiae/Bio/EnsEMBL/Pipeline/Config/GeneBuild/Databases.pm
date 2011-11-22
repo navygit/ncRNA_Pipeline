@@ -50,65 +50,65 @@ use vars qw( %Databases );
 	      # for some of these entries. However, reading and writing in the same db is not recommended.
 	
 	      # database containing sequence plus features from raw computes
-	      GB_DBHOST                  => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      GB_DBNAME                  => 'saccharomyces_cerevisiae_core_9_61_3',
+	      GB_DBHOST                  => 'mysql-eg-devel-1.ebi.ac.uk',
+	      GB_DBNAME                  => 'saccharomyces_cerevisiae_core_12_65_4',
 	      GB_DBUSER                  => 'ensrw',
-	      GB_DBPASS                  => 'writ3rp1',
-	      GB_DBPORT                  => '4238',
+	      GB_DBPASS                  => 'scr1b3d1',
+	      GB_DBPORT                  => '4126',
 	      # database containing the genewise genes (TGE_gw,similarity_genewise)
-              GB_GW_DBHOST               => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-              GB_GW_DBNAME               => 'saccharomyces_cerevisiae_core_9_61_3',
+              GB_GW_DBHOST               => 'mysql-eg-devel-1.ebi.ac.uk',
+              GB_GW_DBNAME               => 'saccharomyces_cerevisiae_core_12_65_4',
               GB_GW_DBUSER               => 'ensrw',
-              GB_GW_DBPASS               => 'writ3rp1',
-              GB_GW_DBPORT               => '4238',
+              GB_GW_DBPASS               => 'scr1b3d1',
+              GB_GW_DBPORT               => '4126',
 	      # database containing the blessed genes if there are any (e! definition!)
 	      # ... in this case: blessed genes are the ones not to modify .. ie "targetted_genes"
-	      GB_BLESSED_DBHOST          => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      GB_BLESSED_DBNAME          => 'saccharomyces_cerevisiae_core_9_61_3',
+	      GB_BLESSED_DBHOST          => 'mysql-eg-devel-1.ebi.ac.uk',
+	      GB_BLESSED_DBNAME          => 'saccharomyces_cerevisiae_core_12_65_4',
 	      GB_BLESSED_DBUSER          => 'ensrw',
-	      GB_BLESSED_DBPASS          => 'writ3rp1',
-	      GB_BLESSED_DBPORT          => '4238',
+	      GB_BLESSED_DBPASS          => 'scr1b3d1',
+	      GB_BLESSED_DBPORT          => '4126',
 	      #GB_BLESSED_DBHOST          => '',
 	      #GB_BLESSED_DBNAME          => '',
 	      #GB_BLESSED_DBUSER          => '',
 	      #GB_BLESSED_DBPASS          => '',
 	      #GB_BLESSED_DBPORT          => '',
 	      # database where the combined_gw_e2g genes will be stored
-	      GB_COMB_DBHOST             => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      GB_COMB_DBNAME             => 'saccharomyces_cerevisiae_core_9_61_3',   #Was: kmegy_culex3_gw_combine_42 - this one is for a test!
+	      GB_COMB_DBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',
+	      GB_COMB_DBNAME             => 'saccharomyces_cerevisiae_core_12_65_4',   #Was: kmegy_culex3_gw_combine_42 - this one is for a test!
 	      GB_COMB_DBUSER             => 'ensrw',
-	      GB_COMB_DBPASS             => 'writ3rp1',
-	      GB_COMB_DBPORT             => '4238',
+	      GB_COMB_DBPASS             => 'scr1b3d1',
+	      GB_COMB_DBPORT             => '4126',
     	      # database containing the cdnas mapped, to be combined with the genewises
 	      # by putting this info here, we free up ESTConf.pm so that two analysis can
 	      # be run at the same time
 	      #Not clean EST database (...and partly erased!)
-	      #GB_cDNA_DBHOST             => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
+	      #GB_cDNA_DBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',
 	      #GB_cDNA_DBNAME             => 'kmegy_culex3_estbuild_42', / 'kmegy_culex3_estbuild2_42', / 'kmegy_culex3_estbuild_broad__42',
 	      #GB_cDNA_DBUSER             => 'ensrw',
-	      #GB_cDNA_DBPASS             => 'writ3rp1',
-              #GB_cDNA_DBPORT             => '4238',
+	      #GB_cDNA_DBPASS             => 'scr1b3d1',
+              #GB_cDNA_DBPORT             => '4126',
 
 	      #Clean EST database
-	      GB_cDNA_DBHOST             => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      GB_cDNA_DBNAME             => 'saccharomyces_cerevisiae_core_9_61_3',
+	      GB_cDNA_DBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',
+	      GB_cDNA_DBNAME             => 'saccharomyces_cerevisiae_core_12_65_4',
 	      GB_cDNA_DBUSER             => 'ensrw',
-	      GB_cDNA_DBPASS             => 'writ3rp1',
-              GB_cDNA_DBPORT             => '4238',
+	      GB_cDNA_DBPASS             => 'scr1b3d1',
+              GB_cDNA_DBPORT             => '4126',
 
 	      # db to put pseudogenes in
-	      PSEUDO_DBHOST              => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      PSEUDO_DBNAME              => 'saccharomyces_cerevisiae_core_9_61_3',
+	      PSEUDO_DBHOST              => 'mysql-eg-devel-1.ebi.ac.uk',
+	      PSEUDO_DBNAME              => 'saccharomyces_cerevisiae_core_12_65_4',
 	      PSEUDO_DBUSER              => 'ensrw',
-	      PSEUDO_DBPASS              => 'writ3rp1',
-              PSEUDO_DBPORT              => '4238',
+	      PSEUDO_DBPASS              => 'scr1b3d1',
+              PSEUDO_DBPORT              => '4126',
 
 	      # this db needs to have clone & contig & static_golden_path tables populated        #For GeneBuild
-	      GB_FINALDBHOST             => 'mysql-cluster-eg-prod-1.ebi.ac.uk',                                         # ...see Incremental config files
-	      GB_FINALDBNAME             => 'saccharomyces_cerevisiae_core_9_61_3',
+	      GB_FINALDBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',                                         # ...see Incremental config files
+	      GB_FINALDBNAME             => 'saccharomyces_cerevisiae_core_12_65_4',
 	      GB_FINALDBUSER             => 'ensrw',
-	      GB_FINALDBPASS             => 'writ3rp1',
-              GB_FINALDBPORT             => '4238',
+	      GB_FINALDBPASS             => 'scr1b3d1',
+              GB_FINALDBPORT             => '4126',
 	     );
 
 sub import {

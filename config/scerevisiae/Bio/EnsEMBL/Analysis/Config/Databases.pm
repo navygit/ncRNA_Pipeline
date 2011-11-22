@@ -81,7 +81,7 @@ use vars qw(%Config);
     # predictions, dna- or protein alignments )
 
     REFERENCE_DB => { 
-                      -dbname => 'saccharomyces_cerevisiae_core_10_63_3',
+                      -dbname => 'saccharomyces_cerevisiae_core_12_65_4',
                       -host   => 'mysql-eg-devel-1.ebi.ac.uk',
                       -port   => '4126',
                       -user   => 'ensrw',
@@ -93,7 +93,7 @@ use vars qw(%Config);
     # formerly GB_GW_DB )
 
     GENEWISE_DB => { 
-                     -dbname => 'saccharomyces_cerevisiae_core_10_63_3',
+                     -dbname => 'saccharomyces_cerevisiae_core_12_65_4',
                      -host   => 'mysql-eg-devel-1.ebi.ac.uk',
                      -port   => '4126',
                      -user   => 'ensrw',
@@ -104,7 +104,7 @@ use vars qw(%Config);
     # or EST's gene-structtures made by exonerate (Exonerate2Genes.pm)
 
     EXONERATE_DB => {
-                      -dbname => 'saccharomyces_cerevisiae_otherfeatures_10_63_3',
+                      -dbname => 'saccharomyces_cerevisiae_otherfeatures_12_65_4',
                       -host   => 'mysql-eg-devel-1.ebi.ac.uk',
                       -port   => '4126',
                       -user   => 'ensrw',
@@ -115,7 +115,7 @@ use vars qw(%Config);
     # gene-set ( if there is one )
 
     BLESSED_DB => { 
-                    -dbname => 'saccharomyces_cerevisiae_core_10_63_3',
+                    -dbname => 'saccharomyces_cerevisiae_core_12_65_4',
                     -host   => 'mysql-eg-devel-1.ebi.ac.uk',
                     -port   => '4126',
                     -user   => 'ensrw',
@@ -126,7 +126,7 @@ use vars qw(%Config);
     # UTR-addtion-run Combine_Genewises_and_E2Gs.pm writes to UTR_DB
 
     UTR_DB => { 
-                -dbname => 'saccharomyces_cerevisiae_core_10_63_3',
+                -dbname => 'saccharomyces_cerevisiae_core_12_65_4',
                 -host   => 'mysql-eg-devel-1.ebi.ac.uk',
                 -port   => '4126',
                 -user   => 'ensrw',
@@ -138,7 +138,7 @@ use vars qw(%Config);
     # The Pseudogene-code READS from this database
 
     GENEBUILD_DB => { 
-                      -dbname => 'saccharomyces_cerevisiae_core_10_63_3',
+                      -dbname => 'saccharomyces_cerevisiae_core_12_65_4',
                       -host   => 'mysql-eg-devel-1.ebi.ac.uk',
                       -port   => '4126',
                       -user   => 'ensrw',
@@ -148,7 +148,7 @@ use vars qw(%Config);
     # PSEUDO_DB holds the pseudo-genes
 
     PSEUDO_DB => { 
-                   -dbname => 'saccharomyces_cerevisiae_core_10_63_3',
+                   -dbname => 'saccharomyces_cerevisiae_core_12_65_4',
                    -host   => 'mysql-eg-devel-1.ebi.ac.uk',
                    -port   => '4126',
                    -user   => 'ensrw',
@@ -159,7 +159,7 @@ use vars qw(%Config);
     # results to
 
     COALESCER_DB => { 
-                      -dbname => 'saccharomyces_cerevisiae_core_10_63_3',
+                      -dbname => 'saccharomyces_cerevisiae_core_12_65_4',
                       -host   => 'mysql-eg-devel-1.ebi.ac.uk',
                       -port   => '4126',
                       -user   => 'ensrw',
