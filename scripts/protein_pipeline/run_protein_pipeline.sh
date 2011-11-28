@@ -76,7 +76,6 @@ export PATH=${PERL_PATH}/perlbrew/perls/5.14.2/bin:/nfs/panda/ensemblgenomes/ext
 export COILSDIR=/nfs/panda/ensemblgenomes/external/coils/
 
 cd ${ENS_PIPELINE_PATH}/scripts/
-
 if [ "$TESTING" == "1" ]
 then
 
@@ -84,7 +83,7 @@ then
                                    
     echo "Run the sanity check"        
                                    
-     perl pipeline_sanity.pl -dbhost $DB_HOST -dbname $DB_NAME -dbuser $DB_USER -dbpass $DB_PASS -dbport $DB_PORT -verbose 
+     #perl pipeline_sanity.pl -dbhost $DB_HOST -dbname $DB_NAME -dbuser $DB_USER -dbpass $DB_PASS -dbport $DB_PORT -verbose 
 
     # Test the pipelines
 
@@ -109,13 +108,13 @@ then
 
     echo "Run the Protein pipelines"
 
-    echo "perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Signalp -analysis tmhmm -analysis Prints -analysis Tigrfam -analysis pfscan -analysis scanprosite -analysis Seg -analysis ncoils -analysis Superfamily  -analysis Smart -analysis Pfam -verbose -output_dir ${OUTPUT_DIR}"
+    echo "perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Signalp -analysis tmhmm -analysis Prints -analysis Tigrfam -analysis pfscan -analysis Seg -analysis ncoils -analysis Superfamily  -analysis Smart -analysis Pfam -verbose -output_dir ${OUTPUT_DIR}"
 
-    perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Signalp -analysis tmhmm -analysis Prints -analysis Tigrfam -analysis pfscan -analysis scanprosite -analysis Seg -analysis ncoils -analysis Superfamily  -analysis Smart -analysis Pfam -verbose -output_dir ${OUTPUT_DIR}
+    perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Signalp -analysis tmhmm -analysis Prints -analysis Tigrfam -analysis pfscan -analysis Seg -analysis ncoils -analysis Superfamily  -analysis Smart -analysis Pfam -verbose -output_dir ${OUTPUT_DIR}
 
     # Just seg and ncoils
 
-    # perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Seg -analysis ncoils -verbose -output_dir ${OUTPUT_DIR}
+     #perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Seg -analysis ncoils -verbose -output_dir ${OUTPUT_DIR}
 
 fi
 
