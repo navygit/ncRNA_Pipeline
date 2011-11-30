@@ -111,7 +111,7 @@ cd ${ENSEMBL_PATH}/misc-scripts/density_feature
 
 echo "Running repeat_coverage_calc.pl"
 
-perl repeat_coverage_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME
+perl repeat_coverage_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro
 
 
 # percent_gc_calc.pl
@@ -122,7 +122,7 @@ echo "Running percent_gc_calc.pl"
 
 echo "perl percent_gc_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME"
 
-perl percent_gc_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME
+perl percent_gc_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro
 
 # meta_levels
 
@@ -163,7 +163,8 @@ echo "y" | perl overlapping_regions.pl -host $DB_HOST -user $DB_USER -pass $DB_P
 
 
 # optimization
-
+echo $PERL4LIB
+echo `which perl`
 echo "Analyzing the tables"
 
 for t in `mysql -h $DB_HOST -u $DB_USER -P $DB_PORT -p$DB_PASS $DB_NAME -e "show tables"`
@@ -172,24 +173,3 @@ do
   mysql -h $DB_HOST -u $DB_USER -P $DB_PORT -p$DB_PASS $DB_NAME -e "analyze table $t"
 done
 
-# Not running the heatchchecks
-
-exit 0
-
-# healthcheck
-
-echo "Running the healthchecks"
-
-cd ${CODE}/ensj-healthcheck-head
-
-source ~arnaud/jdk1.6.sh
-
-# Todo: Get the right database property file!
-# and move it to ensembl-asp
-
-echo "sh ./run-healthcheck.sh -config `pwd`"/database.properties."$SPECIES_SHORT_NAME -debug -output all -type core -d '$SPECIES.*core.*' -species $SPECIES release"
-
-sh ./run-healthcheck.sh -config `pwd`"/database.properties."$SPECIES_SHORT_NAME -debug -output all -type core -d '$SPECIES.*core.*' -species $SPECIES release
-
-# use: - to make it more specific !
-# sh run-healthcheck.sh -config database.properties.aoryzae -debug -output all -type core -d 'aspergillus_oryzae_core_.*_54_.*' -species aspergillus_oryzae release > & aoryzae.log &
