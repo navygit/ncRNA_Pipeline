@@ -45,8 +45,8 @@ use vars qw( %General );
 
 # Hash containing config info
 %General = (
-	    PA_PEPTIDE_FILE => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/scerevisiae/proteins/scerevisiae.pep', #path to dumped peptides
-	    PA_CHUNKS_DIR => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/scerevisiae/protein_chunks', #path to directory chunks to be written
+	    PA_PEPTIDE_FILE => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/aclavatus/proteins/aclavatus.pep', #path to dumped peptides
+	    PA_CHUNKS_DIR => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/aclavatus//protein_chunks', #path to directory chunks to be written
 	    PA_CHUNK_SIZE => 100,
 	    PA_IPRSCAN_DIR => '/nfs/seqdb/production/interpro/binaries/64_bit_Linux',	
 	   );
