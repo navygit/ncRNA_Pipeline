@@ -143,8 +143,10 @@ input_id_type=CHUNK
 db=pantherdb
 gff_source=PANTHER
 gff_feature=domain
+input_id_type=CHUNK
 
 [Gene3D]
 db=gene3d
 gff_source=Gene3D
 gff_feature=domain
+input_id_type=CHUNK
