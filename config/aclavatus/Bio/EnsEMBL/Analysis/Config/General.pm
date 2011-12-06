@@ -3,9 +3,9 @@ package Bio::EnsEMBL::Analysis::Config::General;
 use strict;
 use vars qw(%Config);
 %Config = (
-    BIN_DIR  => '/nas/seqdb/integr8/production/code/external/bin',
-    DATA_DIR => '/nas/seqdb/integr8/production/code/external/data',
-    LIB_DIR  => '/nas/seqdb/integr8/production/code/external/lib',
+    BIN_DIR  => '/nfs/panda/ensemblgenomes/external/bin',
+    DATA_DIR => '/nfs/panda/ensemblgenomes/external/data',
+    LIB_DIR  => '/nfs/panda/ensemblgenomes/external/lib',
 
     # default target_file_directory
     PIPELINE_TARGET_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/aclavatus',
