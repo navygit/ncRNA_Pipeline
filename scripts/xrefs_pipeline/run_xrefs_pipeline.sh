@@ -32,7 +32,7 @@ source $ENV_FILE
 
 echo "database server host, $DB_HOST"
 
-# Test the CONFIG_FILE
+# Test the CONFIG_DIR
 
 if [ ! -d ${CONFIG_DIR} ] 
 then
@@ -50,6 +50,17 @@ echo "SPECIES: $SPECIES"
 SPECIES_SHORT_NAME=`echo $SPECIES | perl -ne '$_ =~ /^(\w)[^_]+_(\w+)/; $a = $1; $b = $2; print "$a$b";'`
 
 echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
+
+# Check the mapping config file exists
+
+CONFIG_MAPPING_FILE=${CONFIG_DIR}"/Config/"${SPECIES_SHORT_NAME}"_xref_mapper.input"
+
+if [ ! -f ${CONFIG_MAPPING_FILE} ]
+then
+    echo "Config file, ${CONFIG_MAPPING_FILE}, not found!"
+    exit 1
+fi
+
 
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 ENSEMBL_ROOT_DIR=/nfs/panda/ensemblgenomes
@@ -90,17 +101,12 @@ echo "y" | perl xref_parser.pl -user $DB_USER -pass $DB_PASS -host $DB_HOST -por
 
 # Mapping stage
 
-if [ ! -f ${CONFIG_DIR}"/"${SPECIES_SHORT_NAME}"_xref_mapper.input" ]
-then
-    echo "Config file, "${CONFIG_DIR}"/"${SPECIES_SHORT_NAME}"_xref_mapper.input, not found!"
-    exit 1
-fi
 
 echo ""
 echo "Running xref_mapper.pl"
-echo "perl xref_mapper.pl -file "${CONFIG_DIR}"/"${SPECIES_SHORT_NAME}"_xref_mapper.input -upload"
+echo "perl xref_mapper.pl -file ${CONFIG_MAPPING_FILE} -upload"
 
 # 55 and further
 
-perl xref_mapper.pl -file ${CONFIG_DIR}"/"${SPECIES_SHORT_NAME}"_xref_mapper.input" -upload
+perl xref_mapper.pl -file ${CONFIG_MAPPING_FILE} -upload
 
