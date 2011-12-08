@@ -54,8 +54,8 @@ foreach my $type (@types) {
 
   # Get the list of objects which don't have a stable_id yet
 
-  my $sql = "SELECT $type.${type}_id FROM $type join ${type}_stable_id using (${type}_id) WHERE stable_id like \"%RNA%\";";
-
+  my $sql = "SELECT $type.${type}_id FROM $type WHERE stable_id like \"%RNA%\";";
+  
   print STDERR "fetching the list of objects without a stable_id for type, $type\n";
   print STDERR "sql: $sql\n";
 
@@ -80,7 +80,7 @@ foreach my $type (@types) {
 
       ($new_stable_id,my $nis) = @{increment_stable_id($new_stable_id,$type)};
     
-      my $sql = qq~insert into ${type}_stable_id (${type}_id, stable_id, version, created_date, modified_date) values ($object_id, "$nis", 1, NOW(), NOW()) ;~;
+      my $sql = qq~UPDATE ${type} SET stable_id = "$nis", version = 1, created_date = NOW(), modified_date = NOW() WHERE ${type}_id = $object_id;~;
       
       $dbi->do($sql);
   }
