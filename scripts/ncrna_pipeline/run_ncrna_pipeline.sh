@@ -15,7 +15,7 @@
 ########################
 
 NCRNA_LOGIC_NAME="ncRNA"
-PROTEIN_LOGIC_NAME="ena"
+PROTEIN_LOGIC_NAME="ensemblgenomes"
 LSF_QUEUE="production-rh6"
 COORD_SYSTEM="toplevel"
 
@@ -74,8 +74,8 @@ echo ""
 
 OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/production/ncgenes_pipelines/data/${SPECIES_SHORT_NAME}
 
-NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts
-NCGENES_SCRIPTS_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts
+NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts/ncrna_pipeline/
+NCGENES_SCRIPTS_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts/ncrna_pipeline/
 NCGENES_SQL_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/sql
 #ENSEMBL_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/64/ensembl
 ENSEMBL_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/ensembl-head
