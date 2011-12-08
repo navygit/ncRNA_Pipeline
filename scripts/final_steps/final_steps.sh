@@ -85,9 +85,10 @@ perl set_canonical_transcripts.pl -dbhost $DB_HOST -dbuser $DB_USER -dbpass $DB_
 # gene_density_calc.pl
 
 echo "Running gene_density_calc.pl"
+echo "perl gene_density_calc.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -dbname $DB_NAME -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro"
 
 cd ${ENSEMBL_PATH}/misc-scripts/density_feature
-perl gene_density_calc.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -dbname $DB_NAME 
+perl gene_density_calc.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -dbname $DB_NAME -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro
 
 
 # seq_region_stats.pl
@@ -110,6 +111,7 @@ perl seq_region_stats.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_
 cd ${ENSEMBL_PATH}/misc-scripts/density_feature
 
 echo "Running repeat_coverage_calc.pl"
+echo "perl repeat_coverage_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro"
 
 perl repeat_coverage_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro
 
@@ -120,7 +122,7 @@ cd ${ENSEMBL_PATH}/misc-scripts/density_feature
 
 echo "Running percent_gc_calc.pl"
 
-echo "perl percent_gc_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME"
+echo "perl percent_gc_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro"
 
 perl percent_gc_calc.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro
 
