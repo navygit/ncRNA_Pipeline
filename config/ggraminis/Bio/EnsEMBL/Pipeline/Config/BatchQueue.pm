@@ -176,7 +176,7 @@ use vars qw(%Config);
 			    },
 			    {
 			     logic_name => 'Prints',
-			     batch_size => 5,
+			     batch_size => 2,
 			     resource   => '',
 			     retries    => 3,
 			     sub_args   => '',
@@ -191,7 +191,7 @@ use vars qw(%Config);
 			    },
 			    {
 			     logic_name => 'pfscan',
-			     batch_size => 20,
+			     batch_size => 1,
 			     resource   => '',
 			     retries    => 3,
 			     sub_args   => '',
@@ -206,7 +206,7 @@ use vars qw(%Config);
 			    },   
 			    {
 			     logic_name => 'Pfam',
-			     batch_size => 5,
+			     batch_size => 2,
 			     resource   => '',
 			     retries    => 3,
 			     sub_args   => '',
@@ -251,7 +251,7 @@ use vars qw(%Config);
 			    },    
 			    {
 			     logic_name => 'tmhmm',
-			     batch_size => 5,
+			     batch_size => 20,
 			     resource   => '',
 			     retries    => 3,
 			     sub_args   => '',
@@ -281,7 +281,7 @@ use vars qw(%Config);
 			    },
                             {
                              logic_name => 'Tigrfam',
-                             batch_size => 50,
+                             batch_size => 2,
                              resource   => '',
                              retries    => 3,
                              sub_args   => '',
@@ -297,7 +297,7 @@ use vars qw(%Config);
                            },
                            {
                             logic_name => 'Superfamily',
-                            batch_size => 50,
+                            batch_size => 1,
                             resource   => '',
                             retries    => 3,
                             sub_args   => '',
@@ -313,7 +313,7 @@ use vars qw(%Config);
 			   },
 	                   {
 		           logic_name => 'Smart',
-                           batch_size => 50,
+                           batch_size => 2,
                            resource   => '',
                            retries    => 3,
                            sub_args   => '',
@@ -329,7 +329,7 @@ use vars qw(%Config);
                          },
                          {
                           logic_name => 'PIRSF',
-                          batch_size => 50,
+                          batch_size => 1,
                           resource   => '',
                           retries    => 3,
                           sub_args   => '',
