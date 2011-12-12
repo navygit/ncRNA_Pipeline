@@ -79,11 +79,11 @@ db=Pfam
 db_file=/ebi/production/interpro/data/members/pfam/23.0/Pfam_ls
 program=hmmpfam
 program_file=/sw/arch/bin/hmmpfam
-parameters=--cut_ga
+parameters=--cut_ga --cpu 1
 module=ProteinAnnotation/Hmmpfam
 gff_source=Pfam
 gff_feature=domain
-input_id_type=TRANSLATIONID
+input_id_type=CHUNK
 
 
 [Seg]
@@ -104,7 +104,7 @@ parameters=--cut_ga
 module=ProteinAnnotation/Hmmpfam
 gff_source=TIGRFAM
 gff_feature=domain
-input_id_type=TRANSLATIONID
+input_id_type=CHUNK
 
 [Superfamily]
 db=Superfamily
@@ -115,7 +115,7 @@ parameters=-t /nfs/nobackup/ensemblgenomes/production/protein_pipelines/temp/Sup
 module=ProteinAnnotation/Superfamily
 gff_source=Superfamily
 gff_feature=domain
-input_id_type=TRANSLATIONID
+input_id_type=CHUNK
 
 [Smart]
 db=Smart
@@ -126,7 +126,7 @@ parameters=-E 0.01
 module=ProteinAnnotation/Hmmpfam
 gff_source=Smart
 gff_feature=domain
-input_id_type=TRANSLATIONID
+input_id_type=CHUNK
 
 [PIRSF]
 db=PIRSF
