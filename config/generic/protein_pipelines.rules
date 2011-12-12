@@ -15,19 +15,19 @@ condition=SubmitChunk
 condition=SubmitProteome
 
 [Pfam]
-condition=SubmitTranslation
+condition=SubmitChunk
 
 [tmhmm]
 condition=SubmitChunk
 
 [Tigrfam]
-condition=SubmitTranslation
+condition=SubmitChunk
 
 [Superfamily]
-condition=SubmitTranslation
+condition=SubmitChunk
 
 [Smart]
-condition=SubmitTranslation
+condition=SubmitChunk
 
 [PIRSF]
 condition=SubmitChunk
