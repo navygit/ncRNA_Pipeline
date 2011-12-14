@@ -91,11 +91,17 @@ then
 
     cd ${ENS_ANALYSIS_PATH}/scripts
     
-    #perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic Superfamily -input_id 1 -verbose
+    perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic Pfam -input_id ggraminis_chunk_0000000 -verbose
+    
+    # perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic Superfamily -input_id ggraminis_chunk_0000000 -verbose
 
-    perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic PIRSF -input_id 1 -verbose
+    # perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic PIRSF -input_id ggraminis_chunk_0000000 -verbose
 
-    #perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic Prints -input_id pchabaudi_chunk_0000000 -verbose
+    # perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic Prints -input_id ggraminis_chunk_0000000 -verbose
+    
+    # perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic pfscan -input_id ggraminis_chunk_0000000 -verbose
+    
+    # perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic Tigrfam -input_id ggraminis_chunk_0000000 -verbose
 
 fi
 
