@@ -49,7 +49,7 @@ while (<$in_fh>) {
   my $name   = $9;
   
   # Replace '8S' by '5.8S'
-  $name =~ s/8s_rRNA/5.8S_rRNA/;
+  $name =~ s/8s_rRNA/5S_rRNA/;
   
   my $note = "$name";
   my $dbxref = "RNAMMER:$name";
