@@ -92,15 +92,16 @@ export PATH=${PERL_PATH}/perlbrew/perls/5.14.2/bin:$PATH
 
 cd ${ENSEMBL_PATH}/misc-scripts/xref_mapping
 
+
 # Parsing stage
 
 echo ""
 echo "Running xref_parser.pl"
 
-echo "y" | perl xref_parser.pl -user $DB_USER -pass $DB_PASS -host $DB_HOST -port $DB_PORT -species $SPECIES -create -dbname $XREF_DB_NAME -checkdownload -download_dir ${DATA_DOWNLOAD_DIR} -drop_db
+echo "y" | perl xref_parser.pl -user $DB_USER -pass $DB_PASS -host $DB_HOST -port $DB_PORT -species $SPECIES -create -dbname $XREF_DB_NAME -checkdownload -download_dir ${DATA_DOWNLOAD_DIR} -drop_db -force
+
 
 # Mapping stage
-
 
 echo ""
 echo "Running xref_mapper.pl"
