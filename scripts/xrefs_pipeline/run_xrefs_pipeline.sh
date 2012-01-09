@@ -98,7 +98,7 @@ cd ${ENSEMBL_PATH}/misc-scripts/xref_mapping
 echo ""
 echo "Running xref_parser.pl"
 
-echo "y" | perl xref_parser.pl -user $DB_USER -pass $DB_PASS -host $DB_HOST -port $DB_PORT -species $SPECIES -create -dbname $XREF_DB_NAME -checkdownload -download_dir ${DATA_DOWNLOAD_DIR} -drop_db -force
+perl xref_parser.pl -user $DB_USER -pass $DB_PASS -host $DB_HOST -port $DB_PORT -species $SPECIES -create -dbname $XREF_DB_NAME -checkdownload -download_dir ${DATA_DOWNLOAD_DIR} -drop_db -force
 
 
 # Mapping stage
