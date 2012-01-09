@@ -100,6 +100,11 @@ echo "Running xref_parser.pl"
 
 perl xref_parser.pl -user $DB_USER -pass $DB_PASS -host $DB_HOST -port $DB_PORT -species $SPECIES -create -dbname $XREF_DB_NAME -checkdownload -download_dir ${DATA_DOWNLOAD_DIR} -drop_db -force
 
+if [ $? -eq 0 ]
+then
+    echo "Parsing stage failed"
+    exit 1
+fi
 
 # Mapping stage
 
@@ -111,3 +116,8 @@ echo "perl xref_mapper.pl -file ${CONFIG_MAPPING_FILE} -upload"
 
 perl xref_mapper.pl -file ${CONFIG_MAPPING_FILE} -upload
 
+if [ $? -eq 0 ]
+then
+    echo "Mapping stage failed"
+    exit 1
+fi
