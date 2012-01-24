@@ -5,29 +5,29 @@ condition=SubmitChunk
 [ncoils]
 condition=SubmitChunk 
 
-[Prints]
+[prints]
 condition=SubmitChunk 
 
-[Signalp]
+[signalp]
 condition=SubmitChunk 
 
-[Seg]
+[seg]
 condition=SubmitProteome
 
-[Pfam]
+[pfam]
 condition=SubmitChunk
 
 [tmhmm]
 condition=SubmitChunk
 
-[Tigrfam]
+[tigrfam]
 condition=SubmitChunk
 
-[Superfamily]
+[superfamily]
 condition=SubmitChunk
 
-[Smart]
+[smart]
 condition=SubmitChunk
 
-[PIRSF]
+[pirsf]
 condition=SubmitChunk

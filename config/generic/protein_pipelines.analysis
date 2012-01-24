@@ -42,7 +42,7 @@ gff_source=Tmhmm
 gff_feature=annotation
 input_id_type=CHUNK
 
-[Signalp]
+[signalp]
 db=signal_peptide
 program=signalp
 program_file=/homes/ensgen/signalp-3.0/signalp
@@ -62,7 +62,7 @@ gff_feature=Domain
 input_id_type=CHUNK
 
 
-[Prints]
+[prints]
 db=Prints
 db_file=/nfs/seqdb/production/interpro/data/iprscan/prints.pval
 program=FingerPRINTScan
@@ -74,7 +74,7 @@ gff_feature=domain
 input_id_type=CHUNK
 
 
-[Pfam]
+[pfam]
 db=Pfam
 db_file=/ebi/production/interpro/data/members/pfam/23.0/Pfam_ls
 program=hmmpfam
@@ -86,7 +86,7 @@ gff_feature=domain
 input_id_type=CHUNK
 
 
-[Seg]
+[seg]
 db=low_complexity
 program=seg
 program_file=/nfs/panda/ensemblgenomes/external/bin/seg
@@ -95,7 +95,7 @@ gff_source=Seg
 gff_feature=annotation
 input_id_type=PROTEOME
 
-[Tigrfam]
+[tigrfam]
 db=TIGRfam
 db_file=/ebi/sp/pro1/interpro/data/members/tigrfam/9.0/TIGRFAMs_9.0_HMM.LIB
 program=hmmpfam
@@ -106,7 +106,7 @@ gff_source=TIGRFAM
 gff_feature=domain
 input_id_type=CHUNK
 
-[Superfamily]
+[superfamily]
 db=Superfamily
 db_file=/nfs/seqdb/production/interpro/data/iprscan/superfamily.hmm
 program=superfamily.pl
@@ -117,7 +117,7 @@ gff_source=Superfamily
 gff_feature=domain
 input_id_type=CHUNK
 
-[Smart]
+[smart]
 db=Smart
 db_file=/nfs/seqdb/production/interpro/data/iprscan/smart.HMMs
 program=hmmpfam
@@ -128,7 +128,7 @@ gff_source=Smart
 gff_feature=domain
 input_id_type=CHUNK
 
-[PIRSF]
+[pirsf]
 db=PIRSF
 db_file=/nfs/seqdb/production/interpro/data/iprscan/sf_hmm;/nfs/seqdb/production/interpro/data/iprscan/sf_hmm_sub
 program=pirsf.pl
@@ -139,13 +139,13 @@ gff_source=PIRSF
 gff_feature=domain
 input_id_type=CHUNK
 
-[PANTHER]
+[panther]
 db=pantherdb
 gff_source=PANTHER
 gff_feature=domain
 input_id_type=CHUNK
 
-[Gene3D]
+[gene3d]
 db=gene3d
 gff_source=Gene3D
 gff_feature=domain

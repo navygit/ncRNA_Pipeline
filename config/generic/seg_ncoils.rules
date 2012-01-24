@@ -1,5 +1,5 @@
 [ncoils]
 condition=SubmitChunk 
 
-[Seg]
+[seg]
 condition=SubmitProteome

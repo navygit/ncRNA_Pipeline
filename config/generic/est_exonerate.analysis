@@ -2,7 +2,7 @@
 module=Dummy
 input_id_type=ESTCHUNK
 
-[EST_exonerate]
+[est_exonerate]
 program=/nas/seqdb/integr8/production/code/external/exonerate-2.2.0-x86_64/bin/exonerate
 program_file=/nas/seqdb/integr8/production/code/external/exonerate-2.2.0-x86_64/bin/exonerate
 module=Exonerate2Genes

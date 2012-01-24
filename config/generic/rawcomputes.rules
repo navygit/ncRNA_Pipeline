@@ -1,8 +1,8 @@
-[Eponine]
+[eponine]
 condition=SubmitSlice
-[TRF]
+[trf]
 condition=SubmitSlice
-[Dust]
+[dust]
 condition=SubmitSlice
-[RepeatMask]
+[repeatmask]
 condition=SubmitSlice

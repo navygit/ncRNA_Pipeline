@@ -22,7 +22,7 @@ gff_source=ncoils
 gff_feature=annotation
 input_id_type=CHUNK
 
-[Seg]
+[seg]
 db=low_complexity
 program=seg
 program_file=/nfs/panda/ensemblgenomes/external/bin/seg

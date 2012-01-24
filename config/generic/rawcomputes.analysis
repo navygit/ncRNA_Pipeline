@@ -11,7 +11,7 @@ module=Dummy
 input_id_type=CHROMOSOME
 
 
-[CpG]
+[cpg]
 db=cpg
 program=cpg
 program_version=1
@@ -22,7 +22,7 @@ gff_feature=cpg_island
 input_id_type=SLICE
 
 
-[Dust]
+[dust]
 program=dust
 program_version=2
 program_file=/nfs/panda/ensemblgenomes/external/bin/tcdust
@@ -32,7 +32,7 @@ gff_feature=dust
 input_id_type=SLICE
 
 
-[Eponine]
+[eponine]
 db=Eponine
 program=eponine-scan
 program_version=1
@@ -44,7 +44,7 @@ gff_feature=annotation
 input_id_type=SLICE
 
 
-[TRF]
+[trf]
 program=trf
 program_file=/nfs/panda/ensemblgenomes/external/bin/trf
 module=TRF
@@ -53,7 +53,7 @@ gff_feature=tandem_repeat
 input_id_type=SLICE
 
 
-[RepeatMask]
+[repeatmask]
 db=repbase
 db_file=repbase
 db_version=20110914
