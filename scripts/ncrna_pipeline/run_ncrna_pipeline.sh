@@ -14,10 +14,12 @@
 #
 ########################
 
-NCRNA_LOGIC_NAME="ncRNA"
+NCRNA_LOGIC_NAME="ncRNA_EG"
 PROTEIN_LOGIC_NAME="ensemblgenomes"
 LSF_QUEUE="production-rh6"
-COORD_SYSTEM="toplevel"
+#COORD_SYSTEM="toplevel"
+
+COORD_SYSTEM="supercontig"
 
 ###
 
