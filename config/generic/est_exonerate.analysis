@@ -3,8 +3,8 @@ module=Dummy
 input_id_type=ESTCHUNK
 
 [est_exonerate]
-program=/nas/seqdb/integr8/production/code/external/exonerate-2.2.0-x86_64/bin/exonerate
-program_file=/nas/seqdb/integr8/production/code/external/exonerate-2.2.0-x86_64/bin/exonerate
+program=/nfs/panda/ensemblgenomes/external/exonerate-2.2.0-x86_64-Linux/bin/exonerate
+program_file=/nfs/panda/ensemblgenomes/external/exonerate-2.2.0-x86_64-Linux/bin/exonerate
 module=Exonerate2Genes
 input_id_type=ESTCHUNK
 
