@@ -1,7 +1,7 @@
 xref
 host=mysql-eg-devel-1.ebi.ac.uk
 port=4126
-dbname=gaeumannomyces_graminis_xref_12_65_1
+dbname=gaeumannomyces_graminis_xref_13_66_1
 user=ensrw
 password=scr1b3d1
 dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/ggraminis
@@ -10,7 +10,7 @@ species=gaeumannomyces_graminis
 taxon=eukaryota
 host=mysql-eg-devel-1.ebi.ac.uk
 port=4126
-dbname=gaeumannomyces_graminis_core_12_65_1
+dbname=gaeumannomyces_graminis_core_13_66_1
 user=ensrw
 password=scr1b3d1
 dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/ggraminis
