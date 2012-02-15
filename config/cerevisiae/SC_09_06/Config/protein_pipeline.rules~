@@ -1,0 +1,17 @@
+[scanprosite]
+condition=SubmitTranscriptChunk 
+[pfscan]
+condition=SubmitProteome 
+[ncoils]
+condition=SubmitTranscriptChunk 
+[Prints]
+condition=SubmitTranscriptChunk 
+[Signalp]
+condition=SubmitTranscriptChunk 
+[Seg]
+condition=SubmitProteome
+[Pfam]
+condition=SubmitTranscript
+[tmhmm]
+condition=SubmitTranscriptChunk
+

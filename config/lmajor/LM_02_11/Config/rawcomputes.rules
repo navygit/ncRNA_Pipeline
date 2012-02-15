@@ -1,0 +1,8 @@
+[Eponine]
+condition=SubmitChromosome
+[TRF]
+condition=SubmitChromosome
+[Dust]
+condition=SubmitChromosome
+[RepeatMask]
+condition=SubmitChromosome

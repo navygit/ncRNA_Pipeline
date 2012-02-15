@@ -1,0 +1,42 @@
+EST MAPPING 
+============
+
+Here are some more notes concerning the cerevisiae gene load.
+One thing to note is that the est exonerate failed to map the ests to the
+correct strands because exonerate relies on the sequences having splice sites to
+use to predict the strand.
+What occured is that several of the sequences were mapped to the +ve strand of
+the chromosome, but the hit sequence was mapped on its reverse strand.
+In order to corect this I swapped the strands over where the hit was -ve and
+the chromsomewas +ve. 
+As it turn out this is proboblynot the best way to do this but without splicing
+info what are you going to do?
+There is a possibilty that any spliced ests that were correcctly mapped to the +
+strand would have been flipped to the reverse strand, but as spliced ests are
+very rare it shouldnt cause oo much difficulty.
+Steve suggested trying to map the ESTS back to the genes they represent, but
+this may be rather a lot of work at this stage.
+
+
+PROTEIN MAPPING
+================
+
+Protein mapping was done using wublastx of the genomic vs Uniprot, this resulted
+in a large number of spurious hits, possibly due to the lack of repeat masking
+of the yeast genome, and also the density of the genes might complicate the
+process.
+As a result of this I reran the protein mapping using blastgenscanpep but instead 
+of using genscan predictions  loaded the genes into the prediction transcrip/exon tables 
+to ensure that each gene was blasted against uniprot
+
+
+ABINITIO GENE PREDICTION
+=========================
+
+Genscan has no config for yeast, gene finder is for worm (Steve suggested using
+genefinder on the basis that worm is closer to yeast than human. However neither
+of them was much use on there own, as they just joined up genes.
+Subsequently i Spent some time modifying the config for these programmes to
+increase the penalties for making introns.
+As a result the predictions look much more like yeaast genes!
+The config files that I produced are stored in the config directory ie here!

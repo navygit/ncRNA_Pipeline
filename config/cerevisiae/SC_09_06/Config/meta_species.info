@@ -1,0 +1,15 @@
+8	assembly.default	SGD1
+9	species.taxonomy_id	4932
+10	species.common_name	baker's yeast
+11	species.classification	cerevisiae
+12	species.classification	Saccharomyces
+13	species.classification	Saccharomycetaceae
+14	species.classification	Saccharomycetales
+15	species.classification	Saccharomycetes
+16	species.classification	Saccharomycotina
+17	species.classification	Ascomycota
+18	species.classification	Fungi
+19	species.classification	Metazoa
+20	species.classification	Eukaryota
+21	genebuild.version	0609SGD
+22	genebuild.id	1
