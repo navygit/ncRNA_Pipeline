@@ -1,1 +1,0 @@
-/usr/local/ensembl/bin/genefinder -seqfile Prot/chri.fasta -tablenamefile /usr/local/ensembl/data/nemtables/sanger.tablenamefile.cod -intronPenaltyFile /ecs2/work2/sw4/Yeast/Config/GeneFinder/intron_penalty.lookup -exonPenaltyFile /ecs2/work2/sw4/Yeast/Config/GeneFinder/exon_penalty.lookup
