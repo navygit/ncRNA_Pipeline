@@ -10,7 +10,6 @@ input_id_type=SLICE30k
 module=Dummy
 input_id_type=CHROMOSOME
 
-
 [cpg]
 db=cpg
 program=cpg
@@ -21,7 +20,6 @@ gff_source=cpg
 gff_feature=cpg_island
 input_id_type=SLICE
 
-
 [dust]
 program=dust
 program_version=2
@@ -30,7 +28,6 @@ module=Dust
 gff_source=dust
 gff_feature=dust
 input_id_type=SLICE
-
 
 [eponine]
 db=Eponine
@@ -43,7 +40,6 @@ gff_source=Eponine
 gff_feature=annotation
 input_id_type=SLICE
 
-
 [trf]
 program=trf
 program_file=/nfs/panda/ensemblgenomes/external/bin/trf
@@ -51,7 +47,6 @@ module=TRF
 gff_source=trf
 gff_feature=tandem_repeat
 input_id_type=SLICE
-
 
 [repeatmask]
 db=repbase

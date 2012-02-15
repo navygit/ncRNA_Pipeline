@@ -7,4 +7,3 @@ program=/nfs/panda/ensemblgenomes/external/exonerate-2.2.0-x86_64-Linux/bin/exon
 program_file=/nfs/panda/ensemblgenomes/external/exonerate-2.2.0-x86_64-Linux/bin/exonerate
 module=Exonerate2Genes
 input_id_type=ESTCHUNK
-

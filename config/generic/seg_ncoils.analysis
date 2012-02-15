@@ -6,11 +6,9 @@ input_id_type=PROTEOME
 module=Dummy
 input_id_type=CHUNK
 
-
 [SubmitTranslation]
 module=Dummy
 input_id_type=TRANSLATIONID
-
 
 [ncoils]
 db=coiled_coil
@@ -30,4 +28,3 @@ module=ProteinAnnotation/Seg
 gff_source=Seg
 gff_feature=annotation
 input_id_type=PROTEOME
-
