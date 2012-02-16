@@ -122,7 +122,7 @@ use vars qw( %Config );
 
       },
 
-      EST_exonerate => {
+      est_exonerate => {
 
         # GENOMICSEQS obtained from DEFAULT
         # IIDREGEXP not set; input ids are file names

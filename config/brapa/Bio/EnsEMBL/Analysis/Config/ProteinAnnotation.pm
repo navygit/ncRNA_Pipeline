@@ -54,35 +54,35 @@ use vars qw( %ProteinAnnotation );
        # if genes are in pipeline database
        GENEDB => undef,
        # most analyses are chunks, so default to chunk dir
-       BASE_DIR      => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/protein_chunks',
+       BASE_DIR      => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/brapa/protein_chunks',
      },
 
-     Seg => {
+     seg => {
        # only specify DIR where the file with all translations lives - 
        # Seg get's the filename out of table input_id_analysis.input_id 
-       BASE_DIR      => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/proteins',
+       BASE_DIR      => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/brapa/proteins',
      },
-     Signalp => {
+     signalp => {
      },
-     Ncoils => {
+     ncoils => {
      },
-     Tmhmm => {
+     tmhmm => {
      },
-     Prints => {
+     prints => {
      },
      scanprosite => {
      },
      pfscan => {
      },
-     Pfam => {
+     pfam => {
      },
-     Tigrfam => {
+     tigrfam => {
      },
-     Superfamily => {
+     superfamily => {
      },
-     Smart => {
+     smart => {
      },
-     PIRSF => {
+     pirsf => {
      },
    }
 

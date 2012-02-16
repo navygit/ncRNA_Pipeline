@@ -63,13 +63,13 @@ use vars qw(%Config);
   PIPELINE_INPUT_DIR => '',
 
   # default target_file_directory
-  PIPELINE_TARGET_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/pultimum',
+  PIPELINE_TARGET_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/brapa',
 
   #regex for spiting up slice input_ids
   SLICE_INPUT_ID_REGEX => '(\S+)\.(\d+)-(\d+):?([^:]*)',	   
     
   ANALYSIS_WORK_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/brapa',
-  PIPELINE_REPEAT_MASKING => ['RepeatMask'],	
+  PIPELINE_REPEAT_MASKING => ['repeatmask'],	
 
   SNAP_MASKING => [],
 

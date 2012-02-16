@@ -69,7 +69,7 @@ use vars qw(%Config);
   SLICE_INPUT_ID_REGEX => '(\S+)\.(\d+)-(\d+):?([^:]*)',	   
     
   ANALYSIS_WORK_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/brapa',
-  PIPELINE_REPEAT_MASKING => ['RepeatMask'],	
+  PIPELINE_REPEAT_MASKING => ['repeatmask'],	
 
   SNAP_MASKING => [],
 
