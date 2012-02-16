@@ -75,10 +75,10 @@ echo "Test the dna pipelines"
 
 cd ${ENS_ANALYSIS_PATH}/scripts
 
-# perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic RepeatMask -input_id ${COORD_SYSTEM}:TRIAD1:scaffold_24:1:298301:1 -verbose
-#perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic Eponine -input_id ${COORD_SYSTEM}:TRIAD1:scaffold_24:1:298301:1 -verbose
-#perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic Dust -input_id ${COORD_SYSTEM}:TRIAD1:scaffold_24:1:298301:1 -verbose
-#perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic TRF -input_id ${COORD_SYSTEM}:TRIAD1:scaffold_24:1:298301:1 -verbose
+# perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic repeatmask -input_id ${COORD_SYSTEM}:TRIAD1:scaffold_24:1:298301:1 -verbose
+# perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic eponine -input_id ${COORD_SYSTEM}:TRIAD1:scaffold_24:1:298301:1 -verbose
+# perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic dust -input_id ${COORD_SYSTEM}:TRIAD1:scaffold_24:1:298301:1 -verbose
+# perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic trf -input_id ${COORD_SYSTEM}:TRIAD1:scaffold_24:1:298301:1 -verbose
 
 # Run the pipelines
 
@@ -86,5 +86,5 @@ echo "Run the pipelines"
 
 cd ${ENS_PIPELINE_PATH}/scripts/
 
-perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis Eponine -analysis TRF -analysis Dust -analysis RepeatMask -verbose -output_dir ${OUTPUT_DIR}
+perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis eponine -analysis trf -analysis dust -analysis repeatmask -verbose -output_dir ${OUTPUT_DIR}
 

@@ -84,9 +84,9 @@ then
 
     cd ${ENS_ANALYSIS_PATH}/scripts
 
-    echo "perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -logic EST_exonerate -input_id cDNAs_chunk_0000000 -verbose"
+    echo "perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -logic est_exonerate -input_id cDNAs_chunk_0000000 -verbose"
 
-    perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -logic EST_exonerate -input_id cDNAs_chunk_0000000 -verbose
+    perl test_RunnableDB -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -logic est_exonerate -input_id cDNAs_chunk_0000000 -verbose
 
 else
 
@@ -96,8 +96,8 @@ else
 
     cd ${ENS_PIPELINE_PATH}/scripts/
 
-    echo "perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -once -analysis EST_exonerate -verbose -output_dir ${OUTPUT_DIR}"
+    echo "perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -once -analysis est_exonerate -verbose -output_dir ${OUTPUT_DIR}"
 
-    perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -once -analysis EST_exonerate -verbose -output_dir ${OUTPUT_DIR} 
+    perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -once -analysis est_exonerate -verbose -output_dir ${OUTPUT_DIR} 
 
 fi
