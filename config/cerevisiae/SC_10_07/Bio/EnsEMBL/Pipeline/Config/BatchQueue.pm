@@ -76,7 +76,7 @@ use vars qw(%Config);
 	   QUEUE_CONFIG => [
 
 			    {
-			     logic_name => 'RepeatMask',
+			     logic_name => 'repeatmask',
 			     batch_size => 1,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -92,7 +92,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
 			    {
-			     logic_name => 'CpG',
+			     logic_name => 'cpg',
 			     batch_size => 50,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -107,7 +107,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
 			    {
-			     logic_name => 'TRF',
+			     logic_name => 'trf',
 			     batch_size => 100,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -122,7 +122,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
 			    {
-			     logic_name => 'Dust',
+			     logic_name => 'dust',
 			     batch_size => 100,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -137,7 +137,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
 			    {
-			     logic_name => 'tRNAscan',
+			     logic_name => 'trnascan',
 			     batch_size => 100,
 			     retries    => 3,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
@@ -152,7 +152,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
 			    {
-			     logic_name => 'Eponine',
+			     logic_name => 'eponine',
 			     batch_size => 20,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -168,7 +168,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
 			    {
-			     logic_name => 'Uniprot',
+			     logic_name => 'uniprot',
 			     batch_size => 1,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -184,7 +184,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
                             {
-			     logic_name => 'UniGene',
+			     logic_name => 'unigene',
 			     batch_size => 1,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -200,7 +200,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
                             {
-			     logic_name => 'Genscan',
+			     logic_name => 'genscan',
 			     batch_size => 1,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -216,7 +216,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
 	                    {
-			     logic_name => 'GeneFinder',
+			     logic_name => 'genefinder',
 			     batch_size => 1,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -247,7 +247,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
 			    {
-			     logic_name => 'Prints',
+			     logic_name => 'prints',
 			     batch_size => 5,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -277,7 +277,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },   
 			    {
-			     logic_name => 'Pfam',
+			     logic_name => 'pfam',
 			     batch_size => 5,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -292,7 +292,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
 			    {
-			     logic_name => 'Signalp',
+			     logic_name => 'signalp',
 			     batch_size => 5,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -307,7 +307,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },    
 			    {
-			     logic_name => 'Seg',
+			     logic_name => 'seg',
 			     batch_size => 1,
 			     resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -352,7 +352,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
 			    },
                             {
-                             logic_name => 'Tigrfam',
+                             logic_name => 'tigrfam',
                              batch_size => 50,
                              resource   => 'linux',
                              resource   => 'select[mygenebuild4<400 ] rusage[mygenebuild4=10:duration=30:decay=1]',
@@ -369,7 +369,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
                            },
                            {
-                            logic_name => 'Superfamily',
+                            logic_name => 'superfamily',
                             batch_size => 50,
                             resource   => 'linux',
                             retries    => 3,
@@ -385,7 +385,7 @@ use vars qw(%Config);
 			     retry_sub_args => '',
                           },
                           {
-                           logic_name => 'Smart',
+                           logic_name => 'smart',
                            batch_size => 50,
                            resource   => 'linux',
                            resource   => 'select[mygenebuild4<400 ] rusage[mygenebuild4=10:duration=30:decay=1]',
@@ -402,7 +402,7 @@ use vars qw(%Config);
                            output_dir => '/lustre/scratch1/ensembl/fsk/yeast_output/smart',
                          },
                          {
-                          logic_name => 'PIRSF',
+                          logic_name => 'pirsf',
                           batch_size => 50,
                           resource   => 'linux',
                           resource   => 'select[mygenebuild4<400 ] rusage[mygenebuild4=10:duration=30:decay=1]',
@@ -436,7 +436,7 @@ use vars qw(%Config);
                          cleanup => 'no',
                        },
                           #  {
-			  #   logic_name => 'EST_genebuilder',
+			  #   logic_name => 'est_genebuilder',
 			  #   batch_size => 5,
 			  #   resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
 			  #   retries    => 3,

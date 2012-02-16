@@ -70,7 +70,7 @@ use vars qw(%Config);
 	   QUEUE_CONFIG => [
 
 			    {
-			     logic_name => 'RepeatMask',
+			     logic_name => 'repeatmask',
 			     batch_size => 10,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -82,7 +82,7 @@ use vars qw(%Config);
 			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			    },
 			    {
-			     logic_name => 'CPG',
+			     logic_name => 'cpg',
 			     batch_size => 10,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -104,7 +104,7 @@ use vars qw(%Config);
 			     runnabledb_path => 'Bio/EnsEMBL/Pipeline/RunnableDB',
 			    },
 			    {
-			     logic_name => 'TRF',
+			     logic_name => 'trf',
 			     batch_size => 10,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -115,7 +115,7 @@ use vars qw(%Config);
 			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			    },
 			    {
-			     logic_name => 'Dust',
+			     logic_name => 'dust',
 			     batch_size => 10,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -126,7 +126,7 @@ use vars qw(%Config);
 			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			    },
 			    {
-			     logic_name => 'tRNAscan',
+			     logic_name => 'trnascan',
 			     batch_size => 10,
 			     retries    => 3,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
@@ -149,7 +149,7 @@ use vars qw(%Config);
 			     cleanup => 'no',
 			    },
 			    {
-			     logic_name => 'Eponine',
+			     logic_name => 'eponine',
 			     batch_size => 1,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -161,7 +161,7 @@ use vars qw(%Config);
 			     cleanup => 'no',
 			    },
 			    {
-			     logic_name => 'Uniprot_wublastx',
+			     logic_name => 'uniprot_wublastx',
 			     batch_size => 1,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -173,7 +173,7 @@ use vars qw(%Config);
 			     cleanup => 'no',
 			    },
                             {
-			     logic_name => 'GenScan',
+			     logic_name => 'genscan',
 			     batch_size => 1,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -185,7 +185,7 @@ use vars qw(%Config);
 			     cleanup => 'no',
 			    },
 	                    {
-			     logic_name => 'GeneFinder',
+			     logic_name => 'genefinder',
 			     batch_size => 1,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -207,7 +207,7 @@ use vars qw(%Config);
 			     output_dir => '/nfs/acari/jb16/projects/Scerevisiae/pipeline/out/Scanprosite'
 			    },
 			    {
-			     logic_name => 'Prints',
+			     logic_name => 'prints',
 			     batch_size => 5,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -227,7 +227,7 @@ use vars qw(%Config);
 			     output_dir => '/nfs/acari/jb16/projects/Scerevisiae/pipeline/out/Pfscan'
 			    },   
 			    {
-			     logic_name => 'Pfam',
+			     logic_name => 'pfam',
 			     batch_size => 5,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -237,7 +237,7 @@ use vars qw(%Config);
 			     output_dir => '/nfs/acari/jb16/projects/Scerevisiae/pipeline/out/Pfam'
 			    },
 			    {
-			     logic_name => 'Signalp',
+			     logic_name => 'signalp',
 			     batch_size => 5,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -247,7 +247,7 @@ use vars qw(%Config);
 			     output_dir => '/nfs/acari/jb16/projects/Scerevisiae/pipeline/out/SigP'
 			    },    
 			    {
-			     logic_name => 'Seg',
+			     logic_name => 'seg',
 			     batch_size => 1,
 			     resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			     retries    => 3,
@@ -289,7 +289,7 @@ use vars qw(%Config);
 			     cleanup => 'no',
 			    },
                           #  {
-			  #   logic_name => 'EST_genebuilder',
+			  #   logic_name => 'est_genebuilder',
 			  #   batch_size => 5,
 			  #   resource   => 'select[linux && myia64g <=800] rusage[myia64f=10:duration=10:decay=10]',
 			  #   retries    => 3,

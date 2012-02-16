@@ -38,3 +38,11 @@ for file in \
     echo
 done;
 
+
+
+## MUNGY!
+
+perl -p -i -e '
+    s/logic_name => (\S+),/logic_name => \L$1,/
+
+' $(grep "Pipeline/Config/BatchQueue.pm" file.list )
