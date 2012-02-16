@@ -9,8 +9,8 @@ Bio::EnsEMBL::Pipeline::Config::BatchQueue
 
 =head1 SYNOPSIS
 
-    use Bio::EnsEMBL::Pipeline::Config::BatchQueue;
-    use Bio::EnsEMBL::Pipeline::Config::BatchQueue qw();
+use Bio::EnsEMBL::Pipeline::Config::BatchQueue;
+use Bio::EnsEMBL::Pipeline::Config::BatchQueue qw();
 
 =head1 DESCRIPTION
 
@@ -27,49 +27,9 @@ C<%Config> hash is asked to be set.
 The variables can also be references to arrays or hashes.
 
 Edit C<%Config> to add or alter variables.
-All the variables are in capitals, so that they resemble environment variables.  
 
-To run a job only on a certain host, you have to add specific resource-requirements. This 
-can be useful if you have special memory-requirements, if you like to run the job only on 
-linux 64bit machines or if you want to run the job only on a specific host group. 
-The commands bmgroups and lsinfo show you certain host-types / host-groups. 
-
-Here are some example resource-statements / sub_args statements:  
-
- sub_args => '-m bc_hosts',                 # only use hosts of host-group 'bc_hosts' (see bmgroup)
- sub_args => '-m bc1_1',                    # only use hosts of host-group 'bc1_1' 
-
- resource => 'select[type==X86_64]',  # use Linux 64 bit machines only 
- resource => 'select[model==IBMBC2800] ',  # only run on IBMBC2800 hosts
-
- resource => 'alpha',                       # only run on DEC alpha 
- resource => 'linux',                       # run on any machine capable of running 32-bit X86 Linux apps
- 
-Database throtteling :
-This runs a job on a linux host, throttles ecs4:3350 to not have more than 300 cative connections, 10 connections per 
-job in the duration of the first 10 minutes when the job is running (means 30 hosts * 10 connections = 300 connections):
- 
-    resource =>'select[linux && ecs4my3350 <=300] rusage[ecs4my3350=10:duration=10]',
-
-
-Running on 'linux' hosts with not more than 200 active connections for myia64f and myia64g, 10 connections per job to each 
-db-instance for the first 10 minutes :
- 
-    resource =>'select[linux && myia64f <=200 && myia64g <=200] rusage[myia64f=10:myia64g=10:duration=10]',
- 
-
-Running on hosts of model 'IBMBC2800' hosts with not more than 200 active connections to myia64f;  
-10 connections per job for the first 10 minutes:
-
-   resource =>'select[model==IBMBC2800 && myia64f<=200] rusage[myia64f=10:duration=10]',
-
-
-
-Running on hosts of host_group bc_hosts with not more than 200 active connections to myia64f;  
-10 connections per job for the first 10 minutes:
-
-   resource =>'select[myia64f<=200] rusage[myia64f=10:duration=10]',
-   sub_args =>'-m bc_hosts' 
+All the variables are in capitals, so that they resemble environment
+variables.
 
 =head1 CONTACT
 
@@ -84,329 +44,350 @@ use strict;
 use vars qw(%Config);
 
 %Config = (
-  QUEUE_MANAGER       => 'LSF', # depending on the job-submission-system you're using 
-                                # use LSF, you can also use 'Local' 
-                                # for mor info look into 
-                                # /ensembl-pipeline/modules/Bio/EnsEMBL/Pipeline/BatchSubmission 
-                                # 
-  DEFAULT_BATCH_SIZE  => 10,
-  DEFAULT_RETRIES     => 3,
-  DEFAULT_BATCH_QUEUE => 'production', # put in the queue  of your choice, eg. 'normal'
-  DEFAULT_RESOURCE    => '',
-  DEFAULT_SUB_ARGS => '',
-  DEFAULT_OUTPUT_DIR  => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum',
-  DEFAULT_CLEANUP     => 'no',	
-  DEFAULT_VERBOSITY   => 'INFO',
-
-  # The two variables below are to overcome a bug in LSF. 
-  # We're currently running the pre-exec with a different perl. lsf currently unsets the LD_LIBRARY_PATH 
-  # which we need for certain 64bit libraries in pre-exec commands. (more info see LSF_LD_SECURITY variable )
-         
-  # arnaud: Use 32bits compiles perl at Sanger
-  # Not sure we've got one at EBI, so use normal Perl for now       
-         
-  DEFAULT_LSF_PRE_EXEC_PERL =>'/nfs/panda/ensemblgenomes/perl/default/bin/perl', # ONLY use 32bit perl for lsf -pre-exec jobs
-  DEFAULT_LSF_PERL =>'/nfs/panda/ensemblgenomes/perl/default/bin/perl', # ONLY use ensembl64/bin/perl for memory jobs > 4 gb
-                                                    # SANGER farm : don't forget to source source /software/intel_cce_80/bin/iccvars.csh for big mem jobs
-                                                    #
-                                                                                                                       
-  JOB_LIMIT           => 10000, # at this number of jobs RuleManager will sleep for 
-                                # a certain period of time if you effectively want this never to run set 
+	   QUEUE_MANAGER       => 'LSF',
+	   DEFAULT_BATCH_SIZE  => 5,
+	   DEFAULT_RETRIES     => 0,
+	   DEFAULT_BATCH_QUEUE => 'production-rh6', # put in the queue  of your choice, eg. 'acari'
+	   DEFAULT_OUTPUT_DIR  => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/brapa',
+           DEFAULT_RESOURCE    => '',
+           DEFAULT_SUB_ARGS => '',
+	   DEFAULT_CLEANUP     => 'n',	
+	   AUTO_JOB_UPDATE     => 1,
+	   JOB_LIMIT           => 10000, # at this number of jobs RuleManager will sleep for 
+	   # a certain period of time if you effectively want this never to run set 
                                 # the value to very high ie 100000 for a certain period of time
-				# this is important for queue managers which cannot cope with large numbers
-				# of pending jobs (e.g. early LSF versions and SGE)
+	   JOB_STATUSES_TO_COUNT => ['PEND'], # these are the jobs which will be
+	   # counted
+	   # valid statuses for this array are RUN, PEND, SSUSP, EXIT, DONE
+	   MARK_AWOL_JOBS      => 1,
+	   MAX_JOB_SLEEP       => 3600,	# the maximun time to sleep for when job limit 
+	   # reached
+	   MIN_JOB_SLEEP => 120, # the minium time to sleep for when job limit reached
+	   SLEEP_PER_JOB => 30, # the amount of time to sleep per job when job limit 
+	   # reached
+	   DEFAULT_RUNNABLEDB_PATH => 'Bio/EnsEMBL/Pipeline/RunnableDB',      
+           DEFAULT_RETRY_QUEUE => 'production-rh6',
+           DEFAULT_RETRY_SUB_ARGS => '',
+           DEFAULT_RETRY_RESOURCE => '',
+	   DEFAULT_RUNNER => '/lustre/work1/ensembl/fsk/project_data/yeast/cvs/ensembl-pipeline/modules/Bio/EnsEMBL/Pipeline/runner.pl', 
 
-  JOB_STATUSES_TO_COUNT => ['PEND'], # these are the jobs which will be
-                                     # counted
-                                     # valid statuses for this array are RUN, PEND, SSUSP, EXIT, DONE
-  MARK_AWOL_JOBS      => 1,
-  MAX_JOB_SLEEP       => 3600,# the maximun time to sleep for when job limit 
-                              # reached
-  MIN_JOB_SLEEP => 120, # the minium time to sleep for when job limit reached
-  SLEEP_PER_JOB => 30, # the amount of time to sleep per job when job limit 
-                       # reached
-  DEFAULT_RUNNABLEDB_PATH => 'Bio/EnsEMBL/Analysis/RunnableDB',      
+           DEFAULT_VERBOSITY => 'WARNING',     
 
-  DEFAULT_RUNNER => '',      
-  DEFAULT_RETRY_QUEUE => 'production',
-  DEFAULT_RETRY_SUB_ARGS => '',
-  DEFAULT_RETRY_RESOURCE => '',
-  
-  QUEUE_CONFIG => [
-    {
-      logic_name => 'RepeatMask',
-      batch_size => 10,
-      resource   => '',
-      retries    => 3,
-      sub_args   => '',
-      runner     => '',
-      queue => 'production',
-      output_dir => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/pultimum',
-      verbosity => 'INFO',
-      runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-      retry_queue => 'production',
-      retry_resource => '',
-      retry_sub_args => '',
-    },
-    {
-      logic_name => 'CpG',
-      batch_size => 10,
-      resource   => '',
-      retries    => 3,
-      sub_args   => '',
-      runner     => '',
-      retry_queue => 'production',
-      retry_resource => '',
-      retry_sub_args => '',
-    },
-    {
-      logic_name => 'Eponine',
-      batch_size => 10,
-      resource   => '',
-      retries    => 3,
-      sub_args   => '',
-      runner     => '',
-      retry_queue => 'production',
-      retry_resource => '',
-      retry_sub_args => '',
-    },
-    {
-      logic_name => 'TRF',
-      batch_size => 10,
-      resource   => '',
-      retries    => 3,
-      sub_args   => '',
-      runner     => '',
-      retry_queue => 'production',
-      retry_resource => '',
-      retry_sub_args => '',
-    },
-    {
-      logic_name => 'Dust',
-      batch_size => 10,
-      resource   => '',
-      retries    => 3,
-      sub_args   => '',
-      runner     => '',
-      retry_queue => 'production',
-      retry_resource => '',
-      retry_sub_args => '',
-    },
- {
-     logic_name => 'scanprosite',
-     batch_size => 5,
-     resource   => '',
-     retries    => 2,
-     sub_args   => '',
-     runner     => '',
-     cleanup => 'no',
-     output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/Scanprosite',
-     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-     verbosity => 'INFO',
-     retry_queue => 'production',
-     retry_resource => '',
-     retry_sub_args => '',
-  },
-      {
-	  logic_name => 'Prints',
-	  batch_size => 5,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup => 'no',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/Prints',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-      },
-      {
-	  logic_name => 'pfscan',
-	  batch_size => 20,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup => 'no',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/Pfscan',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-      },   
-      {
-	  logic_name => 'Pfam',
-	  batch_size => 5,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup => 'no',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/Pfam',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-      },
-      {
-	  logic_name => 'Signalp',
-	  batch_size => 5,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup => 'no',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/SigP',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-      },    
-      {
-	  logic_name => 'Seg',
-	  batch_size => 1,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup => 'no',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/Seg',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-      },    
-      {
-	  logic_name => 'tmhmm',
-	  batch_size => 5,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup => 'no',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/Tmhmm',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-      },    
-      {
-	  logic_name => 'ncoils',
-	  batch_size => 5,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup => 'no',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/Ncoils',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-      },
-      {
-	  logic_name => 'Tigrfam',
-	  batch_size => 50,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup    => 'yes',
-	  queue      => 'production',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/Tigrfam',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-      },
-      {
-	  logic_name => 'Superfamily',
-	  batch_size => 50,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup    => 'yes',
-	  queue      => 'production',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/Superfamily',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-      },
-      {
-	  logic_name => 'Smart',
-	  batch_size => 50,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup    => 'yes',
-	  queue      => 'production',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/smart',
-      },
-      {
-	  logic_name => 'PIRSF',
-	  batch_size => 50,
-	  resource   => '',
-	  retries    => 3,
-	  sub_args   => '',
-	  runner     => '',
-	  cleanup    => 'yes',
-	  queue      => 'production',
-	  runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
-	  output_dir => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/pultimum/pirsf',
-	  verbosity => 'INFO',
-	  retry_queue => 'production',
-	  retry_resource => '',
-	  retry_sub_args => '',
-      },
+           # The two variables below are to overcome a bug in LSF. 
+           # We're currently running the pre-exec with a different perl. lsf currently unsets the LD_LIBRARY_PATH 
+           # which we need for certain 64bit libraries in pre-exec commands. (more info see LSF_LD_SECURITY variable )
+
+           DEFAULT_LSF_PRE_EXEC_PERL =>'/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin/perl', # ONLY use 32bit perl for lsf -pre-exec jobs
+           DEFAULT_LSF_PERL =>'/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin/perl', # ONLY use ensembl64/bin/perl for memory jobs > 4 gb
+
+	   QUEUE_CONFIG => [
+
+			    {
+			     logic_name => 'RepeatMask',
+			     batch_size => 10,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     queue => 'production-rh6',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/brapa',
+			     cleanup => 'yes',        
+			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },
+			    {
+			     logic_name => 'CpG',
+			     batch_size => 50,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',         
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/brapa',
+			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },
+			    {
+			     logic_name => 'TRF',
+			     batch_size => 100,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',         
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/brapa',
+			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },
+			    {
+			     logic_name => 'Dust',
+			     batch_size => 100,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',         
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/brapa',
+			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },
+			    {
+			     logic_name => 'Eponine',
+			     batch_size => 20,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     queue => 'production-rh6',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/brapa',
+			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     cleanup => 'no',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },
+			    {
+			     logic_name => 'scanprosite',
+			     batch_size => 5,
+			     resource   => '',
+			     retries    => 2,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/scanprosite',
+                             runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },
+			    {
+			     logic_name => 'Prints',
+			     batch_size => 5,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/prints',
+                             runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },
+			    {
+			     logic_name => 'pfscan',
+			     batch_size => 20,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/Pfscan',
+                             runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },   
+			    {
+			     logic_name => 'Pfam',
+			     batch_size => 5,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/pfam',
+                             runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },
+			    {
+			     logic_name => 'Signalp',
+			     batch_size => 5,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/signalp',
+                             runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },    
+			    {
+			     logic_name => 'Seg',
+			     batch_size => 1,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/Seg',
+                             runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => 'production-rh6',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },    
+			    {
+			     logic_name => 'tmhmm',
+			     batch_size => 5,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/Tmhmm',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+                             runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			    },    
+			    {
+			     logic_name => 'ncoils',
+			     batch_size => 5,
+			     resource   => '',
+			     retries    => 3,
+			     sub_args   => '',
+			     runner     => '',
+			     cleanup => 'no',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/ncoils',
+                             runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => 'production-rh6',
+			     retry_resource => '',
+			     retry_sub_args => '',
+			    },
+                            {
+                             logic_name => 'Tigrfam',
+                             batch_size => 50,
+                             resource   => '',
+                             retries    => 3,
+                             sub_args   => '',
+                             runner     => '',
+                             cleanup    => 'yes',
+                             queue      => 'normal',
+                             runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+                             output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/Tigrfam',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '',
+                           },
+                           {
+                            logic_name => 'Superfamily',
+                            batch_size => 50,
+                            resource   => '',
+                            retries    => 3,
+                            sub_args   => '',
+                            runner     => '',
+                            cleanup    => 'yes',
+                            queue      => 'normal',
+                            runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+                            output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/Superfamily',
+			    verbosity => 'INFO',
+			    retry_queue => '',
+			    retry_resource => '',
+			    retry_sub_args => '',
+			   },
+	                   {
+		           logic_name => 'Smart',
+                           batch_size => 50,
+                           resource   => '',
+                           retries    => 3,
+                           sub_args   => '',
+                           runner     => '',
+                           cleanup    => 'yes',
+                           queue      => 'production-rh6',
+                           runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			   verbosity => 'INFO',
+			   retry_queue => '',
+			   retry_resource => '',
+			   retry_sub_args => '',
+                           output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/smart',
+                         },
+                         {
+                          logic_name => 'PIRSF',
+                          batch_size => 50,
+                          resource   => '',
+                          retries    => 3,
+                          sub_args   => '',
+                          runner     => '',
+                          cleanup    => 'yes',
+                          queue      => 'production-rh6',
+                          runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+                          output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/brapa/pirsf',
+			  verbosity => 'INFO',
+			  retry_queue => '',
+			  retry_resource => '',
+			  retry_sub_args => '',
+                        },
                         {
 			 logic_name => 'EST_exonerate',
-                         batch_size => 100,
+                         batch_size => 20,
                          resource   => '',
                          retries    => 2,
                          sub_args   => '',
                          runner     => '',
-                         queue => 'production',
-                         output_dir => '/nfs/panda/ensemblgenomes/production/est_pipeline/data/pultimum',
+                         queue => 'production-rh6',
+                         output_dir => '/nfs/panda/ensemblgenomes/production/est_pipeline/data/brapa',
                          runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			 verbosity => 'INFO',
-			 retry_queue => 'production',
+			 retry_queue => 'production-rh6',
 			 retry_resource => '',
 			 retry_sub_args => '',
                          cleanup => 'no',
                        },
-      
-  ]
-);
+                          #  {
+			  #   logic_name => 'EST_genebuilder',
+			  #   batch_size => 5,
+			  #   resource   => 'select[linux && mygenebuild4 <=2000] rusage[mygenebuild4=10:duration=10:decay=10]',
+			  #   retries    => 3,
+			  #   sub_args   => '',
+			  #   runner     => '',
+			  #   cleanup => 'no',
+			  #   output_dir => '/nobackup/vol1/ensembl_genomes/yeast/genebuilder',
+			  #   runnabledb_path => 'Bio/EnsEMBL/Pipeline/RunnableDB',
+			  #   verbosity => 'INFO',
+			  #   retry_queue => '',
+			  #   retry_resource => '',
+			  #   retry_sub_args => '',
+			  #  },
+			   ]
+	  );
 
 sub import {
-    my ($callpack) = caller(0); # Name of the calling package
-    my $pack = shift; # Need to move package off @_
+  my ($callpack) = caller(0);	# Name of the calling package
+  my $pack = shift;		# Need to move package off @_
 
-    # Get list of variables supplied, or else all
-    my @vars = @_ ? @_ : keys(%Config);
-    return unless @vars;
+  # Get list of variables supplied, or else all
+  my @vars = @_ ? @_ : keys(%Config);
+  return unless @vars;
 
-    # Predeclare global variables in calling package
-    eval "package $callpack; use vars qw("
-         . join(' ', map { '$'.$_ } @vars) . ")";
+  # Predeclare global variables in calling package
+  eval "package $callpack; use vars qw("
+    . join(' ', map { '$'.$_ } @vars) . ")";
     die $@ if $@;
 
 

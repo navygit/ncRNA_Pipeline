@@ -50,35 +50,35 @@ use vars qw( %Databases );
 	      # for some of these entries. However, reading and writing in the same db is not recommended.
 	
 	      # database containing sequence plus features from raw computes
-	      GB_DBHOST                  => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      GB_DBNAME                  => 'pythium_ultimum_core_9_61_1',
+	      GB_DBHOST                  => 'mysql-eg-staging-1.ebi.ac.uk',
+	      GB_DBNAME                  => 'brassica_rapa_core_13_66_1',
 	      GB_DBUSER                  => 'ensrw',
-	      GB_DBPASS                  => 'writ3rp1',
-	      GB_DBPORT                  => '4238',
+	      GB_DBPASS                  => 'scr1b3s1',
+	      GB_DBPORT                  => '4160',                          
 	      # database containing the genewise genes (TGE_gw,similarity_genewise)
-              GB_GW_DBHOST               => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-              GB_GW_DBNAME               => 'pythium_ultimum_core_9_61_1',
-              GB_GW_DBUSER               => 'ensrw',
-              GB_GW_DBPASS               => 'writ3rp1',
-              GB_GW_DBPORT               => '4238',
+              GB_GW_DBHOST               => 'mysql-eg-staging-1.ebi.ac.uk',  
+              GB_GW_DBNAME               => 'brassica_rapa_core_13_66_1',    
+              GB_GW_DBUSER               => 'ensrw',                         
+              GB_GW_DBPASS               => 'scr1b3s1',                      
+              GB_GW_DBPORT               => '4160',                          
 	      # database containing the blessed genes if there are any (e! definition!)
 	      # ... in this case: blessed genes are the ones not to modify .. ie "targetted_genes"
-	      GB_BLESSED_DBHOST          => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      GB_BLESSED_DBNAME          => 'pythium_ultimum_core_9_61_1',
-	      GB_BLESSED_DBUSER          => 'ensrw',
-	      GB_BLESSED_DBPASS          => 'writ3rp1',
-	      GB_BLESSED_DBPORT          => '4238',
+	      GB_BLESSED_DBHOST          => 'mysql-eg-staging-1.ebi.ac.uk',  
+	      GB_BLESSED_DBNAME          => 'brassica_rapa_core_13_66_1',    
+	      GB_BLESSED_DBUSER          => 'ensrw',                         
+	      GB_BLESSED_DBPASS          => 'scr1b3s1',                      
+	      GB_BLESSED_DBPORT          => '4160',                          
 	      #GB_BLESSED_DBHOST          => '',
 	      #GB_BLESSED_DBNAME          => '',
 	      #GB_BLESSED_DBUSER          => '',
 	      #GB_BLESSED_DBPASS          => '',
 	      #GB_BLESSED_DBPORT          => '',
 	      # database where the combined_gw_e2g genes will be stored
-	      GB_COMB_DBHOST             => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      GB_COMB_DBNAME             => 'pythium_ultimum_core_9_61_1',   #Was: kmegy_culex3_gw_combine_42 - this one is for a test!
-	      GB_COMB_DBUSER             => 'ensrw',
-	      GB_COMB_DBPASS             => 'writ3rp1',
-	      GB_COMB_DBPORT             => '4238',
+	      GB_COMB_DBHOST             => 'mysql-eg-staging-1.ebi.ac.uk',  
+	      GB_COMB_DBNAME             => 'brassica_rapa_core_13_66_1',    
+	      GB_COMB_DBUSER             => 'ensrw',                         
+	      GB_COMB_DBPASS             => 'scr1b3s1',                      
+	      GB_COMB_DBPORT             => '4160',                          
     	      # database containing the cdnas mapped, to be combined with the genewises
 	      # by putting this info here, we free up ESTConf.pm so that two analysis can
 	      # be run at the same time
@@ -90,25 +90,25 @@ use vars qw( %Databases );
               #GB_cDNA_DBPORT             => '4238',
 
 	      #Clean EST database
-	      GB_cDNA_DBHOST             => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      GB_cDNA_DBNAME             => 'pythium_ultimum_core_9_61_1',
-	      GB_cDNA_DBUSER             => 'ensrw',
-	      GB_cDNA_DBPASS             => 'writ3rp1',
-              GB_cDNA_DBPORT             => '4238',
+	      GB_cDNA_DBHOST             => 'mysql-eg-staging-1.ebi.ac.uk',  
+	      GB_cDNA_DBNAME             => 'brassica_rapa_core_13_66_1',    
+	      GB_cDNA_DBUSER             => 'ensrw',                         
+	      GB_cDNA_DBPASS             => 'scr1b3s1',                      
+              GB_cDNA_DBPORT             => '4160',                          
 
 	      # db to put pseudogenes in
-	      PSEUDO_DBHOST              => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
-	      PSEUDO_DBNAME              => 'pythium_ultimum_core_9_61_1',
-	      PSEUDO_DBUSER              => 'ensrw',
-	      PSEUDO_DBPASS              => 'writ3rp1',
-              PSEUDO_DBPORT              => '4238',
+	      PSEUDO_DBHOST              => 'mysql-eg-staging-1.ebi.ac.uk',  
+	      PSEUDO_DBNAME              => 'brassica_rapa_core_13_66_1',    
+	      PSEUDO_DBUSER              => 'ensrw',                         
+	      PSEUDO_DBPASS              => 'scr1b3s1',                      
+              PSEUDO_DBPORT              => '4160',                          
 
 	      # this db needs to have clone & contig & static_golden_path tables populated        #For GeneBuild
-	      GB_FINALDBHOST             => 'mysql-cluster-eg-prod-1.ebi.ac.uk',                                         # ...see Incremental config files
-	      GB_FINALDBNAME             => 'pythium_ultimum_core_9_61_1',
-	      GB_FINALDBUSER             => 'ensrw',
-	      GB_FINALDBPASS             => 'writ3rp1',
-              GB_FINALDBPORT             => '4238',
+	      GB_FINALDBHOST             => 'mysql-eg-staging-1.ebi.ac.uk',  
+	      GB_FINALDBNAME             => 'brassica_rapa_core_13_66_1',    
+	      GB_FINALDBUSER             => 'ensrw',                         
+	      GB_FINALDBPASS             => 'scr1b3s1',                      
+              GB_FINALDBPORT             => '4160',                          
 	     );
 
 sub import {
