@@ -345,7 +345,7 @@ use vars qw(%Config);
                         },
                         {
 			 logic_name => 'est_exonerate',
-                         batch_size => 20,
+                         batch_size => 10,
                          resource   => '',
                          retries    => 2,
                          sub_args   => '',
