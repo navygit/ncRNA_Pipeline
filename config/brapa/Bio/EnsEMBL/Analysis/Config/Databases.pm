@@ -82,10 +82,10 @@ use vars qw(%Config);
 
     REFERENCE_DB => { 
                       -dbname => 'brassica_rapa_core_13_66_1',
-                      -host   => 'mysql-eg-staging-1.ebi.ac.uk',
-                      -port   => '4160',
+                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
+                      -port   => '4207',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3s1',
+                      -pass   => 'scr1b3d2',
     },
 
     # The GENEWISE_DB holds genes made by FPC_TargettedGenewise or
@@ -94,10 +94,10 @@ use vars qw(%Config);
 
     GENEWISE_DB => { 
                       -dbname => 'brassica_rapa_core_13_66_1',
-                      -host   => 'mysql-eg-staging-1.ebi.ac.uk',
-                      -port   => '4160',
+                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
+                      -port   => '4207',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3s1',
+                      -pass   => 'scr1b3d2',
     },
 
     # The EXONERATE_DB ( formerly GB_cDNA ) holds alignments to cDNA's
@@ -105,10 +105,10 @@ use vars qw(%Config);
 
     EXONERATE_DB => {
                       -dbname => 'brassica_rapa_otherfeatures_13_66_1',
-                      -host   => 'mysql-eg-staging-1.ebi.ac.uk',
-                      -port   => '4160',
+                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
+                      -port   => '4207',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3s1',
+                      -pass   => 'scr1b3d2',
     },
 
     # The BLESSED_DB (formerly GB_BLESSED) holds the 'blessed'
@@ -116,10 +116,10 @@ use vars qw(%Config);
 
     BLESSED_DB => { 
                       -dbname => 'brassica_rapa_core_13_66_1',
-                      -host   => 'mysql-eg-staging-1.ebi.ac.uk',
-                      -port   => '4160',
+                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
+                      -port   => '4207',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3s1',
+                      -pass   => 'scr1b3d2',
     },
 
     # The UTR_DB (formerly GB_COMB) holds genes made by the
@@ -127,10 +127,10 @@ use vars qw(%Config);
 
     UTR_DB => { 
                       -dbname => 'brassica_rapa_core_13_66_1',
-                      -host   => 'mysql-eg-staging-1.ebi.ac.uk',
-                      -port   => '4160',
+                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
+                      -port   => '4207',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3s1',
+                      -pass   => 'scr1b3d2',
     },
 
     # GENEBUILD_DB (formerly GB_FINALDB) is the Database where
@@ -139,20 +139,20 @@ use vars qw(%Config);
 
     GENEBUILD_DB => { 
                       -dbname => 'brassica_rapa_core_13_66_1',
-                      -host   => 'mysql-eg-staging-1.ebi.ac.uk',
-                      -port   => '4160',
+                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
+                      -port   => '4207',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3s1',
+                      -pass   => 'scr1b3d2',
     },
 
     # PSEUDO_DB holds the pseudo-genes
 
     PSEUDO_DB => { 
                       -dbname => 'brassica_rapa_core_13_66_1',
-                      -host   => 'mysql-eg-staging-1.ebi.ac.uk',
-                      -port   => '4160',
+                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
+                      -port   => '4207',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3s1',
+                      -pass   => 'scr1b3d2',
     },
 
     # COALESCER_DB is the DB where TranscriptCoalescer writes its
@@ -160,10 +160,10 @@ use vars qw(%Config);
 
     COALESCER_DB => { 
                       -dbname => 'brassica_rapa_core_13_66_1',
-                      -host   => 'mysql-eg-staging-1.ebi.ac.uk',
-                      -port   => '4160',
+                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
+                      -port   => '4207',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3s1',
+                      -pass   => 'scr1b3d2',
     },
 
     # OrthologueEvalutor, FindMissingGenes, etc. write it's results into
