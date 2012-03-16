@@ -14,12 +14,12 @@
 #
 ########################
 
-NCRNA_LOGIC_NAME="ncRNA_EG"
+NCRNA_LOGIC_NAME="ncrna_eg"
 PROTEIN_LOGIC_NAME="ensemblgenomes"
 LSF_QUEUE="production-rh6"
 #COORD_SYSTEM="toplevel"
 
-COORD_SYSTEM="supercontig"
+COORD_SYSTEM="toplevel"
 
 ###
 
@@ -51,16 +51,6 @@ source $ENV_FILE
 
 echo "database server host, $DB_HOST"
 
-# Test the CONFIG_FILE
-
-if [ ! -d ${CONFIG_DIR} ] 
-then
-    echo "CONFIG_DIR is not a valid directory, ${CONFIG_DIR}"
-    echo "check you have specified it correctly if your ${USER}.env.sh environment file"
-    exit 1
-fi
-
-echo "Config Dir: $CONFIG_DIR"
 
 ########################
 
