@@ -151,3 +151,9 @@ gff_source=ProDom
 gff_feature=domain
 input_id_type=CHUNK
 
+[hamap]
+db=HAMAP
+gff_source=HAMAP
+gff_feature=domain
+input_id_type=CHUNK
+
