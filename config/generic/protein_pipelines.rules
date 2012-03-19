@@ -35,6 +35,3 @@ condition=SubmitChunk
 [prodom]
 condition=SubmitChunk
 
-[hamap]
-condition=SubmitChunk
-
