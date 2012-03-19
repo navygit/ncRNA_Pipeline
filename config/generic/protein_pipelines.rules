@@ -31,3 +31,7 @@ condition=SubmitChunk
 
 [pirsf]
 condition=SubmitChunk
+
+[prodom]
+condition=SubmitChunk
+

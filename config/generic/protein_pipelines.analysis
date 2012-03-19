@@ -144,3 +144,10 @@ db=gene3d
 gff_source=Gene3D
 gff_feature=domain
 input_id_type=CHUNK
+
+[prodom]
+db=ProDom
+gff_source=ProDom
+gff_feature=domain
+input_id_type=CHUNK
+
