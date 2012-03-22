@@ -47,7 +47,7 @@ echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 
 echo ""
 
-export PERL5LIB=${ENSEMBL_PATH}/modules:${CODE}/ensembl-variation-head/modules:${BIOPERL_PATH}
+export PERL5LIB=${ENSEMBL_PATH}/modules:${CODE}/ensembl-variation-head/modules:${BIOPERL_PATH}:$PERL5LIB
 
 # Add ensgen perl binary path
 export PATH=${PERL_PATH}/perl/perlbrew/perls/5.14.2/bin:$PATH
@@ -55,6 +55,7 @@ export PATH=${PERL_PATH}/perl/perlbrew/perls/5.14.2/bin:$PATH
 # Run repeat-types.pl
 
 echo "Running repeat-types.pl"
+echo "perl repeat-types.pl -user $DB_USER -port $DB_PORT -host $DB_HOST -pass $DB_PASS -dbpattern $DB_NAME"
 
 cd ${ENSEMBL_PATH}/misc-scripts/repeats 
 perl repeat-types.pl -user $DB_USER -port $DB_PORT -host $DB_HOST -pass $DB_PASS -dbpattern $DB_NAME
