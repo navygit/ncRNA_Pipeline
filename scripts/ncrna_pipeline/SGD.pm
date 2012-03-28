@@ -212,7 +212,8 @@ sub process_file{
 	 $type eq 'transposable_element_gene' or
 	 $type eq 'pseudogene' or
 	 $type =~ /RNA/) or 
-         $type =~ /antisense/i){
+         $type =~ /antisense/i or 
+	 $type =~ /ribozyme/i){
       # store all the extra data in a hash tied to the gene identifier
       my %xref;
       $xref{'type'} = $type;
