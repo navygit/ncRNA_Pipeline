@@ -57,32 +57,32 @@ use vars qw( %ProteinAnnotation );
        BASE_DIR      => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/ggraminis/protein_chunks/',
      },
 
-     Seg => {
+     seg => {
        # only specify DIR where the file with all translations lives - 
        # Seg get's the filename out of table input_id_analysis.input_id 
        BASE_DIR      => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/ggraminis/proteins/',
      },
-     Signalp => {
+     signalp => {
      },
-     Ncoils => {
+     ncoils => {
      },
-     Tmhmm => {
+     tmhmm => {
      },
-     Prints => {
+     prints => {
      },
      scanprosite => {
      },
      pfscan => {
      },
-     Pfam => {
+     pfam => {
      },
-     Tigrfam => {
+     tigrfam => {
      },
-     Superfamily => {
+     superfamily => {
      },
-     Smart => {
+     smart => {
      },
-     PIRSF => {
+     pirsf => {
      },
    }
 
