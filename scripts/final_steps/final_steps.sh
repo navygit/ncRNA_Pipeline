@@ -153,9 +153,9 @@ cd ${ENSEMBL_PATH}/misc-scripts
 
 echo "Running overlapping_regions.pl"
 
-echo "perl overlapping_regions.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -pattern "$DB_NAME" -dry_run 1 --nolog"
+echo "perl overlapping_regions.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -pattern "$DB_NAME" -interactive 0 --nolog"
 
-echo "y" | perl overlapping_regions.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -pattern "$DB_NAME" -dry_run 1 --nolog
+echo "y" | perl overlapping_regions.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -pattern "$DB_NAME" -interactive 0 --nolog
 
 
 # Remove pipeline tables - don't run that as we haven't run the protein pipelines yet
