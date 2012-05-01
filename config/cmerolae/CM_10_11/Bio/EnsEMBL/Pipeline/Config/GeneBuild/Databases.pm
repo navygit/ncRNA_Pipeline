@@ -50,65 +50,65 @@ use vars qw( %Databases );
 	      # for some of these entries. However, reading and writing in the same db is not recommended.
 	
 	      # database containing sequence plus features from raw computes
-	      GB_DBHOST                  => 'mysql-eg-devel-2.ebi.ac.uk',
-	      GB_DBNAME                  => 'cyanidioschyzon_merolae_core_1_63_1',
+	      GB_DBHOST                  => 'mysql-eg-devel-1.ebi.ac.uk',
+	      GB_DBNAME                  => 'cyanidioschyzon_merolae_core_14_67_1',
 	      GB_DBUSER                  => 'ensrw',
-	      GB_DBPASS                  => 'scr1b3d2',
-	      GB_DBPORT                  => '4207',
+	      GB_DBPASS                  => 'scr1b3d1',
+	      GB_DBPORT                  => '4126',
 	      # database containing the genewise genes (TGE_gw,similarity_genewise)
-              GB_GW_DBHOST               => 'mysql-eg-devel-2.ebi.ac.uk',
-              GB_GW_DBNAME               => 'cyanidioschyzon_merolae_core_1_63_1',
+              GB_GW_DBHOST               => 'mysql-eg-devel-1.ebi.ac.uk',
+              GB_GW_DBNAME               => 'cyanidioschyzon_merolae_core_14_67_1',
               GB_GW_DBUSER               => 'ensrw',
-              GB_GW_DBPASS               => 'scr1b3d2',
-              GB_GW_DBPORT               => '4207',
+              GB_GW_DBPASS               => 'scr1b3d1',
+              GB_GW_DBPORT               => '4126',
 	      # database containing the blessed genes if there are any (e! definition!)
 	      # ... in this case: blessed genes are the ones not to modify .. ie "targetted_genes"
-	      GB_BLESSED_DBHOST          => 'mysql-eg-devel-2.ebi.ac.uk',
-	      GB_BLESSED_DBNAME          => 'cyanidioschyzon_merolae_core_1_63_1',
+	      GB_BLESSED_DBHOST          => 'mysql-eg-devel-1.ebi.ac.uk',
+	      GB_BLESSED_DBNAME          => 'cyanidioschyzon_merolae_core_14_67_1',
 	      GB_BLESSED_DBUSER          => 'ensrw',
-	      GB_BLESSED_DBPASS          => 'scr1b3d2',
-	      GB_BLESSED_DBPORT          => '4207',
+	      GB_BLESSED_DBPASS          => 'scr1b3d1',
+	      GB_BLESSED_DBPORT          => '4126',
 	      #GB_BLESSED_DBHOST          => '',
 	      #GB_BLESSED_DBNAME          => '',
 	      #GB_BLESSED_DBUSER          => '',
 	      #GB_BLESSED_DBPASS          => '',
 	      #GB_BLESSED_DBPORT          => '',
 	      # database where the combined_gw_e2g genes will be stored
-	      GB_COMB_DBHOST             => 'mysql-eg-devel-2.ebi.ac.uk',
-	      GB_COMB_DBNAME             => 'cyanidioschyzon_merolae_core_1_63_1',   #Was: kmegy_culex3_gw_combine_42 - this one is for a test!
+	      GB_COMB_DBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',
+	      GB_COMB_DBNAME             => 'cyanidioschyzon_merolae_core_14_67_1',   #Was: kmegy_culex3_gw_combine_42 - this one is for a test!
 	      GB_COMB_DBUSER             => 'ensrw',
-	      GB_COMB_DBPASS             => 'scr1b3d2',
-	      GB_COMB_DBPORT             => '4207',
+	      GB_COMB_DBPASS             => 'scr1b3d1',
+	      GB_COMB_DBPORT             => '4126',
     	      # database containing the cdnas mapped, to be combined with the genewises
 	      # by putting this info here, we free up ESTConf.pm so that two analysis can
 	      # be run at the same time
 	      #Not clean EST database (...and partly erased!)
-	      #GB_cDNA_DBHOST             => 'mysql-eg-devel-2.ebi.ac.uk',
+	      #GB_cDNA_DBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',
 	      #GB_cDNA_DBNAME             => 'kmegy_culex3_estbuild_42', / 'kmegy_culex3_estbuild2_42', / 'kmegy_culex3_estbuild_broad__42',
 	      #GB_cDNA_DBUSER             => 'ensrw',
-	      #GB_cDNA_DBPASS             => 'scr1b3d2',
-              #GB_cDNA_DBPORT             => '4207',
+	      #GB_cDNA_DBPASS             => 'scr1b3d1',
+              #GB_cDNA_DBPORT             => '4126',
 
 	      #Clean EST database
-	      GB_cDNA_DBHOST             => 'mysql-eg-devel-2.ebi.ac.uk',
-	      GB_cDNA_DBNAME             => 'cyanidioschyzon_merolae_core_1_63_1',
+	      GB_cDNA_DBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',
+	      GB_cDNA_DBNAME             => 'cyanidioschyzon_merolae_core_14_67_1',
 	      GB_cDNA_DBUSER             => 'ensrw',
-	      GB_cDNA_DBPASS             => 'scr1b3d2',
-              GB_cDNA_DBPORT             => '4207',
+	      GB_cDNA_DBPASS             => 'scr1b3d1',
+              GB_cDNA_DBPORT             => '4126',
 
 	      # db to put pseudogenes in
-	      PSEUDO_DBHOST              => 'mysql-eg-devel-2.ebi.ac.uk',
-	      PSEUDO_DBNAME              => 'cyanidioschyzon_merolae_core_1_63_1',
+	      PSEUDO_DBHOST              => 'mysql-eg-devel-1.ebi.ac.uk',
+	      PSEUDO_DBNAME              => 'cyanidioschyzon_merolae_core_14_67_1',
 	      PSEUDO_DBUSER              => 'ensrw',
-	      PSEUDO_DBPASS              => 'scr1b3d2',
-              PSEUDO_DBPORT              => '4207',
+	      PSEUDO_DBPASS              => 'scr1b3d1',
+              PSEUDO_DBPORT              => '4126',
 
 	      # this db needs to have clone & contig & static_golden_path tables populated        #For GeneBuild
-	      GB_FINALDBHOST             => 'mysql-eg-devel-2.ebi.ac.uk',                                         # ...see Incremental config files
-	      GB_FINALDBNAME             => 'cyanidioschyzon_merolae_core_1_63_1',
+	      GB_FINALDBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',                                         # ...see Incremental config files
+	      GB_FINALDBNAME             => 'cyanidioschyzon_merolae_core_14_67_1',
 	      GB_FINALDBUSER             => 'ensrw',
-	      GB_FINALDBPASS             => 'scr1b3d2',
-              GB_FINALDBPORT             => '4207',
+	      GB_FINALDBPASS             => 'scr1b3d1',
+              GB_FINALDBPORT             => '4126',
 	     );
 
 sub import {
