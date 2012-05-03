@@ -62,10 +62,12 @@ fi
 
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 
-#ENS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/61/ensembl
+#ENS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/66/ensembl
 ENS_PATH=/nfs/panda/ensemblgenomes/production/protein_pipelines/ensembl-head
-ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
-ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/pipeline/head
+#ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
+ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/production/protein_pipelines/ensembl-analysis
+#ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/pipeline/head
+ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/production/protein_pipelines/ensembl-pipeline
 
 BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable
 
