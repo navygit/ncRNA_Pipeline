@@ -1,19 +1,19 @@
 xref
 host=mysql-eg-devel-1.ebi.ac.uk
 port=4126
-dbname=setaria_italica_xref_14_67_1
+dbname=setaria_italica_xref_14_67_21
 user=ensrw
 password=scr1b3d1
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/slycopersicum
+dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/sitalica
 
 species=setaria_italica
 taxon=eukaryota
 host=mysql-eg-devel-1.ebi.ac.uk
 port=4126
-dbname=setaria_italica_core_14_67_1
+dbname=setaria_italica_core_14_67_21
 user=ensrw
 password=scr1b3d1
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/slycopersicum
+dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/sitalica
 
 farm
 queue=production-rh6
