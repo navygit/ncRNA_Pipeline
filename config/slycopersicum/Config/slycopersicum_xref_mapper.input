@@ -1,7 +1,7 @@
 xref
 host=mysql-eg-devel-1.ebi.ac.uk
 port=4126
-dbname=solanum_lycopersicum_xref_14_67_1
+dbname=solanum_lycopersicum_xref_14_67_240
 user=ensrw
 password=scr1b3d1
 dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/slycopersicum
@@ -10,7 +10,7 @@ species=solanum_lycopersicum
 taxon=eukaryota
 host=mysql-eg-devel-1.ebi.ac.uk
 port=4126
-dbname=solanum_lycopersicum_core_14_67_1
+dbname=solanum_lycopersicum_core_14_67_240
 user=ensrw
 password=scr1b3d1
 dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/slycopersicum
