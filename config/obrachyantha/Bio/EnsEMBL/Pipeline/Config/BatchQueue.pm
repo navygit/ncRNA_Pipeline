@@ -182,7 +182,7 @@ use vars qw(%Config);
 			     sub_args   => '',
 			     runner     => '',
 			     cleanup => 'no',
-			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/screvisiae/prints',
+			     output_dir => '/nfs/nobackup/ensemblgenomes/production/protein_pipelines/data/obrachyantha/prints',
                              runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			     verbosity => 'INFO',
 			     retry_queue => '',

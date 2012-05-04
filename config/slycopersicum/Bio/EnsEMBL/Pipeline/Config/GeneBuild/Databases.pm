@@ -51,20 +51,20 @@ use vars qw( %Databases );
 	
 	      # database containing sequence plus features from raw computes
 	      GB_DBHOST                  => 'mysql-eg-devel-1.ebi.ac.uk',
-	      GB_DBNAME                  => 'oryza_brachyantha_core_14_67_14',
+	      GB_DBNAME                  => 'solanum_lycopersicum_core_14_67_240',
 	      GB_DBUSER                  => 'ensrw',
 	      GB_DBPASS                  => 'scr1b3d1',
 	      GB_DBPORT                  => '4126',
 	      # database containing the genewise genes (TGE_gw,similarity_genewise)
               GB_GW_DBHOST               => 'mysql-eg-devel-1.ebi.ac.uk',    
-              GB_GW_DBNAME               => 'oryza_brachyantha_core_14_67_14',    
+              GB_GW_DBNAME               => 'solanum_lycopersicum_core_14_67_240',    
               GB_GW_DBUSER               => 'ensrw',                         
               GB_GW_DBPASS               => 'scr1b3d1',                      
               GB_GW_DBPORT               => '4126',                          
 	      # database containing the blessed genes if there are any (e! definition!)
 	      # ... in this case: blessed genes are the ones not to modify .. ie "targetted_genes"
 	      GB_BLESSED_DBHOST          => 'mysql-eg-devel-1.ebi.ac.uk',    
-	      GB_BLESSED_DBNAME          => 'oryza_brachyantha_core_14_67_14',    
+	      GB_BLESSED_DBNAME          => 'solanum_lycopersicum_core_14_67_240',    
 	      GB_BLESSED_DBUSER          => 'ensrw',                         
 	      GB_BLESSED_DBPASS          => 'scr1b3d1',                      
 	      GB_BLESSED_DBPORT          => '4126',
@@ -75,7 +75,7 @@ use vars qw( %Databases );
 	      #GB_BLESSED_DBPORT          => '',
 	      # database where the combined_gw_e2g genes will be stored
 	      GB_COMB_DBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',    
-	      GB_COMB_DBNAME             => 'oryza_brachyantha_core_14_67_14',    
+	      GB_COMB_DBNAME             => 'solanum_lycopersicum_core_14_67_240',    
 	      GB_COMB_DBUSER             => 'ensrw',                         
 	      GB_COMB_DBPASS             => 'scr1b3d1',                      
 	      GB_COMB_DBPORT             => '4126',                          
@@ -91,21 +91,21 @@ use vars qw( %Databases );
 
 	      #Clean EST database
 	      GB_cDNA_DBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',    
-	      GB_cDNA_DBNAME             => 'oryza_brachyantha_core_14_67_14',    
+	      GB_cDNA_DBNAME             => 'solanum_lycopersicum_core_14_67_240',    
 	      GB_cDNA_DBUSER             => 'ensrw',                         
 	      GB_cDNA_DBPASS             => 'scr1b3d1',                      
               GB_cDNA_DBPORT             => '4126',                          
 
 	      # db to put pseudogenes in
 	      PSEUDO_DBHOST              => 'mysql-eg-devel-1.ebi.ac.uk',    
-	      PSEUDO_DBNAME              => 'oryza_brachyantha_core_14_67_14',    
+	      PSEUDO_DBNAME              => 'solanum_lycopersicum_core_14_67_240',    
 	      PSEUDO_DBUSER              => 'ensrw',                         
 	      PSEUDO_DBPASS              => 'scr1b3d1',                      
               PSEUDO_DBPORT              => '4126',                          
 
 	      # this db needs to have clone & contig & static_golden_path tables populated        #For GeneBuild
 	      GB_FINALDBHOST             => 'mysql-eg-devel-1.ebi.ac.uk',    
-	      GB_FINALDBNAME             => 'oryza_brachyantha_core_14_67_14',    
+	      GB_FINALDBNAME             => 'solanum_lycopersicum_core_14_67_240',    
 	      GB_FINALDBUSER             => 'ensrw',                         
 	      GB_FINALDBPASS             => 'scr1b3d1',                      
               GB_FINALDBPORT             => '4126',                          

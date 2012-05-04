@@ -75,10 +75,10 @@ use vars qw( %Config );
         #      or B. '/your/soft/masked/genomeDIR'
         #      or C. ['/your/soft/masked/genomeDIR_1', '/your/soft/masked/genomeDIR_2']
         #      or D. Isn't read if using Exonerate2GenesRegion.pm, which will get seq from ref/pipeline db
-        GENOMICSEQS         => '/nfs/panda/ensemblgenomes/production/est_pipeline/data/brapa/toplevel.fa',
+        GENOMICSEQS         => '/nfs/panda/ensemblgenomes/production/est_pipeline/data/sitalica/toplevel.fa',
 
         QUERYTYPE           => 'dna',
-        QUERYSEQS           => '/nfs/panda/ensemblgenomes/production/est_pipeline/data/brapa/est_chunks',
+        QUERYSEQS           => '/nfs/panda/ensemblgenomes/production/est_pipeline/data/sitalica/est_chunks',
         QUERYANNOTATION     => undef,
 
         # If your query sequences have not been checked against the 
@@ -128,7 +128,7 @@ use vars qw( %Config );
         # IIDREGEXP not set; input ids are file names
 
         QUERYTYPE => 'dna',
-        QUERYSEQS => '/nfs/panda/ensemblgenomes/production/est_pipeline/data/brapa/est_chunks',
+        QUERYSEQS => '/nfs/panda/ensemblgenomes/production/est_pipeline/data/sitalica/est_chunks',
 
         # As of 17 Jun 2010, there are no killed ESTs in the kill_list DB.
         # Therefore it's not necessary to do the kill_list check unless
