@@ -53,9 +53,10 @@ export PATH=${PERL_PATH}/perlbrew/perls/5.14.2/bin:$PATH
 # variation_density.pl
 
 echo "Running variation_density.pl"
+echo "perl variation_density.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -species ${SPECIES} -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro"
 
 cd ${ENSEMBL_PATH}/misc-scripts/density_feature
-perl variation_density.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -species ${SPECIES}
+perl variation_density.pl -host $DB_HOST -user $DB_USER -pass $DB_PASS -port $DB_PORT -species ${SPECIES} -mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro
 
 # seq_region_stats.pl
 
