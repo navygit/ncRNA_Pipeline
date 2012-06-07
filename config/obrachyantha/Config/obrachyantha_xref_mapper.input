@@ -4,7 +4,7 @@ port=4126
 dbname=oryza_brachyantha_xref_14_67_14
 user=ensrw
 password=scr1b3d1
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/slycopersicum
+dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/obrachyantha
 
 species=oryza_brachyantha
 taxon=eukaryota
@@ -13,7 +13,7 @@ port=4126
 dbname=oryza_brachyantha_core_14_67_14
 user=ensrw
 password=scr1b3d1
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/slycopersicum
+dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/obrachanthya
 
 farm
 queue=production-rh6
