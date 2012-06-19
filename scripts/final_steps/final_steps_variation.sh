@@ -11,7 +11,7 @@ BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable/
 if [ $# != 1 ]
 then
     echo "Wrong number of command line arguments"
-    echo "sh ./final_steps.sh puccinia_graministritici_core_7_60_1a"
+    echo "sh ./final_steps_variation.sh puccinia_graministritici_core_7_60_1a"
     exit 1
 fi
 
