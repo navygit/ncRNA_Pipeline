@@ -820,9 +820,11 @@ sub write_genes{
     }
 
     my $dbxref_value = $xrefs{$gene->stable_id}{'dbxref'};
+    my $desc  = $xrefs{$gene->stable_id}{'description'};
 
-    #print STDERR "dbxref_value: $dbxref_value\n";
-
+    print STDERR "dbxref_value: $dbxref_value\n";
+    print STDERR "description: $description\n";
+    
     $dbxref_value =~ /Source:([^;]+);Acc:(.+)\]/;
     my $source_db  = $1;
     my $primary_id = $2;
@@ -835,7 +837,9 @@ sub write_genes{
 	  -display_id => $display_id,
 	  -version    => 1,
 	  -release    => 1,
-	  -dbname     => $source_db );
+	  -dbname     => $source_db,
+	  -description => $desc
+	);
     $dbentry->priority(50);
     $dbentry->status("KNOWN");
 
