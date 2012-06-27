@@ -64,7 +64,7 @@ perl repeat-types.pl -user $DB_USER -port $DB_PORT -host $DB_HOST -pass $DB_PASS
 echo "Running translation_attribs.pl"
 
 cd ${ENSEMBL_PATH}/misc-scripts/
-perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -dbname $DB_NAME --binpath=${EMBOSS}
+perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS}
 
 
 # Run the %GC per gene
