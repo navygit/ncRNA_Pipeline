@@ -134,13 +134,13 @@ gff_feature=domain
 input_id_type=CHUNK
 
 [panther]
-db=pantherdb
+db=PANTHER
 gff_source=PANTHER
 gff_feature=domain
 input_id_type=CHUNK
 
 [gene3d]
-db=gene3d
+db=Gene3D
 gff_source=Gene3D
 gff_feature=domain
 input_id_type=CHUNK
