@@ -133,7 +133,7 @@ gff_source=PIRSF
 gff_feature=domain
 input_id_type=CHUNK
 
-[panther]
+[hmmpanther]
 db=PANTHER
 gff_source=PANTHER
 gff_feature=domain
@@ -145,7 +145,7 @@ gff_source=Gene3D
 gff_feature=domain
 input_id_type=CHUNK
 
-[prodom]
+[blastprodom]
 db=ProDom
 gff_source=ProDom
 gff_feature=domain

@@ -32,6 +32,8 @@ condition=SubmitChunk
 [pirsf]
 condition=SubmitChunk
 
-[prodom]
+[blastprodom]
 condition=SubmitChunk
 
+[hmmpanther]
+condition=SubmitChunk
