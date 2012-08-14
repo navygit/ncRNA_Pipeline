@@ -62,6 +62,7 @@ perl repeat-types.pl -user $DB_USER -port $DB_PORT -host $DB_HOST -pass $DB_PASS
 
 # Run the pepstats script
 echo "Running translation_attribs.pl"
+echo "perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS}"
 
 cd ${ENSEMBL_PATH}/misc-scripts/
 perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS}
