@@ -6,7 +6,8 @@
 # alternative translation loading ???
 
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
-EMBOSS=/sw/arch/pkg/EMBOSS-5.0.0/
+#EMBOSS=/sw/arch/pkg/EMBOSS-5.0.0/
+EMBOSS=/nfs/production/panda/ensemblgenomes/external/EMBOSS-6.4.0_x86_64-Linux/
 CODE=/nfs/panda/ensemblgenomes/production/final_steps
 ENSEMBL_PATH=${CODE}/ensembl-head
 BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable/
@@ -62,10 +63,10 @@ perl repeat-types.pl -user $DB_USER -port $DB_PORT -host $DB_HOST -pass $DB_PASS
 
 # Run the pepstats script
 echo "Running translation_attribs.pl"
-echo "perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS}"
+echo "perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS} -v"
 
 cd ${ENSEMBL_PATH}/misc-scripts/
-perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS}
+perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS} -v
 
 
 # Run the %GC per gene
