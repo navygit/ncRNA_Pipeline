@@ -61,12 +61,13 @@ echo "perl repeat-types.pl -user $DB_USER -port $DB_PORT -host $DB_HOST -pass $D
 cd ${ENSEMBL_PATH}/misc-scripts/repeats 
 perl repeat-types.pl -user $DB_USER -port $DB_PORT -host $DB_HOST -pass $DB_PASS -dbpattern $DB_NAME
 
+
 # Run the pepstats script
 echo "Running translation_attribs.pl"
-echo "perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS} -v"
+echo "perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS} --verbose"
 
 cd ${ENSEMBL_PATH}/misc-scripts/
-perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS} -v
+perl translation_attribs.pl -host $DB_HOST -user $DB_USER -port $DB_PORT -pass $DB_PASS -pattern $DB_NAME --binpath=${EMBOSS} --verbose
 
 
 # Run the %GC per gene
