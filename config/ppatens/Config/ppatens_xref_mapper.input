@@ -1,7 +1,7 @@
-uniparc
-dbname=UAPRO
-user=proteomes_prod
-password=pprod
+#uniparc
+#dbname=UAPRO
+#user=proteomes_prod
+#password=pprod
 
 xref
 dbname=physcomitrella_patens_xref_15_68_11
