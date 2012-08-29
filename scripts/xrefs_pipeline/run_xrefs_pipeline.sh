@@ -78,7 +78,7 @@ fi
 
 if [ ! -d "${DATA_OUTPUT_DIR}" ] 
 then
-    echo "reating directory structure, ${DATA_OUTPUT_DIR}"
+    echo "Creating directory structure, ${DATA_OUTPUT_DIR}"
     mkdir -p ${DATA_OUTPUT_DIR}
 fi
 
@@ -97,6 +97,7 @@ cd ${ENSEMBL_PATH}/misc-scripts/xref_mapping
 
 echo ""
 echo "Running xref_parser.pl"
+echo "perl xref_parser.pl -user $DB_USER -pass $DB_PASS -host $DB_HOST -port $DB_PORT -species $SPECIES -create -dbname $XREF_DB_NAME -checkdownload -download_dir ${DATA_DOWNLOAD_DIR} -drop_db -force"
 
 perl xref_parser.pl -user $DB_USER -pass $DB_PASS -host $DB_HOST -port $DB_PORT -species $SPECIES -create -dbname $XREF_DB_NAME -checkdownload -download_dir ${DATA_DOWNLOAD_DIR} -drop_db -force
 
