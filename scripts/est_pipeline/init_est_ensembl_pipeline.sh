@@ -178,8 +178,8 @@ fi
 
 echo "Dump the genome toplevel sequences"
     
-echo "perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat Dust -mask_repeat RepeatMask"
-perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat Dust -mask_repeat RepeatMask
+echo "perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat dust -mask_repeat repeatMask"
+perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat dust -mask_repeat repeatmask
 
 echo ""
 
