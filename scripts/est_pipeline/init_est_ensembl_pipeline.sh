@@ -77,7 +77,8 @@ PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 ENS_PATH=/nfs/panda/ensemblgenomes/production/ensembl_pipelines_init/ensembl-head
 #ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
 ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/production/ensembl_pipelines_init/ensembl-analysis-head
-ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/pipeline/head
+#ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/pipeline/head
+ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/production/ensembl_pipelines_init/ensembl-pipeline-head
 BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable/
 
 export PERL5LIB=${CONFIG_DIR}:${ENS_PATH}/modules:${ENS_ANALYSIS_PATH}/modules:${ENS_PIPELINE_PATH}/modules:${ENS_PIPELINE_PATH}/scripts/:${BIOPERL_PATH}
