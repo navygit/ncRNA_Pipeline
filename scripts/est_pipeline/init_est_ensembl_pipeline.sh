@@ -142,7 +142,15 @@ cat table.sql | mysql -h $DB_HOST -u $DB_USER -p$DB_PASS -P $DB_PORT $OTHERFEATU
 
 cd ${ENS_PIPELINE_PATH}/scripts/
 
+echo "perl analysis_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -read -file ${CONFIG_DIR}/est_exonerate.analysis"
+
 perl analysis_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -read -file ${CONFIG_DIR}/est_exonerate.analysis
+
+if [ $? -gt 0 ]
+then
+    echo "analysis_setup step failed"
+    exit 1
+fi
 
 # Add the EST analysis descriptions
 
@@ -151,13 +159,20 @@ then
 	echo "Adding EST_exonerate.sql"
 	cat /nfs/panda/ensemblgenomes/production/final_steps/sql/EST_exonerate.sql | mysql -h $DB_HOST -u $DB_USER -P $DB_PORT -p$DB_PASS $OTHERFEATURES_DB_NAME
 else 
-	echo "not adding EST_exonerate analysis description, as there is no file called /nfs/panda/ensemblgenomes/production/final_steps/sql/EST_exonerate_${SPECIES_SHORT_NAME}.sql"
+	echo "not adding EST_exonerate analysis description, as there is no file called /nfs/panda/ensemblgenomes/production/final_steps/sql/EST_exonerate.sql"
 fi
 
 # 7/ rules_setup.pl
 
+echo "perl rule_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -read -file ${CONFIG_DIR}/est_exonerate.rules"
+
 perl rule_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -read -file ${CONFIG_DIR}/est_exonerate.rules
 
+if [ $? -gt 0 ]
+then
+    echo "rule_setup step failed"
+    exit 1
+fi
 
 # 8/ Dump the genome toplevel sequences
 
@@ -181,6 +196,7 @@ fi
 echo "Dump the genome toplevel sequences"
     
 echo "perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat dust -mask_repeat repeatMask"
+
 perl sequence_dump.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -toplevel -mask -softmask -output_dir ${ESTs_OUTPUT_DIR}/ -onefile -mask_repeat dust -mask_repeat repeatmask
 
 echo ""
@@ -218,3 +234,8 @@ echo "perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -db
 
 perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $OTHERFEATURES_DB_NAME -logic_name SubmitESTChunkFile -file -dir ${ESTs_OUTPUT_DIR}/est_chunks
 
+if [ $? -gt 0 ]
+then
+    echo "make_input_ids step failed"
+    exit 1
+fi

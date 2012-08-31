@@ -90,9 +90,22 @@ echo "perl analysis_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST 
 
 perl analysis_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -read -file ${CONFIG_DIR}/rawcomputes.analysis
 
+if [ $? -gt 0 ]
+then
+    echo "analysis_setup.pl failed for setting up DNA analysis"
+    exit 1
+fi
+
 echo "perl analysis_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -read -file ${CONFIG_DIR}/protein_pipelines.analysis"
 
 perl analysis_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -read -file ${CONFIG_DIR}/protein_pipelines.analysis
+
+if [ $? -gt 0 ]
+then
+    echo "analysis_setup.pl failed for setting up protein analysis"
+    exit 1
+fi
+
 
 # 3/ rules_setup.pl
 
@@ -100,9 +113,21 @@ echo "perl rule_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbp
 
 perl rule_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -read -file ${CONFIG_DIR}/rawcomputes.rules
 
+if [ $? -gt 0 ]
+then
+    echo "rule_setup.pl failed for setting up DNA rules"
+    exit 1
+fi
+
 echo "perl rule_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -read -file ${CONFIG_DIR}/protein_pipelines.rules"
 
 perl rule_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -read -file ${CONFIG_DIR}/protein_pipelines.rules
+
+if [ $? -gt 0 ]
+then
+    echo "rule_setup.pl failed for setting up protein rules"
+    exit 1
+fi
 
 
 # 4/ Dump the protein sequences and chunk them
@@ -158,8 +183,20 @@ cd ${ENS_PIPELINE_PATH}/scripts
 echo "perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitSlice -slice -coord_system $COORD_SYSTEM -slice_size 300000"
 
 perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitSlice -slice -coord_system $COORD_SYSTEM -slice_size 300000
- perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitChromosome -slice -coord_system $COORD_SYSTEM
- perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name Submit30kSlice -slice -coord_system $COORD_SYSTEM -slice_size 30000
+
+if [ $? -gt 0 ]
+then
+    echo "make_input_ids failed for SubmitSlice rule"
+    exit 1
+fi
+
+echo "perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitChromosome -slice -coord_system $COORD_SYSTEM"
+
+perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitChromosome -slice -coord_system $COORD_SYSTEM
+
+echo "perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name Submit30kSlice -slice -coord_system $COORD_SYSTEM -slice_size 30000"
+
+perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name Submit30kSlice -slice -coord_system $COORD_SYSTEM -slice_size 30000
 
 # Protein ones
 
