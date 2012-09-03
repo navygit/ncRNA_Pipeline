@@ -17,7 +17,6 @@
 NCRNA_LOGIC_NAME="ncrna_eg"
 PROTEIN_LOGIC_NAME="ensemblgenomes"
 LSF_QUEUE="production-rh6"
-#COORD_SYSTEM="toplevel"
 
 COORD_SYSTEM="toplevel"
 
@@ -82,6 +81,8 @@ export PERL5LIB=${NCGENES_MODULES_PATH}:${ENSEMBL_PATH}/modules:${BIOPERL_PATH}
 RNAMMER_PATH=/nfs/panda/ensemblgenomes/external/rnammer/rnammer
 TRNASCAN_PATH=/sw/arch/bin/tRNAscan-SE
 RFAMSCAN_PATH=/nfs/panda/ensemblgenomes/external/rfam_scan/rfam_scan.pl
+
+RFAM_DB_PATH=/nas/seqdb/integr8/production/data/mirror/data/Rfam/
 
 if [ ! -d "${OUTPUT_DIR}" ]
 then
@@ -154,7 +155,7 @@ do
 
     echo "Running Rfamscan and parsing its results"
 
-    bsub -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".rfamscan.lsf.out" "$RFAMSCAN_PATH -o $rfamscan_out --nobig -v -filter wu --masking --blastdb /nas/seqdb/integr8/production/data/mirror/data/Rfam/Rfam.fasta /nas/seqdb/integr8/production/data/mirror/data/Rfam/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_out `basename $f .fa` > $rfamscan_gff3"
+    bsub -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".rfamscan.lsf.out" "perl $RFAMSCAN_PATH -o $rfamscan_out --nobig -v -filter wu --masking --blastdb ${RFAM_DB_PATH}/Rfam.fasta ${RFAM_DB_PATH}/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_out `basename $f .fa` > $rfamscan_gff3"
 
     
 
@@ -224,7 +225,7 @@ done
 
 # Clean the sequence line to only have the chromosome name
 
-perl -i.bak -pe '$_ =~ /^[^:]+:[^:]*:([^:]+):/; my $chr = $1; $_ =~ s/^[^\t]+/$chr/;' $gff3_output
+perl -i.bak -pe 'if ($_ =~ /^[^:]+:[^:]*:([^:]+):/) { my $chr = $1; $_ =~ s/^[^\t]+/$chr/; }' $gff3_output
 
 echo ""
 
