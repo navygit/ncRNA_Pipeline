@@ -83,7 +83,7 @@ TRNASCAN_PATH=/sw/arch/bin/tRNAscan-SE
 RFAMSCAN_PATH=/nfs/panda/ensemblgenomes/external/rfam_scan/rfam_scan.pl
 
 # Rfam 10.1
-RFAM_DB_PATH=/nas/seqdb/integr8/production/data/mirror/data/Rfam/
+# RFAM_DB_PATH=/nas/seqdb/integr8/production/data/mirror/data/Rfam/
 # Rfam 11.0 and later
 RFAM_DB_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/data/Rfam
 
