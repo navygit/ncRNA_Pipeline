@@ -1,12 +1,11 @@
 #!/bin/sh
 
-# Default is toplevel
-
 # Todo: Check that the ncRNA analysis entry exist already in the database
-# Maybe add the ncRNA one actually from ../sql/ncRNA_analysis.sql
+# Maybe when missing add the ncRNA one from ../sql/ncRNA_analysis.sql
 
-# Todo: Get rid of the PROTEIN_LOGIC_NAME requirement
 # Todo: Make sure the Mitochondrion seq_regrion is flagged properly for tRNAscan
+
+NCRNA_LOGIC_NAME="ncrna_eg"
 
 ########################
 #
@@ -14,10 +13,9 @@
 #
 ########################
 
-NCRNA_LOGIC_NAME="ncrna_eg"
-PROTEIN_LOGIC_NAME="ensemblgenomes"
 LSF_QUEUE="production-rh6"
 
+# Default is toplevel
 COORD_SYSTEM="toplevel"
 
 ###
@@ -157,8 +155,9 @@ do
     rfamscan_options=""
 
     echo "Running Rfamscan and parsing its results"
+    # Tell LSF we will use 4 CPUs (because wublast will)
 
-    bsub -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".rfamscan.lsf.out" "perl $RFAMSCAN_PATH -o $rfamscan_out --nobig -v -filter wu --masking --blastdb ${RFAM_DB_PATH}/Rfam.fasta ${RFAM_DB_PATH}/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_out `basename $f .fa` > $rfamscan_gff3"
+    bsub -n 4 -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".rfamscan.lsf.out" "perl $RFAMSCAN_PATH -o $rfamscan_out --nobig -v -filter wu --masking --blastdb ${RFAM_DB_PATH}/Rfam.fasta ${RFAM_DB_PATH}/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_out `basename $f .fa` > $rfamscan_gff3"
 
     
 
