@@ -40,20 +40,16 @@ print STDERR "readonly: $readonly\n";
 
 usage() if ( !$host );
 usage() if ( !$dbname );
-usage() if ( !$protein_gene_analysis_name );
+usage() if ( !$ncrna_gene_analysis_name );
 usage() if ( !$gff3_filename );
 usage() if ( !$coord_system );
 
 $| = 1;
 
-if (!defined $ncrna_gene_analysis_name) {
-    # reuse the protein coding genes analysis entry, as we assume it is a gff3 import, and they all hence share the same analysis id
-    # consequence: they will all be in the same feature track, but i don't see this as a problem
-
-    $ncrna_gene_analysis_name = $protein_gene_analysis_name;
+if (!defined $protein_gene_analysis_name) {
+    $protein_gene_analysis_name = "ensemblgenomes";
 }
 if (!defined $pseudogene_analysis_name) {
-    # Same logic than for ncRNA genes
     $pseudogene_analysis_name = $protein_gene_analysis_name;
 }
 
@@ -75,13 +71,13 @@ my $pseudogene_analysis = $analysis_adaptor->fetch_by_logic_name($pseudogene_ana
 my $operon_analysis = $analysis_adaptor->fetch_by_logic_name('operon');
 
 if (!defined $protein_coding_analysis) {
-    die "protein gene analysis, $protein_gene_analysis_name, has no entry in database!\n";
+    warn "protein gene analysis, $protein_gene_analysis_name, has no entry in database!\n";
 }
 if (!defined $nc_analysis) {
     die "ncRNA analysis, $ncrna_gene_analysis_name, has no entry in database!\n";
 }
 if (!defined $pseudogene_analysis) {
-    die "pseudogene analysis, $pseudogene_analysis_name, has no entry in database!\n";
+    warn "pseudogene analysis, $pseudogene_analysis_name, has no entry in database!\n";
 }
 
 my $sa = $db->get_SliceAdaptor;
