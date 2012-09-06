@@ -823,7 +823,7 @@ sub write_genes{
     my $desc  = $xrefs{$gene->stable_id}{'description'};
 
     print STDERR "dbxref_value: $dbxref_value\n";
-    print STDERR "description: $description\n";
+    print STDERR "description: $desc\n";
     
     $dbxref_value =~ /Source:([^;]+);Acc:(.+)\]/;
     my $source_db  = $1;
