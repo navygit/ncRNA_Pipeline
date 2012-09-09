@@ -278,9 +278,9 @@ echo ""
 # Loading
 
 echo "Loading gene predictions into db, $DB_NAME"
-echo "perl ${NCGENES_SCRIPTS_PATH}/gene_store.pl -host $DB_HOST -port $DB_PORT -user $DB_USER -pass $DB_PASS -dbname $DB_NAME -gff3 $gff3_output -protein_gene_analysis=${PROTEIN_LOGIC_NAME} -ncrna_gene_analysis=${NCRNA_LOGIC_NAME} -coord_system=${COORD_SYSTEM}"
+echo "perl ${NCGENES_SCRIPTS_PATH}/gene_store.pl -host $DB_HOST -port $DB_PORT -user $DB_USER -pass $DB_PASS -dbname $DB_NAME -gff3 $gff3_output -ncrna_gene_analysis=${NCRNA_LOGIC_NAME} -coord_system=${COORD_SYSTEM}"
 
-perl ${NCGENES_SCRIPTS_PATH}/gene_store.pl -host $DB_HOST -port $DB_PORT -user $DB_USER -pass $DB_PASS -dbname $DB_NAME -gff3 ${gff3_output} -protein_gene_analysis=${PROTEIN_LOGIC_NAME} -ncrna_gene_analysis=${NCRNA_LOGIC_NAME} -coord_system=${COORD_SYSTEM}
+perl ${NCGENES_SCRIPTS_PATH}/gene_store.pl -host $DB_HOST -port $DB_PORT -user $DB_USER -pass $DB_PASS -dbname $DB_NAME -gff3 ${gff3_output} -ncrna_gene_analysis=${NCRNA_LOGIC_NAME} -coord_system=${COORD_SYSTEM}
 
 # Set these genes as 'NOVEL'
 
