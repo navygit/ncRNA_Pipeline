@@ -3,7 +3,7 @@
 # Todo: Check that the ncRNA analysis entry exist already in the database
 # Maybe when missing add the ncRNA one from ../sql/ncRNA_analysis.sql
 
-# Todo: Make sure the Mitochondrion seq_regrion is flagged properly for tRNAscan
+# Todo: Make sure the Mitochondrion seq_region is flagged properly for tRNAscan
 
 NCRNA_LOGIC_NAME="ncrna_eg"
 
@@ -18,18 +18,23 @@ LSF_QUEUE="production-rh6"
 # Default is toplevel
 COORD_SYSTEM="toplevel"
 
+
 ###
+
+CLEANUP=1
 
 source /homes/oracle/ora920setup.sh
 
-if [ $# != 1 ]
+if [ $# != 2 ]
 then
     echo "Wrong number of command line arguments"
-    echo "sh run_ncrna_pipeline.sh schizosaccharomyces_pombe_core_10_63_1"
+    echo "sh run_ncrna_pipeline.sh schizosaccharomyces_pombe_core_10_63_1 division"
+    echo "division => [EPl EF EM EB EPr]"
     exit 1
 fi
 
 DB_NAME=$1
+DIVISION=$2
 
 # specific env variables in a user specific file now
 
@@ -56,12 +61,16 @@ echo "SPECIES: $SPECIES"
 
 # e.g. anidulans
 SPECIES_SHORT_NAME=`echo $SPECIES | perl -ne '$_ =~ /^(\w)[^_]+_(\w+)/; $a = $1; $b = $2; print "$a$b";'`
+# e.g. ANI
+SPECIES_PREFIX=`echo $SPECIES_SHORT_NAME | perl -ne '$_ =~ /^(\w\w\w).+/; $a = uc($1); print "$a";'`
 
 echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
+echo "SPECIES_PREFIX: $SPECIES_PREFIX"
 
 echo ""
 
 OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/production/ncgenes_pipelines/data/${SPECIES_SHORT_NAME}
+LSF_OUTPUT=${OUTPUT_DIR}/lsf_output
 
 NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts/ncrna_pipeline/
 NCGENES_SCRIPTS_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts/ncrna_pipeline/
@@ -72,23 +81,31 @@ ENSEMBL_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable/
 
-export PATH=/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin:$PATH
-
-export PERL5LIB=${NCGENES_MODULES_PATH}:${ENSEMBL_PATH}/modules:${BIOPERL_PATH}
-
 RNAMMER_PATH=/nfs/panda/ensemblgenomes/external/rnammer/rnammer
-TRNASCAN_PATH=/sw/arch/bin/tRNAscan-SE
+# old style
+#TRNASCAN_PATH=/sw/arch/bin/tRNAscan-SE
+# now:
+#TRNASCAN_PATH=/sw/arch/
+TRNASCAN_PATH=/nfs/panda/ensemblgenomes/external/tRNAscan-SE-1.3.1/
+TRNASCAN_BIN=tRNAscan-SE
 RFAMSCAN_PATH=/nfs/panda/ensemblgenomes/external/rfam_scan/rfam_scan.pl
+
+export PATH=/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin:${TRNASCAN_PATH}/bin:$PATH
+
+export PERL5LIB=${NCGENES_MODULES_PATH}:${ENSEMBL_PATH}/modules:${BIOPERL_PATH}:${TRNASCAN_PATH}/bin
+
 
 # Rfam 10.1
 # RFAM_DB_PATH=/nas/seqdb/integr8/production/data/mirror/data/Rfam/
 # Rfam 11.0 and later
 RFAM_DB_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/data/Rfam
 
-if [ ! -d "${OUTPUT_DIR}" ]
+if [ ! -d "${LSF_OUTPUT}" ]
 then
-    echo "Creating directory ${OUTPUT_DIR}"
-    mkdir ${OUTPUT_DIR}
+    echo "Creating directory ${LSF_OUTPUT}"
+    mkdir -p ${LSF_OUTPUT}/trnascan
+    mkdir ${LSF_OUTPUT}/rnammer
+    mkdir ${LSF_OUTPUT}/rfamscan
 fi
 
 if [ ! -d "${OUTPUT_DIR}/unmasked_seq" ]
@@ -104,6 +121,13 @@ then
     perl sequence_dump.pl -dbhost $DB_HOST -dbport $DB_PORT -dbuser $DB_USER -dbpass $DB_PASS -dbname $DB_NAME -coord_system_name $COORD_SYSTEM -output_dir ${OUTPUT_DIR}/unmasked_seq
 fi
 
+if [ ! -d "${OUTPUT_DIR}/temp/trnascan" ]
+then
+    mkdir -p ${OUTPUT_DIR}/temp/trnascan
+    mkdir ${OUTPUT_DIR}/temp/rnammer
+    mkdir ${OUTPUT_DIR}/temp/rfamscan
+fi
+
 cd ${OUTPUT_DIR}
 
 gff3_output=${SPECIES_SHORT_NAME}.ncRNAs.gff3
@@ -116,22 +140,26 @@ fi
 
 touch $gff3_output
 
-INDEX=1
-for f in `ls ${OUTPUT_DIR}/unmasked_seq/*.fa` 
+echo "getting the list of fasta files"
+
+INDEX=0
+for f in `find ${OUTPUT_DIR}/unmasked_seq -name "*.fa"`
 do
     echo "Processing file, $f"
     echo ""
 
     INDEX=`expr $INDEX + 1`
 
-    trnascan_out=`basename $f .fa`.trnascan
-    trnascan_gff3=`basename $f .fa`.trnascan.gff3
+    sequence_name=`basename $f .fa`
+    trnascan_out=$sequence_name".trnascan"
+    trnascan_path="temp/trnascan/"$trnascan_out
+    trnascan_gff3=$sequence_name".trnascan.gff3"
     trnascan_options=""
 
-    if [ -f "$trnascan_out" ]
+    if [ -f "$trnascan_path" ]
     then
-	echo "deleting $trnascan_out"
-	rm -f $trnascan_out
+	echo "deleting $trnascan_path"
+	rm -f $trnascan_path
     fi
 
     # Todo: Update the seq_region_name for MT
@@ -143,39 +171,44 @@ do
     fi
     
     echo "Running tRNAScan-SE and parsing its results"
-    
-    bsub -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".trnascan.lsf.out" "$TRNASCAN_PATH -o $trnascan_out $trnascan_options $f; perl ${NCGENES_SCRIPTS_PATH}/trnascan_to_gff3.pl $trnascan_out `basename $f .fa` > $trnascan_gff3"
-    
+    echo "$TRNASCAN_BIN -o $trnascan_path $trnascan_options $f"
+    echo "perl ${NCGENES_SCRIPTS_PATH}/trnascan_to_gff3.pl $trnascan_path `basename $f .fa` > $trnascan_gff3"
+
+    bsub -q $LSF_QUEUE -J "GENEPRED"$INDEX -o ${LSF_OUTPUT}"/trnascan/"$sequence_name".trnascan.lsf.out" "$TRNASCAN_BIN -o $trnascan_path $trnascan_options $f; perl ${NCGENES_SCRIPTS_PATH}/trnascan_to_gff3.pl $trnascan_path `basename $f .fa` > $trnascan_gff3"
+
     INDEX=`expr $INDEX + 1`
+
 	
     # Running Rfamscan
 	
     rfamscan_out=`basename $f .fa`.rfamscan
+    rfamscan_path="temp/rfamscan/"$rfamscan_out
     rfamscan_gff3=`basename $f .fa`.rfamscan.gff3
     rfamscan_options=""
 
     echo "Running Rfamscan and parsing its results"
-    # Tell LSF we will use 4 CPUs (because wublast will)
+    # Tell LSF we will use 4 CPUs (because wublast will) and more memory requirements
 
-    bsub -n 4 -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".rfamscan.lsf.out" "perl $RFAMSCAN_PATH -o $rfamscan_out --nobig -v -filter wu --masking --blastdb ${RFAM_DB_PATH}/Rfam.fasta ${RFAM_DB_PATH}/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_out `basename $f .fa` > $rfamscan_gff3"
-
+    bsub -M 8192 -R "rusage[mem=8192]" -n 4 -q $LSF_QUEUE -J "GENEPRED"$INDEX -o ${LSF_OUTPUT}"/rfamscan/"$sequence_name".rfamscan.lsf.out" "perl $RFAMSCAN_PATH -o $rfamscan_path --nobig -v -filter wu --masking --blastdb ${RFAM_DB_PATH}/Rfam.fasta ${RFAM_DB_PATH}/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_path `basename $f .fa` > $rfamscan_gff3"
     
 
     rnammer_out=`basename $f .fa`.rnammer
+    rnammer_path="temp/rnammer/"$rnammer_out
     rnammer_gff3=`basename $f .fa`.rnammer.gff3
 
     echo "Running RNAmmer and parsing its results"
-    echo "$RNAMMER_PATH -T /tmp/ -S euk -m lsu,ssu,tsu -gff $rnammer_out -h "$rnammer_out".hmmreport "$f
-    echo "perl ${NCGENES_SCRIPTS_PATH}/rnammer_to_gff3.pl $rnammer_out > $rnammer_gff3"
+    echo "$RNAMMER_PATH -T /tmp/ -S euk -m lsu,ssu,tsu -gff $rnammer_path -h "$rnammer_path".hmmreport "$f
+    echo "perl ${NCGENES_SCRIPTS_PATH}/rnammer_to_gff3.pl $rnammer_path > $rnammer_gff3"
 
-    # touch $rnammer_gff3
+    # in rnammer wrapper script, hmmsearch configured to use 2 CPUs so tell LSF to allocate 2 CPUs
 
-    bsub -q $LSF_QUEUE -J "GENEPRED"$INDEX -o $f".rnammer.lsf.out" "$RNAMMER_PATH -T /tmp/ -S euk -m lsu,ssu,tsu -gff $rnammer_out -h $rnammer_out".hmmreport" $f; perl ${NCGENES_SCRIPTS_PATH}/rnammer_to_gff3.pl $rnammer_out `basename $f .fa` > $rnammer_gff3"
-
+    bsub -n 2 -q $LSF_QUEUE -J "GENEPRED"$INDEX -o ${LSF_OUTPUT}"/rnammer/"$sequence_name".rnammer.lsf.out" "$RNAMMER_PATH -T /tmp/ -S euk -m lsu,ssu,tsu -gff $rnammer_path -h $rnammer_path".hmmreport" $f; perl ${NCGENES_SCRIPTS_PATH}/rnammer_to_gff3.pl $rnammer_path `basename $f .fa` > $rnammer_gff3"
+	
 
     INDEX=`expr $INDEX + 1`
 
     echo ""
+    
 done
 
 ##
@@ -211,11 +244,22 @@ echo "Gene prediction jobs execution done"
 
 echo ""
 
+# cleanup
+
+if [ "$CLEANUP" == "1" ]
+then
+   
+   echo "performing cleanup"
+   
+   bsub -q production-rh6 -o ${LSF_OUTPUT}/cleanup.lsf.out 'find temp -name "*.*scan" -exec rm {} \;'
+   find . -name "*.rnammer" -exec rm {} \;
+fi
+
 # Generate a unique file
 
 echo "Generating a unique with all gene predictions"
 
-for f in `ls ${OUTPUT_DIR}/unmasked_seq/*.fa` 
+for f in `find ${OUTPUT_DIR}/unmasked_seq -name "*.fa"` 
 do
     rnammer_gff3=`basename $f .fa`.rnammer.gff3
     cat $rnammer_gff3 >> $gff3_output
@@ -242,3 +286,9 @@ perl ${NCGENES_SCRIPTS_PATH}/gene_store.pl -host $DB_HOST -port $DB_PORT -user $
 
 cd $NCGENES_SQL_PATH
 cat set_genes_as_novel.sql | mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME
+
+# generate_stable_ids
+
+echo "perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start "${DIVISON}""${PREFIX}"00000000000"
+
+perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start "${DIVISON}""${SPECIES_PREFIX}"00000000000
