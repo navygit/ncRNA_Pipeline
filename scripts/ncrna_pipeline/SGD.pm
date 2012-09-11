@@ -150,6 +150,7 @@ sub parse_gff{
 
   print STDERR "creating nc gene objects\n";
   foreach my $gene_id(keys(%$nc_genes)){
+    print STDERR "processing gene_id, $gene_id\n";
     my $transcripts = $nc_genes->{$gene_id};
     my $unpruned = &create_gene($transcripts, $gene_id, $xrefs);
       #print STDERR "gene ".$unpruned."\n";
@@ -157,7 +158,7 @@ sub parse_gff{
     push(@genes, $gene);
   }
   close(FH);
-  ##print STDERR "PARSE_GFF ".@genes." genes\n";
+  print STDERR "PARSE_GFF ".@genes." genes\n";
   return \@genes, $processed_operons, $xrefs;
 }
 
@@ -653,7 +654,7 @@ sub create_gene{
       }
   }
   else {
-      print STDERR "No description for gene, " . $gene->biotype . "/" . $gene->stable_id . "\n";;
+      print STDERR "No description for gene, " . $gene->biotype . "/" . $gene->stable_id . "\n";
   }
   $gene->description($gene_description);
   #print $gene->description,"\n";
@@ -1215,16 +1216,19 @@ sub create_pseudo_transcripts{
   my $gene_name;
   my $transcript_id;
   foreach my $transcript(keys(%transcripts)){
-    print "transcript: $transcript\n";
+    print STDERR "transcript: $transcript\n";
     my $time = time;
     my @exons = @{$transcripts{$transcript}};
-    if($transcript =~ /\w+\.\d+[a-z A-Z]/){
-     ($gene_name) = $transcript =~ /(\w+\.\d+)[a-z A-Z]/;
-     $transcript_id = $transcript;
-    }else{
+
+    # not sure what this test was meant for, but we don't need it
+
+    #if($transcript =~ /\w+\.\d+[a-z A-Z]/){
+    # ($gene_name) = $transcript =~ /(\w+\.\d+)[a-z A-Z]/;
+    # $transcript_id = $transcript;
+    #}else{
       $gene_name = $transcript;
       $transcript_id = $transcript;
-    }
+    #}
     my $transcript_eobj = new Bio::EnsEMBL::Transcript;
     $transcript_eobj->status('KNOWN');
     my @sorted_exons;
