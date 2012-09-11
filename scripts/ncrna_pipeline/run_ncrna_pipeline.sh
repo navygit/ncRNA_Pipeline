@@ -66,6 +66,7 @@ SPECIES_PREFIX=`echo $SPECIES_SHORT_NAME | perl -ne '$_ =~ /^(\w\w\w).+/; $a = u
 
 echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 echo "SPECIES_PREFIX: $SPECIES_PREFIX"
+echo "$DIVISION"
 
 echo ""
 
@@ -83,11 +84,12 @@ BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable/
 
 RNAMMER_PATH=/nfs/panda/ensemblgenomes/external/rnammer/rnammer
 # old style
-#TRNASCAN_PATH=/sw/arch/bin/tRNAscan-SE
+TRNASCAN_PATH=/sw/arch/bin/tRNAscan-SE
 # now:
 #TRNASCAN_PATH=/sw/arch/
-TRNASCAN_PATH=/nfs/panda/ensemblgenomes/external/tRNAscan-SE-1.3.1/
+#TRNASCAN_PATH=/nfs/panda/ensemblgenomes/external/tRNAscan-SE-1.3.1/
 TRNASCAN_BIN=tRNAscan-SE
+
 RFAMSCAN_PATH=/nfs/panda/ensemblgenomes/external/rfam_scan/rfam_scan.pl
 
 export PATH=/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin:${TRNASCAN_PATH}/bin:$PATH
@@ -289,6 +291,6 @@ cat set_genes_as_novel.sql | mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PAS
 
 # generate_stable_ids
 
-echo "perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start ${DIVISON}${PREFIX}00000000000"
+echo "perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start ${DIVISION}${SPECIES_PREFIX}00000000000"
 
-perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start "${DIVISON}""${SPECIES_PREFIX}"00000000000
+perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start "${DIVISION}""${SPECIES_PREFIX}"00000000000
