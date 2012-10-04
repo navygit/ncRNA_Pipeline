@@ -6,6 +6,8 @@ use FileHandle;
 my $in_file = shift;
 my $prefix = shift || "";
 
+my $verbose = 0;
+
 print STDERR "gene name prefix set to $prefix\n";
 
 if (!defined $in_file) {
@@ -27,7 +29,6 @@ if (!defined $in_file) {
 # dbxref => Rfam for exple
 
 my $algo = "ncRNA";
-my $biotype = "tRNA";
 my $index = 1;
 
 my $in_fh = new FileHandle;
@@ -40,7 +41,8 @@ while (<$in_fh>) {
   chomp $line;
   $line =~ /^([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)/;
   #$line =~ /(\S+)\s+(\d+)\s+(\d+)\s+(\d+)+\s+(\w+)\s+(\w+)\s+(\d+)\s+(\d+)\s+(.+)/;
-  
+
+  my $biotype = "tRNA";
   my $seq    = $1;
   my $start  = $3;
   my $end    = $4;
@@ -70,6 +72,10 @@ while (<$in_fh>) {
   my $name   = "tRNA-" . $aa_name;
   my $note = "$name for anticodon $anticodon";
   my $dbxref = "TRNASCAN_SE:$name";
+
+  if ($verbose) {
+      print STDERR "aa_name, anticodon, $aa_name, $anticodon\n";
+  }
 
   # Replace note spaces by '%20'
   $note =~ s/ /\%20/g;
