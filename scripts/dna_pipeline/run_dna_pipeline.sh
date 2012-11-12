@@ -38,10 +38,10 @@ echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 
 echo ""
 
-OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/${SPECIES_SHORT_NAME}
+OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/${USER}/dna_pipelines/data/${SPECIES_SHORT_NAME}
 
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
-# ENS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/62/ensembl
+# ENS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/69/ensembl
 ENS_PATH=/nfs/panda/ensemblgenomes/production/dna_pipelines/ensembl-head
 ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
 ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/pipeline/head
@@ -60,7 +60,7 @@ echo "Testing directory $OUTPUT_DIR"
 if [ ! -d "$OUTPUT_DIR" ]
 then
     echo "creating directory $OUTPUT_DIR"
-    mkdir $OUTPUT_DIR
+    mkdir -p $OUTPUT_DIR
 fi
 
 cd ${ENS_PIPELINE_PATH}/scripts/
