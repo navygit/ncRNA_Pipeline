@@ -58,10 +58,10 @@ echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 
 echo ""
 
-PROTEIN_OUTPUT_DIR=/nfs/panda/ensemblgenomes/production/protein_pipelines/data/${SPECIES_SHORT_NAME}
+PROTEIN_OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/${USER}/protein_pipelines/data/${SPECIES_SHORT_NAME}
 
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
-#ENS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/64/ensembl
+#ENS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/69/ensembl
 ENS_PATH=/nfs/panda/ensemblgenomes/production/ensembl_pipelines_init/ensembl-head
 ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
 ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/pipeline/head
