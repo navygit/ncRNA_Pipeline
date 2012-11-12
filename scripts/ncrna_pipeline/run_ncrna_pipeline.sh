@@ -70,13 +70,13 @@ echo "$DIVISION"
 
 echo ""
 
-OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/production/ncgenes_pipelines/data/${SPECIES_SHORT_NAME}
+OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/${USER}/ncgenes_pipelines/data/${SPECIES_SHORT_NAME}
 LSF_OUTPUT=${OUTPUT_DIR}/lsf_output
 
 NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts/ncrna_pipeline/
 NCGENES_SCRIPTS_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts/ncrna_pipeline/
 NCGENES_SQL_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/sql
-#ENSEMBL_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/64/ensembl
+#ENSEMBL_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/69/ensembl
 ENSEMBL_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/ensembl-head
 ENSEMBL_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
