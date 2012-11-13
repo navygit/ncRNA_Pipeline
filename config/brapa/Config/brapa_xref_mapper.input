@@ -1,7 +1,7 @@
 xref
 host=mysql-eg-devel-1.ebi.ac.uk
 port=4126
-dbname=brassica_rapa_xref_13_66_1
+dbname=brassica_rapa_xref_15_68_1
 user=ensrw
 password=scr1b3d1
 dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/brapa
@@ -10,7 +10,7 @@ species=brassica_rapa
 taxon=eukaryota
 host=mysql-eg-devel-1.ebi.ac.uk
 port=4126
-dbname=brassica_rapa_core_13_66_1
+dbname=brassica_rapa_core_15_68_1
 user=ensrw
 password=scr1b3d1
 dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/brapa
