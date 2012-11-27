@@ -43,6 +43,7 @@ input_id_type=CHUNK
 db=signal_peptide
 program=signalp
 program_file=/homes/ensgen/signalp-3.0/signalp
+program_version=3.0
 module=ProteinAnnotation/Signalp
 gff_source=Signalp
 gff_feature=annotation
@@ -72,6 +73,7 @@ input_id_type=CHUNK
 [pfam]
 db=Pfam
 db_file=/ebi/production/interpro/data/members/pfam/23.0/Pfam_ls
+db_version=23.0
 program=hmmpfam
 program_file=/sw/arch/bin/hmmpfam
 parameters=--acc --cut_ga --cpu 1
