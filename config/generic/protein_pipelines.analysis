@@ -42,8 +42,8 @@ input_id_type=CHUNK
 [signalp]
 db=signal_peptide
 program=signalp
-program_file=/homes/ensgen/signalp-3.0/signalp
-program_version=3.0
+program_file=/nfs/panda/ensemblgenomes/external/signalp-4.0/signalp
+program_version=4.0
 module=ProteinAnnotation/Signalp
 gff_source=Signalp
 gff_feature=annotation
