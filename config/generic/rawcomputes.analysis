@@ -10,16 +10,6 @@ input_id_type=SLICE30k
 module=Dummy
 input_id_type=CHROMOSOME
 
-[cpg]
-db=cpg
-program=cpg
-program_version=1
-program_file=/nfs/panda/ensemblgenomes/external/bin/cpg
-module=CPG
-gff_source=cpg
-gff_feature=cpg_island
-input_id_type=SLICE
-
 [dust]
 program=dust
 program_version=2
