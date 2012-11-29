@@ -51,20 +51,20 @@ use vars qw( %Databases );
 	
 	      # database containing sequence plus features from raw computes
 	      GB_DBHOST                  => 'mysql-eg-devel-3.ebi.ac.uk',
-	      GB_DBNAME                  => 'solanum_tuberosum_core_16_69_4',
+	      GB_DBNAME                  => 'solanum_tuberosum_core_17_70_4',
 	      GB_DBUSER                  => 'ensrw',
 	      GB_DBPASS                  => 'scr1b3d3',
 	      GB_DBPORT                  => '4208',
 	      # database containing the genewise genes (TGE_gw,similarity_genewise)
               GB_GW_DBHOST               => 'mysql-eg-devel-3.ebi.ac.uk',
-              GB_GW_DBNAME               => 'solanum_tuberosum_core_16_69_4',
+              GB_GW_DBNAME               => 'solanum_tuberosum_core_17_70_4',
               GB_GW_DBUSER               => 'ensrw',
               GB_GW_DBPASS               => 'scr1b3d3',
               GB_GW_DBPORT               => '4208',
 	      # database containing the blessed genes if there are any (e! definition!)
 	      # ... in this case: blessed genes are the ones not to modify .. ie "targetted_genes"
 	      GB_BLESSED_DBHOST          => 'mysql-eg-devel-3.ebi.ac.uk',
-	      GB_BLESSED_DBNAME          => 'solanum_tuberosum_core_16_69_4',
+	      GB_BLESSED_DBNAME          => 'solanum_tuberosum_core_17_70_4',
 	      GB_BLESSED_DBUSER          => 'ensrw',
 	      GB_BLESSED_DBPASS          => 'scr1b3d3',
 	      GB_BLESSED_DBPORT          => '4208',
@@ -75,7 +75,7 @@ use vars qw( %Databases );
 	      #GB_BLESSED_DBPORT          => '',
 	      # database where the combined_gw_e2g genes will be stored
 	      GB_COMB_DBHOST             => 'mysql-eg-devel-3.ebi.ac.uk',
-	      GB_COMB_DBNAME             => 'solanum_tuberosum_core_16_69_4',   #Was: kmegy_culex3_gw_combine_42 - this one is for a test!
+	      GB_COMB_DBNAME             => 'solanum_tuberosum_core_17_70_4',   #Was: kmegy_culex3_gw_combine_42 - this one is for a test!
 	      GB_COMB_DBUSER             => 'ensrw',
 	      GB_COMB_DBPASS             => 'scr1b3d3',
 	      GB_COMB_DBPORT             => '4208',
@@ -91,21 +91,21 @@ use vars qw( %Databases );
 
 	      #Clean EST database
 	      GB_cDNA_DBHOST             => 'mysql-eg-devel-3.ebi.ac.uk',
-	      GB_cDNA_DBNAME             => 'solanum_tuberosum_core_16_69_4',
+	      GB_cDNA_DBNAME             => 'solanum_tuberosum_core_17_70_4',
 	      GB_cDNA_DBUSER             => 'ensrw',
 	      GB_cDNA_DBPASS             => 'scr1b3d3',
               GB_cDNA_DBPORT             => '4208',
 
 	      # db to put pseudogenes in
 	      PSEUDO_DBHOST              => 'mysql-eg-devel-3.ebi.ac.uk',
-	      PSEUDO_DBNAME              => 'solanum_tuberosum_core_16_69_4',
+	      PSEUDO_DBNAME              => 'solanum_tuberosum_core_17_70_4',
 	      PSEUDO_DBUSER              => 'ensrw',
 	      PSEUDO_DBPASS              => 'scr1b3d3',
               PSEUDO_DBPORT              => '4208',
 
 	      # this db needs to have clone & contig & static_golden_path tables populated        #For GeneBuild
 	      GB_FINALDBHOST             => 'mysql-eg-devel-3.ebi.ac.uk',                                         # ...see Incremental config files
-	      GB_FINALDBNAME             => 'solanum_tuberosum_core_16_69_4',
+	      GB_FINALDBNAME             => 'solanum_tuberosum_core_17_70_4',
 	      GB_FINALDBUSER             => 'ensrw',
 	      GB_FINALDBPASS             => 'scr1b3d3',
               GB_FINALDBPORT             => '4208',
