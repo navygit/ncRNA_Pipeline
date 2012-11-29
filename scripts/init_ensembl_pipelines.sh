@@ -119,58 +119,7 @@ then
     exit 1
 fi
 
-echo "perl rule_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -read -file ${CONFIG_DIR}/protein_pipelines.rules"
-
-perl rule_setup.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -read -file ${CONFIG_DIR}/protein_pipelines.rules
-
-if [ $? -gt 0 ]
-then
-    echo "rule_setup.pl failed for setting up protein rules"
-    exit 1
-fi
-
-
-# 4/ Dump the protein sequences and chunk them
-
-echo "Dump the protein sequences"
-
-cd ${ENS_PIPELINE_PATH}/scripts/protein_pipeline
-
-PROTEIN_FILE=${SPECIES_SHORT_NAME}.pep
-PROTEIN_FILE_PATH=${PROTEIN_OUTPUT_DIR}/proteins/${PROTEIN_FILE}
-
-if [ ! -d "${PROTEIN_OUTPUT_DIR}/proteins" ]
-then
-    echo "mkdir -p ${PROTEIN_OUTPUT_DIR}/proteins/"
-    mkdir -p ${PROTEIN_OUTPUT_DIR}/proteins
-fi
-
-if [[ ! -f "$PROTEIN_FILE_PATH" || ! -s "$PROTEIN_FILE_PATH" ]]
-then
-    echo "perl ./dump_translations.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -db_id > $PROTEIN_FILE_PATH"
-    perl ./dump_translations.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -db_id > $PROTEIN_FILE_PATH
-fi
-
-echo "Chunk the protein file"
-
-if [ ! -d "${PROTEIN_OUTPUT_DIR}/protein_chunks" ]
-then
-    echo "mkdir -p ${PROTEIN_OUTPUT_DIR}/protein_chunks"
-    mkdir ${PROTEIN_OUTPUT_DIR}/protein_chunks
-fi
-
-# Define how many chunks to produce, with 100 proteins per chunk
-
-NB_PROTEIN=`grep -c '^>' $PROTEIN_FILE_PATH`
-NB_CHUNKS=`expr $NB_PROTEIN / 100`
-
-echo "Splitting protein file in $NB_CHUNKS chunks"
-echo "fastasplit $PROTEIN_FILE_PATH $NB_CHUNKS ${PROTEIN_OUTPUT_DIR}/protein_chunks"
-
-fastasplit $PROTEIN_FILE_PATH $NB_CHUNKS ${PROTEIN_OUTPUT_DIR}/protein_chunks
-
 echo ""
-
 
 # 5/ Make input_ids for the raw compute analysis in the pipeline
 
@@ -197,18 +146,4 @@ perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $
 echo "perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name Submit30kSlice -slice -coord_system $COORD_SYSTEM -slice_size 30000"
 
 perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name Submit30kSlice -slice -coord_system $COORD_SYSTEM -slice_size 30000
-
-# Protein ones
-
-echo "perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitProteome -single -single_name $PROTEIN_FILE"
-
-perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitProteome -single -single_name $PROTEIN_FILE
-
-echo "perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitTranslation -translation_ids"
-
-perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitTranslation -translation_ids
-
-echo "perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitChunk -file -dir ${PROTEIN_OUTPUT_DIR}/protein_chunks"
-
-perl make_input_ids -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -logic_name SubmitChunk -file -dir ${PROTEIN_OUTPUT_DIR}/protein_chunks
 
