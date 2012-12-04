@@ -17,9 +17,9 @@ use vars qw(%Config);
   RENAME_ON_RETRY => 1,
 
   # default target_file_directory
-  PIPELINE_TARGET_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/stuberosum',
+  PIPELINE_TARGET_DIR => '/nfs/panda/ensemblgenomes/development/arnaud/dna_pipelines/data/stuberosum',
 
-  ANALYSIS_WORK_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/stuberosum',
+  ANALYSIS_WORK_DIR => '/nfs/panda/ensemblgenomes/development/arnaud/dna_pipelines/data/stuberosum',
 );
 
 
