@@ -8,12 +8,12 @@ use vars qw(%Config);
     LIB_DIR  => '/nfs/panda/ensemblgenomes/external/lib',
 
     # default target_file_directory
-    PIPELINE_TARGET_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/gmax',
+    PIPELINE_TARGET_DIR => '/nfs/panda/ensemblgenomes/development/arnaud/dna_pipelines/data/gmax',
     
     #regex for spiting up slice input_ids
     SLICE_INPUT_ID_REGEX => '(\S+)\.(\d+)-(\d+):?([^:]*)',	   
     
-    ANALYSIS_WORK_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/gmax',
+    ANALYSIS_WORK_DIR => '/nfs/panda/ensemblgenomes/development/arnaud/dna_pipelines/data/gmax',
 
     ANALYSIS_REPEAT_MASKING => ['repeatmask'],
 
