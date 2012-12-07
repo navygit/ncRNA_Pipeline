@@ -154,7 +154,7 @@ use vars qw( %Config );
         OPTIONS             => "--model est2genome --forwardcoordinates FALSE "
           . "--softmasktarget TRUE --exhaustive FALSE --score 500 "
           . "--saturatethreshold 100 --dnahspthreshold 60 --dnawordlen 14 "
-          . "--fsmmemory 800 --bestn 100 --maxintron 15000",
+          . "--fsmmemory 2048 --bestn 100 --maxintron 15000",
       },
 
       CDNA_logic_name => {
