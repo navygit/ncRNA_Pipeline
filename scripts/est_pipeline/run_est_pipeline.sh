@@ -43,14 +43,16 @@ echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 
 echo ""
 
-OUTPUT_DIR=/nfs/panda/ensemblgenomes/production/est_pipeline/data/${SPECIES_SHORT_NAME}
+OUTPUT_DIR=/nfs/panda/ensemblgenomes/development/${USER}/est_pipeline/data/${SPECIES_SHORT_NAME}
 
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 
 #ENS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/63/ensembl
 ENS_PATH=/nfs/panda/ensemblgenomes/production/est_pipeline/ensembl-head
 ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
+#ENS_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/production/est_pipeline/ensembl-analysis-head
 ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/pipeline/head
+#ENS_PIPELINE_PATH=/nfs/panda/ensemblgenomes/production/est_pipeline/ensembl-pipeline-head
 ENS_KILLLIST_PATH=/nfs/panda/ensemblgenomes/production/est_pipeline/ensembl-killlist
 
 BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable
