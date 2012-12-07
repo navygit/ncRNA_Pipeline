@@ -63,7 +63,7 @@ echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 
 echo ""
 
-ESTs_OUTPUT_DIR=/nfs/panda/ensemblgenomes/production/est_pipeline/data/${SPECIES_SHORT_NAME}
+ESTs_OUTPUT_DIR=/nfs/panda/ensemblgenomes/development/${USER}/est_pipeline/data/${SPECIES_SHORT_NAME}
 ESTs_FILE_PATH=${ESTs_OUTPUT_DIR}/cDNAs.fa
 
 if [ ! -f "$ESTs_FILE_PATH" ]
@@ -214,7 +214,7 @@ fi
 # Define how many chunks to produce, with 100 ESTs per chunk
 
 NB_ESTs=`grep -c '^>' $ESTs_FILE_PATH`
-NB_CHUNKS=`expr $NB_ESTs / 100`
+NB_CHUNKS=`expr $NB_ESTs / 200`
 
 echo "Splitting ESTs file in $NB_CHUNKS chunks"
 echo "fastasplit $ESTs_FILE_PATH $NB_CHUNKS ${ESTs_OUTPUT_DIR}/est_chunks"
