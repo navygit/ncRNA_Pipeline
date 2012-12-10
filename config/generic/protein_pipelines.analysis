@@ -12,6 +12,7 @@ input_id_type=TRANSLATIONID
 
 [scanprosite]
 db=Prosite_patterns
+db_version=1
 db_file=/nfs/seqdb/production/interpro/data/members/prosite/20.52/prosite.patterns
 parameters=-confirm => /nfs/panda/ensemblgenomes/production/protein_pipelines/databases/confirm.patterns
 module=ProteinAnnotation/PrositeProfile
@@ -21,6 +22,7 @@ input_id_type=CHUNK
 
 [ncoils]
 db=coiled_coil
+db_version=1
 db_file=/nfs/panda/ensemblgenomes/external/src/coils
 program=ncoils
 program_file=/nfs/panda/ensemblgenomes/external/bin/ncoils
@@ -31,6 +33,7 @@ input_id_type=CHUNK
 
 [tmhmm]
 db=transmembrane
+db_version=1
 program=decodeanhmm
 program_file=/nfs/panda/ensemblgenomes/external/TMHMM2.0c/bin/decodeanhmm
 parameters=-modelfile => /nfs/panda/ensemblgenomes/external/TMHMM2.0c/lib/TMHMM2.0.model, -optionsfile => /nfs/panda/ensemblgenomes/external/TMHMM2.0c/lib/TMHMM2.0.options 
@@ -41,6 +44,7 @@ input_id_type=CHUNK
 
 [signalp]
 db=signal_peptide
+db_version=1
 program=signalp
 program_file=/nfs/panda/ensemblgenomes/external/signalp-4.0/signalp
 program_version=4.0
@@ -51,6 +55,7 @@ input_id_type=CHUNK
 
 [pfscan]
 db=Prosite_profiles
+db_version=1
 db_file=/nfs/panda/ensemblgenomes/production/protein_pipelines/databases/prosite.profiles
 program=pfscan
 program_file=/nfs/seqdb/production/interpro/binaries/64_bit_Linux/pfscan
@@ -61,6 +66,7 @@ input_id_type=CHUNK
 
 [prints]
 db=Prints
+db_version=1
 db_file=/nfs/seqdb/production/interpro/data/iprscan/prints.pval
 program=FingerPRINTScan
 program_file=/nfs/seqdb/production/interpro/binaries/64_bit_Linux/fingerPRINTScan
@@ -84,6 +90,7 @@ input_id_type=CHUNK
 
 [seg]
 db=low_complexity
+db_version=1
 program=seg
 program_file=/nfs/panda/ensemblgenomes/external/bin/seg
 module=ProteinAnnotation/Seg
@@ -93,6 +100,7 @@ input_id_type=PROTEOME
 
 [tigrfam]
 db=TIGRfam
+db_version=1
 db_file=/ebi/sp/pro1/interpro/data/members/tigrfam/9.0/TIGRFAMs_9.0_HMM.LIB
 program=hmmpfam
 program_file=/sw/arch/bin/hmmpfam
@@ -104,6 +112,7 @@ input_id_type=CHUNK
 
 [superfamily]
 db=Superfamily
+db_version=1
 db_file=/nfs/seqdb/production/interpro/data/iprscan/superfamily.hmm
 program=superfamily.pl
 program_file=/nfs/panda/ensemblgenomes/production/protein_pipelines/programs/superfamily.pl
@@ -115,6 +124,7 @@ input_id_type=CHUNK
 
 [smart]
 db=Smart
+db_version=1
 db_file=/nfs/seqdb/production/interpro/data/iprscan/smart.HMMs
 program=hmmpfam
 program_file=/sw/arch/bin/hmmpfam
@@ -126,6 +136,7 @@ input_id_type=CHUNK
 
 [pirsf]
 db=PIRSF
+db_version=1
 db_file=/nfs/seqdb/production/interpro/data/iprscan/sf_hmm;/nfs/seqdb/production/interpro/data/iprscan/sf_hmm_sub
 program=pirsf.pl
 program_file=/nfs/panda/ensemblgenomes/production/protein_pipelines/programs/pirsf.pl
@@ -137,18 +148,21 @@ input_id_type=CHUNK
 
 [hmmpanther]
 db=PANTHER
+db_version=1
 gff_source=PANTHER
 gff_feature=domain
 input_id_type=CHUNK
 
 [gene3d]
 db=Gene3D
+db_version=1
 gff_source=Gene3D
 gff_feature=domain
 input_id_type=CHUNK
 
 [blastprodom]
 db=ProDom
+db_version=1
 gff_source=ProDom
 gff_feature=domain
 input_id_type=CHUNK
