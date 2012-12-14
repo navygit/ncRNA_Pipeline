@@ -48,8 +48,10 @@ while (<$in_fh>) {
   # Goes into a xref entry, attached to RNAmmer external_db
   my $name   = $9;
   
-  # Replace '8S' by '5.8S'
-  $name =~ s/8s_rRNA/5S_rRNA/;
+  # Replace '8s' by '5.8S'
+  # and s_ by S_
+  $name =~ s/^8s_rRNA/5.8S_rRNA/;
+  $name =~ s/s_rRNA/S_rRNA/;
   
   my $note = "$name";
   my $dbxref = "RNAMMER:$name";
