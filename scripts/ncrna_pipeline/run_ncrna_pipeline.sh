@@ -84,7 +84,7 @@ BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable/
 
 RNAMMER_PATH=/nfs/panda/ensemblgenomes/external/rnammer/rnammer
 # old style
-TRNASCAN_PATH=/sw/arch/bin/tRNAscan-SE
+TRNASCAN_PATH=/nfs/panda/ensemblgenomes/external/tRNAscan-SE-1.3.1/bin
 # now:
 #TRNASCAN_PATH=/sw/arch/
 #TRNASCAN_PATH=/nfs/panda/ensemblgenomes/external/tRNAscan-SE-1.3.1/
@@ -92,9 +92,9 @@ TRNASCAN_BIN=tRNAscan-SE
 
 RFAMSCAN_PATH=/nfs/panda/ensemblgenomes/external/rfam_scan/rfam_scan.pl
 
-export PATH=/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin:${TRNASCAN_PATH}/bin:$PATH
+export PATH=/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin:${TRNASCAN_PATH}:$PATH
 
-export PERL5LIB=${NCGENES_MODULES_PATH}:${ENSEMBL_PATH}/modules:${BIOPERL_PATH}:${TRNASCAN_PATH}/bin
+export PERL5LIB=${NCGENES_MODULES_PATH}:${ENSEMBL_PATH}/modules:${BIOPERL_PATH}:${TRNASCAN_PATH}
 
 
 # Rfam 10.1
@@ -189,6 +189,7 @@ do
     rfamscan_options=""
 
     echo "Running Rfamscan and parsing its results"
+    echo "perl $RFAMSCAN_PATH -o $rfamscan_path --nobig -v -filter wu --masking --blastdb ${RFAM_DB_PATH}/Rfam.fasta ${RFAM_DB_PATH}/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_path `basename $f .fa` > $rfamscan_gff3"
     # Tell LSF we will use 4 CPUs (because wublast will) and more memory requirements
 
     bsub -M 8192 -R "rusage[mem=8192]" -n 4 -q $LSF_QUEUE -J "GENEPRED"$INDEX -o ${LSF_OUTPUT}"/rfamscan/"$sequence_name".rfamscan.lsf.out" "perl $RFAMSCAN_PATH -o $rfamscan_path --nobig -v -filter wu --masking --blastdb ${RFAM_DB_PATH}/Rfam.fasta ${RFAM_DB_PATH}/Rfam.cm $f; perl ${NCGENES_SCRIPTS_PATH}/rfamscan10_to_gff3.pl $rfamscan_path `basename $f .fa` > $rfamscan_gff3"
