@@ -21,9 +21,6 @@
 
 =cut
 
-# NB: populate mode not supported, simpler to use the production_db script for that
-
-
 use DBI;
 use DBD::mysql;
 use strict;
@@ -37,9 +34,8 @@ my $verbose = 1;
 my $write_back = 1;
 
 my $offset = 50000;
-my ($core, $repopulate) = (undef, 0);
-my $opt = GetOptions('core:s', \$core,
-		     'repopulate!', \$repopulate);
+my ($core) = (undef);
+my $opt = GetOptions('core:s', \$core);
 
 if (!$core) {
 
@@ -179,40 +175,6 @@ if (scalar(@fake_statements) > 0) {
 	$core_dbh->do($real) or die "Could'nt prepare statement:" . $core_dbh->errstr;
     }
         
-}
-
-if ($repopulate == 1) {
-
-    print STDERR "delete from external_db\n";
-    
-    my $c = $core_dbh->do("DELETE FROM external_db") or die "Could'nt prepare statement:" . $core_dbh->errstr;
-    print STDERR "Have removed $c rows...\n";
-    
-    print STDERR "repopulate external_db...";
-    
-    foreach my $code (sort { $external_dbs{$a}->{external_db_id} <=> $external_dbs{$b}->{external_db_id} } keys %external_dbs) {
-#    my $code = $map{$id};
-	
-	my $description = (defined($external_dbs{$code}->{description})) ? $external_dbs{$code}->{description} : ""; 
-	my $query = "INSERT INTO external_db(external_db_id,code,name,description) VALUES(". $external_dbs{$code}->{external_db_id} . ",\"" . $code . "\",\"". $external_dbs{$code}->{name} . "\",\"" . $description . "\")";
-	
-	if ($verbose) {
-	    print STDERR $query . "\n";
-	}
-	
-	$core_dbh->do($query);
-	#$sth = $core_dbh->prepare($query) or die "Could'nt prepare statement:" . $core_dbh->errstr;
-	#$sth->execute();
-	
-    }
-
-    my $sth = $core_dbh->prepare('SELECT COUNT(1) as c FROM external_db');
-    $sth->execute();
-    my $result = $sth->fetchrow_hashref();
-    print "Value returned: $result->{c}\n";
-
-} else {
-    print STDERR "Nothing to do!!\n";
 }
 
 $core_dbh->disconnect();
