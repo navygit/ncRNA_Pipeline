@@ -1,4 +1,5 @@
-pod
+
+# pod
 
 =head1 NAME
   Gautier Koscielny (koscieln@ebi.ac.uk)
@@ -49,12 +50,15 @@ if (!$core) {
 
 # connect to staging to the core database
 
-my $staging_host = 'mysql-eg-staging-2';
-my $staging_port = 4275;
+#my $staging_host = 'mysql-eg-staging-2';
+#my $staging_port = 4275;
+my $staging_host = 'mysql-eg-staging-1';
+my $staging_port = 4160;
 my $core_dbh = undef;
 my $core_dsn = "DBI:mysql:database=$core;host=$staging_host;port=$staging_port";
 my $core_username = 'ensrw';
-my $core_password = 'writ3rs2';
+#my $core_password = 'scr1b3s2';
+my $core_password = 'scr1b3s1';
 
 eval {
     if (!$core_dbh || !$core_dbh->ping()) {
