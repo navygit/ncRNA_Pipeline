@@ -123,12 +123,14 @@ then
     exit 1
 fi
 
+echo "Mapping step is done"
+
 # Delete the object_xref entries related to 'Uniprot_genename'
 
 # Use a patch SQL command for that
 
 echo "Deleting object_xref entries related to 'Uniprot_genename'..."
 
-mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS -e "DELETE FROM object_xref WHERE xref_id IN (SELECT x.xref_id FROM xref x, external_db d WHERE x.external_db_id = d.external_db_id AND d.db_name = 'Uniprot_genename')"
+mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME -e "DELETE FROM object_xref WHERE xref_id IN (SELECT x.xref_id FROM xref x, external_db d WHERE x.external_db_id = d.external_db_id AND d.db_name = 'Uniprot_genename')"
 
 echo "xrefs pipeline procedure has completed"
