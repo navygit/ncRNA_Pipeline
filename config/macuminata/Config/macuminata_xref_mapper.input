@@ -1,19 +1,19 @@
 xref
-host=mysql-cluster-eg-prod-1.ebi.ac.uk
-port=4238
-dbname=musa_acuminata_xref_16_69_1
+host=mysql-eg-devel-1.ebi.ac.uk
+port=4126
+dbname=musa_acuminata_xref_17_70_1
 user=ensrw
-password=writ3rp1
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/macuminata
+password=scr1b3d1
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/macuminata
 
-species=solanum_tuberosum
+species=musa_acuminata
 taxon=eukaryota
-host=mysql-cluster-eg-prod-1.ebi.ac.uk
-port=4238
-dbname=musa_acuminata_core_16_69_1
+host=mysql-eg-devel-1.ebi.ac.uk
+port=4126
+dbname=musa_acuminata_core_17_70_1
 user=ensrw
-password=writ3rp1
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/macuminata
+password=scr1b3d1
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/macuminata
 
 farm
 queue=production-rh6
