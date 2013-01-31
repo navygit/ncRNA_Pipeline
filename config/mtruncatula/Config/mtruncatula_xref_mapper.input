@@ -4,7 +4,7 @@ port=4239
 dbname=medicago_truncatula_xref_17_70_1
 user=ensrw
 password=writ3rp2
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/mtruncatula
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/mtruncatula
 
 species=medicago_truncatula
 taxon=eukaryota
@@ -13,7 +13,7 @@ port=4239
 dbname=medicago_truncatula_core_17_70_1
 user=ensrw
 password=writ3rp2
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/mtruncatula
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/mtruncatula
 
 farm
 queue=production-rh6
