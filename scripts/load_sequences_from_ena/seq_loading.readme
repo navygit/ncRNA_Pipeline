@@ -1,0 +1,55 @@
+# NB: csh based syntax!
+
+set SEQ_LOADING_DIR = /nfs/panda/ensemblgenomes/production/load_sequences/scripts
+
+cd /nfs/panda/ensemblgenomes/production/load_sequences/data
+
+mkdir pgraminis
+
+cd pgraminis
+
+#
+### Get the list of contigs and scaffolds ENA accession numbers
+#
+
+# If it is a new species, use 'emblnew' domain,
+# otherwise use 'emblrelease'
+
+# if new
+
+perl ${SEQ_LOADING_DIR}/ebeye_soaplite.pl --getAllResultsIds  emblnew_wgs "Puccinia graminis" > puccinia_graminis_contigs.list
+
+perl ${SEQ_LOADING_DIR}/ebeye_soaplite.pl --getAllResultsIds  emblnew_con "Puccinia graminis" > puccinia_graminis_supercontigs.list
+
+# or
+
+perl ${SEQ_LOADING_DIR}/ebeye_soaplite.pl --getAllResultsIds  emblrelease_wgs "Puccinia graminis" > puccinia_graminis_contigs.list
+
+perl ${SEQ_LOADING_DIR}/ebeye_soaplite.pl --getAllResultsIds  emblrelease_con "Puccinia graminis" > puccinia_graminis_supercontigs.list
+
+#
+# Fetch the contigs and scaffolds FASTA and EMBL entries
+#
+
+sh ${SEQ_LOADING_DIR}/get_contigs_and_con_entries.sh puccinia_graminis
+
+#
+# embl2agp conversion
+#
+
+mkdir agp
+
+foreach f ( `ls embl/*.embl` )
+foreach? echo $f
+foreach?  set acc = `basename $f .embl`; perl ${SEQ_LOADING_DIR}/embl2agp.pl $f > agp/"$acc".agp
+foreach? end
+
+# Concatenate them into one file ?
+
+# ...
+
+#
+# Reformat the identifiers in the FASTA header
+#
+
+perl -i.bak -pe 'if ($_ =~ /^>ENA\|[^\|]+\|([^\s]+)\s+(.+)/) {$id = $1; $desc = $2; chomp $desc; $_ = ">$id $desc\n";}' puccinia_graminis_contigs.fasta
