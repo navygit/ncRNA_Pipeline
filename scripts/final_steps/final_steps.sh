@@ -106,7 +106,7 @@ echo "y" | perl overlapping_regions.pl \
 # Optimization
 echo "Analyzing the tables"
 
-for t in `mysql -h $DB_HOST -u $DB_USER -P $DB_PORT -p$DB_PASS $DB_NAME -e "show tables"`
+for t in `mysql -h $DB_HOST -u $DB_USER -P $DB_PORT -p$DB_PASS $DB_NAME -Ne "show tables"`
 do
   echo "analyzing table, $t"
   mysql -h $DB_HOST -u $DB_USER -P $DB_PORT -p$DB_PASS $DB_NAME -e "analyze table $t"
