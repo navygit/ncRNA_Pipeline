@@ -66,7 +66,7 @@ PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 ENSEMBL_ROOT_DIR=/nfs/panda/ensemblgenomes
 
 BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable/
-DATA_DOWNLOAD_DIR=/nfs/nobackup/ensemblgenomes/${USER}/xrefs_pipeline/data/${SPECIES_SHORT_NAME}/input_data
+DATA_DOWNLOAD_DIR=/nfs/nobackup2/ensemblgenomes/${USER}/xrefs_pipeline/data/${SPECIES_SHORT_NAME}/input_data
 # Right now, data can't go to nobackup (excepts download) because of nfs issue
 DATA_OUTPUT_DIR=/nfs/panda/ensemblgenomes/development/${USER}/xrefs_pipeline/data/${SPECIES_SHORT_NAME}
 
