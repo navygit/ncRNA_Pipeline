@@ -44,9 +44,9 @@ use vars qw(%Config);
 %Config = (
 
   # binaries, libraries and data files
-  BIN_DIR  => '/nas/seqdb/integr8/production/code/external/bin',
-  DATA_DIR => '/nas/seqdb/integr8/production/code/external/data',
-  LIB_DIR  => '/nas/seqdb/integr8/production/code/external/lib',
+  BIN_DIR  => '/nfs/panda/esnemblgenomes/external/bin',
+  DATA_DIR => '/nfs/panda/ensemblgenomes/external/data',
+  LIB_DIR  => '/nfs/panda/ensemblgenomes/external/lib',
 
   #the two versbosity values control when commands like warning or logger_info
   #print to screen The current settings give you most of what you want but 
@@ -63,13 +63,13 @@ use vars qw(%Config);
   PIPELINE_INPUT_DIR => '',
 
   # default target_file_directory
-  PIPELINE_TARGET_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/lmajor-63',
+  PIPELINE_TARGET_DIR => '/nfs/nobackup2/ensemblgenomes/development/arnaud/dna_pipelines/data/creinhardtii',
 
   #regex for spiting up slice input_ids
   SLICE_INPUT_ID_REGEX => '(\S+)\.(\d+)-(\d+):?([^:]*)',	   
     
-  ANALYSIS_WORK_DIR => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/lmajor-63',
-  PIPELINE_REPEAT_MASKING => ['RepeatMask'],	
+  ANALYSIS_WORK_DIR => '/nfs/nobackup/ensemblgenomes/development/arnaud/dna_pipelines/data/creinhardtii',
+  PIPELINE_REPEAT_MASKING => ['repeatmask'],	
 
   SNAP_MASKING => [],
 
