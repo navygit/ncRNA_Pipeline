@@ -1,24 +1,19 @@
-uniparc
-dbname=UAPRO
-user=proteomes_prod
-password=pprod
-
 xref
-dbname=chlamydomonas_reinhardtii_xref_15_68_1
-host=mysql-eg-devel-3.ebi.ac.uk
-port=4208
+dbname=chlamydomonas_reinhardtii_xref_18_71_1
+host=mysql-eg-staging-2.ebi.ac.uk
+port=4275
 user=ensrw
-password=scr1b3d3
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/creinhardtii
+password=scr1b3s2
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/creinhardtii
 
 species=chlamydomonas_reinhardtii
 taxon=eukaryota
-host=mysql-eg-devel-3.ebi.ac.uk
-port=4208
+host=mysql-eg-staging-2.ebi.ac.uk
+port=4275
 user=ensrw
-password=scr1b3d3
-dbname=chlamydomonas_reinhardtii_core_15_68_1
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/creinhardtii
+password=scr1b3s2
+dbname=chlamydomonas_reinhardtii_core_18_71_1
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/creinhardtii
 
 farm
 queue=production-rh6
