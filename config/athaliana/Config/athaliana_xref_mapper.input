@@ -13,7 +13,7 @@ port=4208
 user=ensrw
 password=scr1b3d3
 dbname=arabidopsis_thaliana_core_18_71_10
-dir=/nfs/panda/ensemblgenomes/development/kclark/xrefs_pipeline/data/athaliana
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/athaliana
 
 farm
 queue=production-rh6
