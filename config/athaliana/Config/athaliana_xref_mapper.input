@@ -1,10 +1,10 @@
 xref
-dbname=arabidopsis_thaliana_xref_15_68_10
+dbname=arabidopsis_thaliana_xref_18_71_10
 host=mysql-eg-devel-3.ebi.ac.uk
 port=4208
 user=ensrw
 password=scr1b3d3
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/athaliana
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/athaliana
 
 species=arabidopsis_thaliana
 taxon=eukaryota
@@ -12,8 +12,8 @@ host=mysql-eg-devel-3.ebi.ac.uk
 port=4208
 user=ensrw
 password=scr1b3d3
-dbname=arabidopsis_thaliana_core_15_68_10
-dir=/nfs/panda/ensemblgenomes/production/xrefs_pipeline/data/athaliana
+dbname=arabidopsis_thaliana_core_18_71_10
+dir=/nfs/panda/ensemblgenomes/development/kclark/xrefs_pipeline/data/athaliana
 
 farm
 queue=production-rh6
