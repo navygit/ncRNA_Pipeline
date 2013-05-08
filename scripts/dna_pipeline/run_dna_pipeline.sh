@@ -38,7 +38,7 @@ echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 
 echo ""
 
-OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/${USER}/dna_pipelines/data/${SPECIES_SHORT_NAME}
+OUTPUT_DIR=/nfs/nobackup2/ensemblgenomes/${USER}/dna_pipelines/data/${SPECIES_SHORT_NAME}
 
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 # ENS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/69/ensembl
