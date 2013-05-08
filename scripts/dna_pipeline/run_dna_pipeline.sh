@@ -86,5 +86,9 @@ echo "Run the pipelines"
 
 cd ${ENS_PIPELINE_PATH}/scripts/
 
-perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis eponine -analysis trf -analysis dust -analysis repeatmask -verbose -output_dir ${OUTPUT_DIR}
+NB_OUTPUT_DIRS=20
+
+echo "perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis eponine -analysis trf -analysis dust -analysis repeatmask -verbose -output_dir ${OUTPUT_DIR} -number_output_dirs $NB_OUTPUT_DIRS"
+
+perl rulemanager.pl -dbuser $DB_USER -dbpass $DB_PASS -dbhost $DB_HOST -dbport $DB_PORT -dbname $DB_NAME -once -analysis eponine -analysis trf -analysis dust -analysis repeatmask -verbose -output_dir ${OUTPUT_DIR} -number_output_dirs $NB_OUTPUT_DIRS
 
