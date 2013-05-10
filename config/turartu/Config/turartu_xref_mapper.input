@@ -1,19 +1,19 @@
 xref
-dbname=zea_mays_xref_18_71_6
-host=mysql-eg-staging-2.ebi.ac.uk
-port=4275
+dbname=triticum_urartu_xref_19_72_1
+host=mysql-eg-prod-1.ebi.ac.uk
+port=4238
 user=ensrw
-password=scr1b3s2
-dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/zmays
+password=writ3rp1
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/turartu
 
-species=zea_mays
+species=triticum_urartu
 taxon=eukaryota
-host=mysql-eg-staging-2.ebi.ac.uk
-port=4275
+host=mysql-eg-prod-1.ebi.ac.uk
+port=4238
 user=ensrw
-password=scr1b3s2
-dbname=zea_mays_core_18_71_6
-dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/zmays
+password=writ3rp1
+dbname=triticum_urartu_core_19_72_1
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/turartu
 
 farm
 queue=production-rh6
