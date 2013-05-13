@@ -48,7 +48,7 @@ use vars qw(%Config);
 	   DEFAULT_BATCH_SIZE  => 5,
 	   DEFAULT_RETRIES     => 0,
 	   DEFAULT_BATCH_QUEUE => 'production-rh6', # put in the queue  of your choice, eg. 'acari'
-	   DEFAULT_OUTPUT_DIR  => '/nfs/nobackup2/ensemblgenomes/arnaud/dna_pipelines/data/turartu',
+	   DEFAULT_OUTPUT_DIR  => '/tmp/',
            DEFAULT_RESOURCE    => '',
            DEFAULT_SUB_ARGS => '',
 	   DEFAULT_CLEANUP     => 'n',	

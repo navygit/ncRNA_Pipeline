@@ -68,7 +68,9 @@ use vars qw(%Config);
   #regex for spiting up slice input_ids
   SLICE_INPUT_ID_REGEX => '(\S+)\.(\d+)-(\d+):?([^:]*)',	   
     
-  ANALYSIS_WORK_DIR => '/nfs/nobackup2/ensemblgenomes/arnaud/dna_pipelines/data/turartu',
+  #ANALYSIS_WORK_DIR => '/nfs/nobackup2/ensemblgenomes/arnaud/dna_pipelines/data/turartu',
+  ANALYSIS_WORK_DIR => '/tmp', 
+  
   PIPELINE_REPEAT_MASKING => ['repeatmask'],	
 
   SNAP_MASKING => [],
