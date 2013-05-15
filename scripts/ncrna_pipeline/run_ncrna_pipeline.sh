@@ -70,7 +70,7 @@ echo "$DIVISION"
 
 echo ""
 
-OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/${USER}/ncgenes_pipelines/data/${SPECIES_SHORT_NAME}
+OUTPUT_DIR=/nfs/nobackup2/ensemblgenomes/${USER}/ncgenes_pipelines/data/${SPECIES_SHORT_NAME}
 LSF_OUTPUT=${OUTPUT_DIR}/lsf_output
 
 NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts/ncrna_pipeline/
