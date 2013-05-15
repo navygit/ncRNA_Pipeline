@@ -25,13 +25,15 @@ if (!defined $in_file) {
 
 #supercontig:EF1:DS178410:1:65833:1	Rfam	similarity	8482	8661	61.50	+	.	evalue=1.58e-16;gc-content=46;id=MIR807.1;model_end=176;model_start=1;rfam-acc=RF00886;rfam-id=MIR807;score=61.50
 
-my $instance = "PRPRO";
-my $user = "proteomes_prod";
-my $pass = "pprod";
+my $instance = "mysql-eg-pan-1.ebi.ac.uk";
+my $port = 4276;
+my $db_name = "ensembl_production";
+my $user = "ensro";
+my $pass = undef;
 
-my $dsn = "DBI:Oracle:$instance";
+my $dsn = "DBI:mysql:database=$db_name;host=$instance;port=$port";
 my $dbh = DBI->connect("$dsn",$user,$pass, {RaiseError => 1});
-my $query = "select embl_feature_key, rfam_desc, biotype from proteomes.rfam_2_embl_classification where rfam_ac = ?";
+my $query = "select embl_feature_key, rfam_desc, biotype from rfam_2_ensembl_biotype where rfam_ac = ?";
 my $sth = $dbh->prepare($query);
 
 # Name => Name attribute
