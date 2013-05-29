@@ -1,19 +1,19 @@
 xref
-dbname=triticum_urartu_xref_19_72_1
+dbname=aegilops_tauschii_xref_19_72_1
 host=mysql-eg-prod-1.ebi.ac.uk
 port=4238
 user=ensrw
 password=writ3rp1
-dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/turartu
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/atauschii
 
-species=triticum_urartu
+species=aegilops_tauschii
 taxon=eukaryota
 host=mysql-eg-prod-1.ebi.ac.uk
 port=4238
 user=ensrw
 password=writ3rp1
-dbname=triticum_urartu_core_19_72_1
-dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/turartu
+dbname=aegilops_tauschii_core_19_72_1
+dir=/nfs/panda/ensemblgenomes/development/arnaud/xrefs_pipeline/data/atauschii
 
 farm
 queue=production-rh6
