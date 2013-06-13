@@ -22,7 +22,6 @@ input_id_type=CHUNK
 
 [ncoils]
 db=coiled_coil
-db_version=1
 db_file=/nfs/panda/ensemblgenomes/external/src/coils
 program=ncoils
 program_file=/nfs/panda/ensemblgenomes/external/bin/ncoils
@@ -33,7 +32,6 @@ input_id_type=CHUNK
 
 [tmhmm]
 db=transmembrane
-db_version=1
 program=decodeanhmm
 program_file=/nfs/panda/ensemblgenomes/external/TMHMM2.0c/bin/decodeanhmm
 parameters=-modelfile => /nfs/panda/ensemblgenomes/external/TMHMM2.0c/lib/TMHMM2.0.model, -optionsfile => /nfs/panda/ensemblgenomes/external/TMHMM2.0c/lib/TMHMM2.0.options 
@@ -44,7 +42,6 @@ input_id_type=CHUNK
 
 [signalp]
 db=signal_peptide
-db_version=1
 program=signalp
 program_file=/nfs/panda/ensemblgenomes/external/signalp-4.0/signalp
 program_version=4.0
@@ -79,7 +76,7 @@ input_id_type=CHUNK
 [pfam]
 db=Pfam
 db_file=/ebi/production/interpro/data/members/pfam/23.0/Pfam_ls
-db_version=23.0
+db_version=25.0
 program=hmmpfam
 program_file=/sw/arch/bin/hmmpfam
 parameters=--acc --cut_ga --cpu 1
@@ -90,7 +87,6 @@ input_id_type=CHUNK
 
 [seg]
 db=low_complexity
-db_version=1
 program=seg
 program_file=/nfs/panda/ensemblgenomes/external/bin/seg
 module=ProteinAnnotation/Seg

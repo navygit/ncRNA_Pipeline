@@ -12,7 +12,6 @@ input_id_type=CHROMOSOME
 
 [dust]
 program=dust
-dv_version=1
 program_version=2
 program_file=/nfs/panda/ensemblgenomes/external/bin/tcdust
 module=Dust
@@ -23,7 +22,6 @@ input_id_type=SLICE
 [eponine]
 db=Eponine
 program=eponine-scan
-db_version=1
 program_version=1
 program_file=/ebi/research/software/Linux_x86_64/opt/java/jdk1.6.0_11/bin/java
 parameters=-epojar => /nfs/panda/ensemblgenomes/external/lib/eponine-scan.jar, -threshold => 0.999
@@ -34,7 +32,6 @@ input_id_type=SLICE
 
 [trf]
 program=trf
-db_version=1
 program_file=/nfs/panda/ensemblgenomes/external/bin/trf
 module=TRF
 gff_source=trf
