@@ -76,7 +76,7 @@ input_id_type=CHUNK
 [pfam]
 db=Pfam
 db_file=/ebi/production/interpro/data/members/pfam/23.0/Pfam_ls
-db_version=25.0
+db_version=26.0
 program=hmmpfam
 program_file=/sw/arch/bin/hmmpfam
 parameters=--acc --cut_ga --cpu 1
