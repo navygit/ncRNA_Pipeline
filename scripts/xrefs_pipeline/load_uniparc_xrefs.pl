@@ -25,11 +25,11 @@ my $logger = get_logger();
 $logger->info("Connecting to UniParc database");
 my ($uni_dba) = @{$cli_helper->get_dbas_for_opts($opts, 1, 'uniparc')};
 
-my $loader = Bio::EnsEMBL::Pipeline::Xref::UniParcLoader->new(-UNIPARC_DBA=>$uni_dba);
+my $loader = Bio::EnsEMBL::Pipeline::Xref::UniParcLoader->new(-UNIPARC_DBA => $uni_dba);
 
 $logger->info("Connecting to core database(s)");
 for my $core_dba_details (@{$cli_helper->get_dba_args_for_opts($opts)}) {
   my $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(%{$core_dba_details});
   $logger->info("Processing " . $dba->species());
   $loader->add_upis($dba);
-} ## end for my $core_dba_details...
+}

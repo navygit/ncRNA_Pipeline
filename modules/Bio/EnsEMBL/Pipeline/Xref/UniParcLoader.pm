@@ -1,10 +1,12 @@
 package Bio::EnsEMBL::Pipeline::Xref::UniParcLoader;
 use Log::Log4perl qw/:easy/;
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
+use Digest::MD5;
 
 sub new {
   my ($proto, @args) = @_;
-  my $self = $proto->SUPER::new(@args);
+  my $class = ref($proto) || $proto;
+  my $self = bless({'dbID' => $dbID}, $class);
   ($self->{uniparc_dba}) = rearrange(['UNIPARC_DBA'], @args);
   $self->{logger} = get_logger();
   return $self;
@@ -67,7 +69,7 @@ sub add_upi {
   my ($self, $ddba, $translation) = @_;
   $self->logger()->debug("Finding UPI for " . $translation->stable_id());
   my $hash  = $self->md5_checksum($translation);
-  my @upis  = @{$uni_dba->dbc()->sql_helper->execute_simple(-SQL => q/select upi from uniparc.protein where md5=?/, -PARAMS => [$hash])};
+  my @upis  = @{$self->{uniparc_dba}->dbc()->sql_helper->execute_simple(-SQL => q/select upi from uniparc.protein where md5=?/, -PARAMS => [$hash])};
   my $nUpis = scalar(@upis);
   if ($nUpis == 0) {
 	$self->logger()->warning("No UPI found for translation " . $translation->stable_id());
@@ -91,3 +93,5 @@ sub md5_checksum {
   $digest->add($sequence->seq());
   return uc($digest->hexdigest());
 }
+
+1;
