@@ -73,7 +73,7 @@ sub add_upi {
   my @upis  = @{$self->{uniparc_dba}->dbc()->sql_helper->execute_simple(-SQL => q/select upi from uniparc.protein where md5=?/, -PARAMS => [$hash])};
   my $nUpis = scalar(@upis);
   if ($nUpis == 0) {
-	$self->logger()->warning("No UPI found for translation " . $translation->stable_id());
+	$self->logger()->warn("No UPI found for translation " . $translation->stable_id());
   } elsif ($nUpis == 1) {
 	$stored = 1;
 	$self->logger()->debug("UPI $upis[0] found for translation " . $translation->stable_id() . " - storing...");
@@ -83,7 +83,7 @@ sub add_upi {
 				 $translation->dbID(),
 				 'Translation');
   } else {
-	$self->logger()->warning("Multiple UPIs found for translation " . $translation->stable_id());
+	$self->logger()->warn("Multiple UPIs found for translation " . $translation->stable_id());
   }
   return $stored;
 }
