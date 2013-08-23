@@ -31,7 +31,7 @@ sub add_upis {
   for my $transcript (@translations) {
 	$translationN++;
 	$self->logger()->info("Processed $translationN/" . scalar @translations . " translations") if ($translationN % 1000 == 0);
-	$self->add_upi($ddba, $transcript->translation());
+	$upiN += $self->add_upi($ddba, $transcript->translation());
   }
   $self->logger()->info("Stored UPIs for $upiN of $translationN translations");
   return;
@@ -67,6 +67,7 @@ sub remove_upis {
 
 sub add_upi {
   my ($self, $ddba, $translation) = @_;
+  my $stored = 0;
   $self->logger()->debug("Finding UPI for " . $translation->stable_id());
   my $hash  = $self->md5_checksum($translation);
   my @upis  = @{$self->{uniparc_dba}->dbc()->sql_helper->execute_simple(-SQL => q/select upi from uniparc.protein where md5=?/, -PARAMS => [$hash])};
@@ -74,7 +75,7 @@ sub add_upi {
   if ($nUpis == 0) {
 	$self->logger()->warning("No UPI found for translation " . $translation->stable_id());
   } elsif ($nUpis == 1) {
-	$upiN++;
+	$stored = 1;
 	$self->logger()->debug("UPI $upis[0] found for translation " . $translation->stable_id() . " - storing...");
 	$ddba->store(Bio::EnsEMBL::DBEntry->new(-PRIMARY_ID    => $upis[0],
 											-DISPLAY_LABEL => $upis[0],
@@ -84,7 +85,7 @@ sub add_upi {
   } else {
 	$self->logger()->warning("Multiple UPIs found for translation " . $translation->stable_id());
   }
-  return;
+  return $stored;
 }
 
 sub md5_checksum {
