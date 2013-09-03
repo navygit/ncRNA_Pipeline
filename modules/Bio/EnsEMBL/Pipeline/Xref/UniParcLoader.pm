@@ -42,7 +42,7 @@ sub remove_upis {
   $self->logger()->info("Removing existing UniParc cross-references");
   $dba->dbc()->sql_helper()->execute_update(
 	-SQL => q/
-		delete ox.* 
+		delete ox.*
 		from object_xref ox,
 		xref x,
 		external_db d,
@@ -77,11 +77,15 @@ sub add_upi {
   } elsif ($nUpis == 1) {
 	$stored = 1;
 	$self->logger()->debug("UPI $upis[0] found for translation " . $translation->stable_id() . " - storing...");
-	$ddba->store(Bio::EnsEMBL::DBEntry->new(-PRIMARY_ID    => $upis[0],
-											-DISPLAY_LABEL => $upis[0],
-											-DBNAME        => 'UniParc'),
-				 $translation->dbID(),
-				 'Translation');
+	$ddba->store(
+    Bio::EnsEMBL::DBEntry->new(
+      -PRIMARY_ID => $upis[0],
+      -DISPLAY_ID => $upis[0],
+      -DBNAME     => 'UniParc',
+      -INFO_TYPE  => 'CHECKSUM'),
+    $translation->dbID(),
+    'Translation'
+  );
   } else {
 	$self->logger()->warn("Multiple UPIs found for translation " . $translation->stable_id());
   }
