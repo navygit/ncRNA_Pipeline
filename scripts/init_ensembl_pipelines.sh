@@ -43,7 +43,7 @@ echo "database server host, $DB_HOST"
 
 # Overwrite CONFIG_DIR to the generic location
 
-CONFIG_DIR="/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/config/generic"
+CONFIG_DIR="/nfs/panda/ensemblgenomes/production/ensembl_pipelines_init/git/eg-pipelines/config/generic"
 
 echo "CONFIG_DIR: $CONFIG_DIR"
 
@@ -58,7 +58,7 @@ echo "SPECIES_SHORT_NAME: $SPECIES_SHORT_NAME"
 
 echo ""
 
-PROTEIN_OUTPUT_DIR=/nfs/nobackup/ensemblgenomes/${USER}/protein_pipelines/data/${SPECIES_SHORT_NAME}
+PROTEIN_OUTPUT_DIR=/nfs/nobackup2/ensemblgenomes/${USER}/protein_pipelines/data/${SPECIES_SHORT_NAME}
 
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 #ENS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/69/ensembl

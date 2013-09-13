@@ -36,7 +36,7 @@ echo "database server host, $DB_HOST"
 
 # Overwrite CONFIG_DIR to the generic location
 
-CONFIG_DIR="/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/config/generic"
+CONFIG_DIR="/nfs/panda/ensemblgenomes/production/ensembl_pipelines_init/git/eg-pipelines/config/generic"
 
 echo "CONFIG_DIR: $CONFIG_DIR"
 
