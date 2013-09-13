@@ -41,7 +41,7 @@ input_id_type=SLICE
 [repeatmask]
 db=repbase
 db_file=repbase
-db_version=20120419
+db_version=20130422
 program=RepeatMasker
 program_version=3.3.0
 program_file=/nfs/panda/ensemblgenomes/external/bin/RepeatMasker
