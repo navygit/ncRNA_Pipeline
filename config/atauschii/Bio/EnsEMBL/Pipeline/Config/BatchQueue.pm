@@ -84,7 +84,7 @@ use vars qw(%Config);
 
 			    {
 			     logic_name => 'repeatmask',
-			     batch_size => 20,
+			     batch_size => 100,
 			     resource   => '',
 			     retries    => 2,
 			     sub_args   => '',

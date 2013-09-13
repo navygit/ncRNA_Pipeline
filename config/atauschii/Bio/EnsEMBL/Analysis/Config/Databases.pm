@@ -81,8 +81,8 @@ use vars qw(%Config);
     # predictions, dna- or protein alignments )
 
     REFERENCE_DB => { 
-                      -dbname => 'aegilops_tauschii_core_19_72_1',
-                      -host   => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
+                      -dbname => 'aegilops_tauschii_core_20_73_1',
+                      -host   => 'mysql-eg-prod-1.ebi.ac.uk',
                       -port   => '4238',
                       -user   => 'ensrw',
                       -pass   => 'writ3rp1',
@@ -93,8 +93,8 @@ use vars qw(%Config);
     # formerly GB_GW_DB )
 
     GENEWISE_DB => { 
-                     -dbname => 'aegilops_tauschii_core_19_72_1',
-                     -host   => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
+                     -dbname => 'aegilops_tauschii_core_20_73_1',
+                     -host   => 'mysql-eg-prod-1.ebi.ac.uk',
                      -port   => '4238',
                      -user   => 'ensrw',
                      -pass   => 'writ3rp1',
@@ -104,8 +104,8 @@ use vars qw(%Config);
     # or EST's gene-structtures made by exonerate (Exonerate2Genes.pm)
 
     EXONERATE_DB => {
-                      -dbname => 'aegilops_tauschii_otherfeatures_19_72_1',
-                      -host   => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
+                      -dbname => 'aegilops_tauschii_otherfeatures_20_73_1',
+                      -host   => 'mysql-eg-prod-1.ebi.ac.uk',
                       -port   => '4238',
                       -user   => 'ensrw',
                       -pass   => 'writ3rp1',
@@ -115,8 +115,8 @@ use vars qw(%Config);
     # gene-set ( if there is one )
 
     BLESSED_DB => { 
-                    -dbname => 'aegilops_tauschii_core_19_72_1',
-                    -host   => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
+                    -dbname => 'aegilops_tauschii_core_20_73_1',
+                    -host   => 'mysql-eg-prod-1.ebi.ac.uk',
                     -port   => '4238',
                     -user   => 'ensrw',
                     -pass   => 'writ3rp1',
@@ -126,8 +126,8 @@ use vars qw(%Config);
     # UTR-addtion-run Combine_Genewises_and_E2Gs.pm writes to UTR_DB
 
     UTR_DB => { 
-                -dbname => 'aegilops_tauschii_core_19_72_1',
-                -host   => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
+                -dbname => 'aegilops_tauschii_core_20_73_1',
+                -host   => 'mysql-eg-prod-1.ebi.ac.uk',
                 -port   => '4238',
                 -user   => 'ensrw',
                 -pass   => 'writ3rp1',
@@ -138,8 +138,8 @@ use vars qw(%Config);
     # The Pseudogene-code READS from this database
 
     GENEBUILD_DB => { 
-                      -dbname => 'aegilops_tauschii_core_19_72_1',
-                      -host   => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
+                      -dbname => 'aegilops_tauschii_core_20_73_1',
+                      -host   => 'mysql-eg-prod-1.ebi.ac.uk',
                       -port   => '4238',
                       -user   => 'ensrw',
                       -pass   => 'writ3rp1',
@@ -148,8 +148,8 @@ use vars qw(%Config);
     # PSEUDO_DB holds the pseudo-genes
 
     PSEUDO_DB => { 
-                   -dbname => 'aegilops_tauschii_core_19_72_1',
-                   -host   => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
+                   -dbname => 'aegilops_tauschii_core_20_73_1',
+                   -host   => 'mysql-eg-prod-1.ebi.ac.uk',
                    -port   => '4238',
                    -user   => 'ensrw',
                    -pass   => 'writ3rp1',
@@ -159,8 +159,8 @@ use vars qw(%Config);
     # results to
 
     COALESCER_DB => { 
-                      -dbname => 'aegilops_tauschii_core_19_72_1',
-                      -host   => 'mysql-cluster-eg-prod-1.ebi.ac.uk',
+                      -dbname => 'aegilops_tauschii_core_20_73_1',
+                      -host   => 'mysql-eg-prod-1.ebi.ac.uk',
                       -port   => '4238',
                       -user   => 'ensrw',
                       -pass   => 'writ3rp1',
