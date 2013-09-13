@@ -80,11 +80,11 @@ use vars qw(%Config);
     # predictions, dna- or protein alignments )
 
     REFERENCE_DB => { 
-                      -dbname => 'triticum_aestivum_core_16_69_1',
-                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
-                      -port   => '4207',
+                      -dbname => 'triticum_aestivum_core_20_73_1',
+                      -host   => 'mysql-eg-prod-1.ebi.ac.uk',
+                      -port   => '4238',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3d2',
+                      -pass   => 'writ3rp1',
     },
 
     # The GENEWISE_DB holds genes made by FPC_TargettedGenewise or
@@ -92,44 +92,44 @@ use vars qw(%Config);
     # formerly GB_GW_DB )
 
     GENEWISE_DB => { 
-                     -dbname => 'triticum_aestivum_core_16_69_1',
-                     -host   => 'mysql-eg-devel-2.ebi.ac.uk',
-                     -port   => '4207',
+                     -dbname => 'triticum_aestivum_core_20_73_1',
+                     -host   => 'mysql-eg-prod-1.ebi.ac.uk',
+                     -port   => '4238',
                      -user   => 'ensrw',
-                     -pass   => 'scr1b3d2',
+                     -pass   => 'writ3rp1',
     },
 
     # The EXONERATE_DB ( formerly GB_cDNA ) holds alignments to cDNA's
     # or EST's gene-structtures made by exonerate (Exonerate2Genes.pm)
 
     EXONERATE_DB => {
-                      -dbname => 'triticum_aestivum_otherfeatures_16_69_1',
-                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
-                      -port   => '4207',
+                      -dbname => 'triticum_aestivum_otherfeatures_20_73_1',
+                      -host   => 'mysql-eg-prod-1.ebi.ac.uk',
+                      -port   => '4238',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3d2',
+                      -pass   => 'writ3rp1',
     },
 
     # The BLESSED_DB (formerly GB_BLESSED) holds the 'blessed'
     # gene-set ( if there is one )
 
     BLESSED_DB => { 
-                    -dbname => 'triticum_aestivum_core_16_69_1',
-                    -host   => 'mysql-eg-devel-2.ebi.ac.uk',
-                    -port   => '4207',
+                    -dbname => 'triticum_aestivum_core_20_73_1',
+                    -host   => 'mysql-eg-prod-1.ebi.ac.uk',
+                    -port   => '4238',
                     -user   => 'ensrw',
-                    -pass   => 'scr1b3d2',
+                    -pass   => 'writ3rp1',
     },
 
     # The UTR_DB (formerly GB_COMB) holds genes made by the
     # UTR-addtion-run Combine_Genewises_and_E2Gs.pm writes to UTR_DB
 
     UTR_DB => { 
-                -dbname => 'triticum_aestivum_core_16_69_1',
-                -host   => 'mysql-eg-devel-2.ebi.ac.uk',
-                -port   => '4207',
+                -dbname => 'triticum_aestivum_core_20_73_1',
+                -host   => 'mysql-eg-prod-1.ebi.ac.uk',
+                -port   => '4238',
                 -user   => 'ensrw',
-                -pass   => 'scr1b3d2',
+                -pass   => 'writ3rp1',
     },
 
     # GENEBUILD_DB (formerly GB_FINALDB) is the Database where
@@ -137,32 +137,32 @@ use vars qw(%Config);
     # The Pseudogene-code READS from this database
 
     GENEBUILD_DB => { 
-                      -dbname => 'triticum_aestivum_core_16_69_1',
-                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
-                      -port   => '4207',
+                      -dbname => 'triticum_aestivum_core_20_73_1',
+                      -host   => 'mysql-eg-prod-1.ebi.ac.uk',
+                      -port   => '4238',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3d2',
+                      -pass   => 'writ3rp1',
     },
 
     # PSEUDO_DB holds the pseudo-genes
 
     PSEUDO_DB => { 
-                   -dbname => 'triticum_aestivum_core_16_69_1',
-                   -host   => 'mysql-eg-devel-2.ebi.ac.uk',
-                   -port   => '4207',
+                   -dbname => 'triticum_aestivum_core_20_73_1',
+                   -host   => 'mysql-eg-prod-1.ebi.ac.uk',
+                   -port   => '4238',
                    -user   => 'ensrw',
-                   -pass   => 'scr1b3d2',
+                   -pass   => 'writ3rp1',
     },
 
     # COALESCER_DB is the DB where TranscriptCoalescer writes its
     # results to
 
     COALESCER_DB => { 
-                      -dbname => 'triticum_aestivum_core_16_69_1',
-                      -host   => 'mysql-eg-devel-2.ebi.ac.uk',
-                      -port   => '4207',
+                      -dbname => 'triticum_aestivum_core_20_73_1',
+                      -host   => 'mysql-eg-prod-1.ebi.ac.uk',
+                      -port   => '4238',
                       -user   => 'ensrw',
-                      -pass   => 'scr1b3d2',
+                      -pass   => 'writ3rp1',
     },
 
     # OrthologueEvalutor, FindMissingGenes, etc. write it's results into

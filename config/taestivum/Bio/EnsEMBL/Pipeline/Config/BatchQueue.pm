@@ -48,7 +48,7 @@ use vars qw(%Config);
 	   DEFAULT_BATCH_SIZE  => 5,
 	   DEFAULT_RETRIES     => 0,
 	   DEFAULT_BATCH_QUEUE => 'production-rh6', # put in the queue  of your choice, eg. 'acari'
-	   DEFAULT_OUTPUT_DIR  => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/taestivum',
+	   DEFAULT_OUTPUT_DIR  => '/tmp',
            DEFAULT_RESOURCE    => '',
            DEFAULT_SUB_ARGS => '',
 	   DEFAULT_CLEANUP     => 'n',	
@@ -81,22 +81,37 @@ use vars qw(%Config);
            DEFAULT_LSF_PERL =>'/nfs/panda/ensemblgenomes/perl/perlbrew/perls/5.14.2/bin/perl', # ONLY use ensembl64/bin/perl for memory jobs > 4 gb
 
 	   QUEUE_CONFIG => [
-
-			    {
-			     logic_name => 'repeatmask',
-			     batch_size => 400,
+	                     {
+			     logic_name => 'repeatmask_trep',
+			     batch_size => 200,
 			     resource   => '',
-			     retries    => 3,
+			     retries    => 2,
 			     sub_args   => '',
 			     runner     => '',
 			     queue => 'production-rh6',
-			     output_dir => '/nfs/nobackup/ensemblgenomes/production/dna_pipelines/data/taestivum',
+			     output_dir => '/tmp',
 			     cleanup => 'yes',        
 			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
 			     verbosity => 'INFO',
 			     retry_queue => '',
 			     retry_resource => '',
-			     retry_sub_args => '',
+			     retry_sub_args => '-M 12192 -R "rusage[mem=12192]"',
+			    },
+			    {
+			     logic_name => 'repeatmask',
+			     batch_size => 200,
+			     resource   => '',
+			     retries    => 2,
+			     sub_args   => '',
+			     runner     => '',
+			     queue => 'production-rh6',
+			     output_dir => '/tmp',
+			     cleanup => 'yes',        
+			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '-M 12192 -R "rusage[mem=12192]"',
 			    },
 			    {
 			     logic_name => 'cpg',
