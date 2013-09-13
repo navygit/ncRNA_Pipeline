@@ -82,6 +82,23 @@ use vars qw(%Config);
 
 	   QUEUE_CONFIG => [
 
+	                     {
+			     logic_name => 'repeatmask_trep',
+			     batch_size => 100,
+			     resource   => '',
+			     retries    => 2,
+			     sub_args   => '',
+			     runner     => '',
+			     queue => 'production-rh6',
+			     output_dir => '/tmp/',
+			     cleanup => 'yes',        
+			     runnabledb_path => 'Bio/EnsEMBL/Analysis/RunnableDB',
+			     verbosity => 'INFO',
+			     retry_queue => '',
+			     retry_resource => '',
+			     retry_sub_args => '-M 12192 -R "rusage[mem=12192]"',
+			    },
+
 			    {
 			     logic_name => 'repeatmask',
 			     batch_size => 100,
