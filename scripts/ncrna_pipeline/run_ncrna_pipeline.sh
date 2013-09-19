@@ -18,21 +18,26 @@ LSF_QUEUE="production-rh6"
 # Default is toplevel
 COORD_SYSTEM="toplevel"
 
+# Default is 'CHROMOSOME'
+DUMPING_TYPE="CHROMOSOME"
+# the other option is 'SCAFFOLD'
 
 ###
 
 CLEANUP=1
 
-if [ $# != 2 ]
+if [ $# != 3 ]
 then
     echo "Wrong number of command line arguments"
-    echo "sh run_ncrna_pipeline.sh schizosaccharomyces_pombe_core_10_63_1 division"
+    echo "sh run_ncrna_pipeline.sh schizosaccharomyces_pombe_core_10_63_1 division dumping_type"
     echo "division => [EPl EF EM EB EPr]"
+    echo "dumping_type => [CHROMOSOME SCAFFOLD]"
     exit 1
 fi
 
 DB_NAME=$1
 DIVISION=$2
+DUMPING_TYPE=$3
 
 # specific env variables in a user specific file now
 
@@ -113,12 +118,37 @@ then
     echo "Creating directory ${OUTPUT_DIR}/unmasked_seq"
     mkdir ${OUTPUT_DIR}/unmasked_seq
     
-    # Dump the sequences
+    if [ ${DUMPING_TYPE} == "CHROMOSOME" ] 
+    then
 
-    cd ${ENSEMBL_ANALYSIS_PATH}/scripts/
-    echo "Dumping genomic sequences"
-    echo "perl sequence_dump.pl -dbhost $DB_HOST -dbport $DB_PORT -dbuser $DB_USER -dbpass $DB_PASS -dbname $DB_NAME -coord_system_name $COORD_SYSTEM -output_dir ${OUTPUT_DIR}/unmasked_seq"
-    perl sequence_dump.pl -dbhost $DB_HOST -dbport $DB_PORT -dbuser $DB_USER -dbpass $DB_PASS -dbname $DB_NAME -coord_system_name $COORD_SYSTEM -output_dir ${OUTPUT_DIR}/unmasked_seq
+        # Dump the sequences - one file - one sequence
+
+	cd ${ENSEMBL_ANALYSIS_PATH}/scripts/
+	echo "Dumping genomic sequences"
+
+	echo "perl sequence_dump.pl -dbhost $DB_HOST -dbport $DB_PORT -dbuser $DB_USER -dbpass $DB_PASS -dbname $DB_NAME -coord_system_name $COORD_SYSTEM -output_dir ${OUTPUT_DIR}/unmasked_seq"
+    
+	perl sequence_dump.pl -dbhost $DB_HOST -dbport $DB_PORT -dbuser $DB_USER -dbpass $DB_PASS -dbname $DB_NAME -coord_system_name $COORD_SYSTEM -output_dir ${OUTPUT_DIR}/unmasked_seq
+
+    else
+
+	# Dump all sequences into one file - then split it up, 100 sequences per file
+    
+	echo "perl sequence_dump.pl -dbhost $DB_HOST -dbport $DB_PORT -dbuser $DB_USER -dbpass $DB_PASS -dbname $DB_NAME -coord_system_name $COORD_SYSTEM -output_dir ${OUTPUT_DIR} -onefile"
+
+	perl sequence_dump.pl -dbhost $DB_HOST -dbport $DB_PORT -dbuser $DB_USER -dbpass $DB_PASS -dbname $DB_NAME -coord_system_name $COORD_SYSTEM -output_dir ${OUTPUT_DIR} -onefile
+
+	/nfs/panda/ensemblgenomes/external/bin/FastaToTbl ${OUTPUT_DIR}/toplevel.fa > ${OUTPUT_DIR}/toplevel.tbl
+	cd ${OUTPUT_DIR}/unmasked_seq
+	split -l 100 ../toplevel.tbl
+	for f in `ls`
+	do
+	    echo "mv $f $f".tbl""
+	    mv $f $f".tbl"
+	    /nfs/panda/ensemblgenomes/external/bin/TblToFasta $f".tbl" > $f".fa"
+	    rm -f $f".tbl"
+	done
+    fi
 fi
 
 if [ ! -d "${OUTPUT_DIR}/temp/trnascan" ]
@@ -293,4 +323,3 @@ cat set_genes_as_novel.sql | mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PAS
 echo "perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start ${DIVISION}${SPECIES_PREFIX}00000000000"
 
 perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start "${DIVISION}""${SPECIES_PREFIX}"00000000000
-
