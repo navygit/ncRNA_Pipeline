@@ -23,8 +23,6 @@ COORD_SYSTEM="toplevel"
 
 CLEANUP=1
 
-source /homes/oracle/ora920setup.sh
-
 if [ $# != 2 ]
 then
     echo "Wrong number of command line arguments"
@@ -73,9 +71,9 @@ echo ""
 OUTPUT_DIR=/nfs/nobackup2/ensemblgenomes/${USER}/ncgenes_pipelines/data/${SPECIES_SHORT_NAME}
 LSF_OUTPUT=${OUTPUT_DIR}/lsf_output
 
-NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts/ncrna_pipeline/
-NCGENES_SCRIPTS_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/scripts/ncrna_pipeline/
-NCGENES_SQL_PATH=/nfs/panda/ensemblgenomes/apis/proteomes/ensembl_genomes/EG-pipelines/sql
+NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/eg-pipelines/scripts/ncrna_pipeline
+NCGENES_SCRIPTS_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/eg-pipelines/scripts/ncrna_pipeline
+NCGENES_SQL_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/eg-pipelines/sql
 #ENSEMBL_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/69/ensembl
 ENSEMBL_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/ensembl-head
 ENSEMBL_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
@@ -295,3 +293,4 @@ cat set_genes_as_novel.sql | mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PAS
 echo "perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start ${DIVISION}${SPECIES_PREFIX}00000000000"
 
 perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start "${DIVISION}""${SPECIES_PREFIX}"00000000000
+
