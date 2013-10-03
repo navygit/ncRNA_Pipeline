@@ -323,3 +323,10 @@ cat set_genes_as_novel.sql | mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PAS
 echo "perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start ${DIVISION}${SPECIES_PREFIX}00000000000"
 
 perl ${NCGENES_SCRIPTS_PATH}/generate_ncrna_stable_ids.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -dbname $DB_NAME -start "${DIVISION}""${SPECIES_PREFIX}"00000000000
+
+# Adding RFAM xrefs to RNAmmer rRNA genes
+
+echo "perl ${NCGENES_SCRIPTS_PATH}/add_rfam_xrefs_to_rRNAs.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -species $SPECIES"
+
+perl ${NCGENES_SCRIPTS_PATH}/add_rfam_xrefs_to_rRNAs.pl -dbuser $DB_USER -dbhost $DB_HOST -dbport $DB_PORT -dbpass $DB_PASS -species $SPECIES
+
