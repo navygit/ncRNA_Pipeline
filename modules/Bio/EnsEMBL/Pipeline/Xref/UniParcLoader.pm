@@ -1,6 +1,7 @@
 package Bio::EnsEMBL::Pipeline::Xref::UniParcLoader;
 use Log::Log4perl qw/:easy/;
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
+use Bio::EnsEMBL::Analysis;
 use Digest::MD5;
 
 sub new {
@@ -28,10 +29,11 @@ sub add_upis {
   my $ddba         = $dba->get_DBEntryAdaptor();
   $self->logger()->info("Processing translations for " . $dba->species());
   my @translations = @{$dba->get_TranscriptAdaptor->fetch_all_by_biotype('protein_coding')};
+  my $analysis = $self->get_analysis($dba, 'xrefchecksum');
   for my $transcript (@translations) {
 	$translationN++;
 	$self->logger()->info("Processed $translationN/" . scalar @translations . " translations") if ($translationN % 1000 == 0);
-	$upiN += $self->add_upi($ddba, $transcript->translation());
+	$upiN += $self->add_upi($ddba, $transcript->translation(), $analysis);
   }
   $self->logger()->info("Stored UPIs for $upiN of $translationN translations");
   return;
@@ -66,7 +68,7 @@ sub remove_upis {
 } ## end sub remove_upis
 
 sub add_upi {
-  my ($self, $ddba, $translation) = @_;
+  my ($self, $ddba, $translation, $analysis) = @_;
   my $stored = 0;
   $self->logger()->debug("Finding UPI for " . $translation->stable_id());
   my $hash  = $self->md5_checksum($translation);
@@ -77,12 +79,14 @@ sub add_upi {
   } elsif ($nUpis == 1) {
 	$stored = 1;
 	$self->logger()->debug("UPI $upis[0] found for translation " . $translation->stable_id() . " - storing...");
-	$ddba->store(
-    Bio::EnsEMBL::DBEntry->new(
+  my $dbentry = Bio::EnsEMBL::DBEntry->new(
       -PRIMARY_ID => $upis[0],
       -DISPLAY_ID => $upis[0],
       -DBNAME     => 'UniParc',
-      -INFO_TYPE  => 'CHECKSUM'),
+      -INFO_TYPE  => 'CHECKSUM');
+  $dbentry->analysis($analysis);
+	$ddba->store(
+    $dbentry,
     $translation->dbID(),
     'Translation'
   );
@@ -97,6 +101,24 @@ sub md5_checksum {
   my $digest = Digest::MD5->new();
   $digest->add($sequence->seq());
   return uc($digest->hexdigest());
+}
+
+sub get_analysis {
+  my ($self, $dba, $logic_name) = @_;
+  
+  my $aa = $dba->get_AnalysisAdaptor();
+  my $analysis = $aa->fetch_by_logic_name($logic_name);
+  if (!defined $analysis) {
+    $analysis = Bio::EnsEMBL::Analysis->new(
+      -logic_name => $logic_name,
+    );
+    $aa->store($analysis);
+    $analysis = $aa->fetch_by_logic_name($logic_name);
+    if (!defined $analysis) {
+      $self->logger()->warn("Analysis $logic_name could not be added to the core database.");
+    }
+  }
+  return $analysis;
 }
 
 1;
