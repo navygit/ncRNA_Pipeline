@@ -82,7 +82,7 @@ then
     mkdir -p ${DATA_OUTPUT_DIR}
 fi
 
-ENSEMBL_PATH=${ENSEMBL_ROOT_DIR}/production/xrefs_pipeline/ensembl-head
+ENSEMBL_PATH=${ENSEMBL_ROOT_DIR}/development/arnaud/xrefs_pipeline/ensembl-head
 
 export PERL5LIB=${ENSEMBL_PATH}/modules:${ENSEMBL_ROOT_DIR}/apis/ensembl/pipeline/head/modules:${BIOPERL_PATH}
 
@@ -131,6 +131,6 @@ echo "Mapping step is done"
 
 echo "Deleting object_xref entries related to 'Uniprot_genename'..."
 
-mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $CORE_DB_NAME -e "DELETE FROM object_xref WHERE xref_id IN (SELECT x.xref_id FROM xref x, external_db d WHERE x.external_db_id = d.external_db_id AND d.db_name = 'Uniprot_genename')"
+mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $CORE_DB_NAME -e "DELETE FROM object_xref WHERE xref_id IN (SELECT x.xref_id FROM xref x, external_db d WHERE x.external_db_id = d.external_db_id AND d.db_name IN ('Uniprot_gn','Uniprot_gn_trans_name'))"
 
 echo "xrefs pipeline procedure has completed"
