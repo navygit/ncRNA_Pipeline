@@ -54,13 +54,13 @@ use vars qw( %ProteinAnnotation );
        # if genes are in pipeline database
        GENEDB => undef,
        # most analyses are chunks, so default to chunk dir
-       BASE_DIR      => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/gSpecies/protein_chunks/',
+       BASE_DIR      => '/nfs/nobackup2/ensemblgenomes/production/'.$ENV{'USER'}.'protein_pipelines/data/gSpecies/protein_chunks/',
      },
 
      seg => {
        # only specify DIR where the file with all translations lives - 
        # Seg get's the filename out of table input_id_analysis.input_id 
-       BASE_DIR      => '/nfs/panda/ensemblgenomes/production/protein_pipelines/data/gSpecies/proteins/',
+       BASE_DIR      => '/nfs/nobackup2/ensemblgenomes/'.$ENV{'USER'}.'/protein_pipelines/data/gSpecies/proteins/',
      },
      signalp => {
      },

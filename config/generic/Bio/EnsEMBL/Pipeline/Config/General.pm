@@ -17,9 +17,9 @@ use vars qw(%Config);
   RENAME_ON_RETRY => 1,
 
   # default target_file_directory
-  PIPELINE_TARGET_DIR => '/nfs/nobackup/ensemblgenomes/'.$ENV{USER}.'/dna_pipelines/data/gSpecies',
+  PIPELINE_TARGET_DIR => '/nfs/nobackup2/ensemblgenomes/'.$ENV{USER}.'/dna_pipelines/data/gSpecies',
 
-  ANALYSIS_WORK_DIR => '/nfs/nobackup/ensemblgenomes/'.$ENV{USER}.'/dna_pipelines/data/gSpecies',
+  ANALYSIS_WORK_DIR => '/nfs/nobackup2/ensemblgenomes/'.$ENV{USER}.'/dna_pipelines/data/gSpecies',
 );
 
 
