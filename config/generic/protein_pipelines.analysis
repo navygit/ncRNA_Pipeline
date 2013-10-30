@@ -12,7 +12,6 @@ input_id_type=TRANSLATIONID
 
 [scanprosite]
 db=Prosite_patterns
-db_version=1
 db_file=/nfs/seqdb/production/interpro/data/members/prosite/20.52/prosite.patterns
 parameters=-confirm => /nfs/panda/ensemblgenomes/production/protein_pipelines/databases/confirm.patterns
 module=ProteinAnnotation/PrositeProfile
@@ -52,7 +51,6 @@ input_id_type=CHUNK
 
 [pfscan]
 db=Prosite_profiles
-db_version=1
 db_file=/nfs/panda/ensemblgenomes/production/protein_pipelines/databases/prosite.profiles
 program=pfscan
 program_file=/nfs/seqdb/production/interpro/binaries/64_bit_Linux/pfscan
@@ -63,7 +61,6 @@ input_id_type=CHUNK
 
 [prints]
 db=Prints
-db_version=1
 db_file=/nfs/seqdb/production/interpro/data/iprscan/prints.pval
 program=FingerPRINTScan
 program_file=/nfs/seqdb/production/interpro/binaries/64_bit_Linux/fingerPRINTScan
@@ -76,7 +73,7 @@ input_id_type=CHUNK
 [pfam]
 db=Pfam
 db_file=/ebi/production/interpro/data/members/pfam/23.0/Pfam_ls
-db_version=26.0
+db_version=23.0
 program=hmmpfam
 program_file=/sw/arch/bin/hmmpfam
 parameters=--acc --cut_ga --cpu 1
@@ -96,7 +93,6 @@ input_id_type=PROTEOME
 
 [tigrfam]
 db=TIGRfam
-db_version=1
 db_file=/ebi/sp/pro1/interpro/data/members/tigrfam/9.0/TIGRFAMs_9.0_HMM.LIB
 program=hmmpfam
 program_file=/sw/arch/bin/hmmpfam
@@ -108,7 +104,6 @@ input_id_type=CHUNK
 
 [superfamily]
 db=Superfamily
-db_version=1
 db_file=/nfs/seqdb/production/interpro/data/iprscan/superfamily.hmm
 program=superfamily.pl
 program_file=/nfs/panda/ensemblgenomes/production/protein_pipelines/programs/superfamily.pl
@@ -120,7 +115,6 @@ input_id_type=CHUNK
 
 [smart]
 db=Smart
-db_version=1
 db_file=/nfs/seqdb/production/interpro/data/iprscan/smart.HMMs
 program=hmmpfam
 program_file=/sw/arch/bin/hmmpfam
@@ -132,7 +126,6 @@ input_id_type=CHUNK
 
 [pirsf]
 db=PIRSF
-db_version=1
 db_file=/nfs/seqdb/production/interpro/data/iprscan/sf_hmm;/nfs/seqdb/production/interpro/data/iprscan/sf_hmm_sub
 program=pirsf.pl
 program_file=/nfs/panda/ensemblgenomes/production/protein_pipelines/programs/pirsf.pl
@@ -143,22 +136,20 @@ gff_feature=domain
 input_id_type=CHUNK
 
 [hmmpanther]
-db=PANTHER
+db=Panther
 db_version=1
-gff_source=PANTHER
+gff_source=Panther
 gff_feature=domain
 input_id_type=CHUNK
 
 [gene3d]
 db=Gene3D
-db_version=1
 gff_source=Gene3D
 gff_feature=domain
 input_id_type=CHUNK
 
 [blastprodom]
 db=ProDom
-db_version=1
 gff_source=ProDom
 gff_feature=domain
 input_id_type=CHUNK
