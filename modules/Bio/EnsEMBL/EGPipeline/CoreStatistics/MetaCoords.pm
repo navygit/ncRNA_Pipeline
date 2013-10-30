@@ -1,0 +1,102 @@
+
+=pod
+
+=head1 NAME
+
+Bio::EnsEMBL::EGPipeline::CoreStatistics::MetaCoords
+
+=head1 DESCRIPTION
+
+Update the meta_coord table to represent the database contents.
+Functionality extracted from ensembl/misc-scripts/meta_coord/meta_coord.pl.
+
+=head1 Author
+
+James Allen
+
+=cut
+
+package Bio::EnsEMBL::EGPipeline::CoreStatistics::MetaCoords;
+
+use strict;
+use warnings;
+
+use base qw/Bio::EnsEMBL::Production::Pipeline::Base/;
+use Bio::EnsEMBL::Utils::Exception qw(throw);
+
+sub run {
+  my ($self) = @_;
+  my $backup_dir = $self->param('meta_coord_dir');
+  
+  my @table_names = qw(
+    assembly_exception
+    density_feature
+    ditag_feature
+    dna_align_feature
+    exon
+    gene
+    intron_supporting_evidence
+    karyotype
+    marker_feature
+    misc_feature
+    prediction_exon
+    prediction_transcript
+    protein_align_feature
+    repeat_feature
+    simple_feature
+    splicing_event
+    transcript
+  );
+
+  my $dba = $self->get_DBAdaptor;
+  my $dbc = $dba->dbc;
+  my $species_id = $dba->species_id;
+  
+  if ($backup_dir) {
+    throw "Backup directory '$backup_dir' does not exist." unless -e $backup_dir;
+    $self->backup_table($dbc, $species_id, $backup_dir);
+  }
+  
+	foreach my $table_name (@table_names) {
+		$dbc->do(
+      "DELETE mc.* ".
+      "FROM meta_coord mc ".
+      "INNER JOIN coord_system cs USING (coord_system_id) ".
+      "WHERE mc.table_name = '$table_name' AND cs.species_id = $species_id"
+    );
+
+		$dbc->do(
+			"INSERT INTO meta_coord ".
+        "SELECT '$table_name', s.coord_system_id, ".
+			  "MAX( t.seq_region_end - t.seq_region_start + 1 ) ".
+			  "FROM $table_name t ".
+        "INNER JOIN seq_region s USING (seq_region_id) ".
+        "INNER JOIN coord_system c USING (coord_system_id) ".
+        "WHERE c.species_id = $species_id ".
+			  "GROUP BY s.coord_system_id"
+    );
+	}
+}
+
+sub backup_table {
+  my ($self, $dbc, $species_id, $backup_dir) = @_;
+  
+	my $file = "$backup_dir/".$dbc->dbname."_$species_id.meta_coord.backup";
+	my $sys_call = sprintf(
+    "mysql ".
+		"--host=%s ".
+		"--port=%d ".
+		"--user=%s ".
+		"--pass='%s' ".
+		"--database=%s ".
+		"--skip-column-names ".
+		"--execute='SELECT * FROM meta_coord'".
+		" > $file",
+    $dbc->host, $dbc->port, $dbc->username, $dbc->password, $dbc->dbname
+  );
+	unless (system($sys_call) == 0) {
+    throw "Failed to back up meta_coord table to $file.";
+	}
+}
+
+1;
