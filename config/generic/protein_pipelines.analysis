@@ -136,9 +136,9 @@ gff_feature=domain
 input_id_type=CHUNK
 
 [hmmpanther]
-db=Panther
-db_version=1
-gff_source=Panther
+db=PANTHER
+db_version=8.1
+gff_source=PANTHER
 gff_feature=domain
 input_id_type=CHUNK
 
