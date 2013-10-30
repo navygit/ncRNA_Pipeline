@@ -5,7 +5,7 @@ use strict;
 use Bio::EnsEMBL::Utils::CliHelper;
 use Log::Log4perl qw/:easy/;
 use Pod::Usage;
-use Bio::EnsEMBL::Pipeline::Xref::UniParcLoader;
+use Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
@@ -25,7 +25,7 @@ my $logger = get_logger();
 $logger->info("Connecting to UniParc database");
 my ($uni_dba) = @{$cli_helper->get_dbas_for_opts($opts, 1, 'uniparc')};
 
-my $loader = Bio::EnsEMBL::Pipeline::Xref::UniParcLoader->new(-UNIPARC_DBA => $uni_dba);
+my $loader = Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader->new(-UNIPARC_DBA => $uni_dba);
 
 $logger->info("Connecting to core database(s)");
 for my $core_dba_details (@{$cli_helper->get_dba_args_for_opts($opts)}) {
