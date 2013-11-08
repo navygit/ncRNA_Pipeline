@@ -1,4 +1,4 @@
-package Bio::EnsEMBL::Pipeline::Xref::UniParcLoader;
+package Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader;
 use Log::Log4perl qw/:easy/;
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::Analysis;
