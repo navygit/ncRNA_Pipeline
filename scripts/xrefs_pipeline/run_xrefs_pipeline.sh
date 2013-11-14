@@ -82,7 +82,7 @@ then
     mkdir -p ${DATA_OUTPUT_DIR}
 fi
 
-ENSEMBL_PATH=${ENSEMBL_ROOT_DIR}/development/arnaud/xrefs_pipeline/ensembl-head
+ENSEMBL_PATH=${ENSEMBL_ROOT_DIR}/development/${USER}/xrefs_pipeline/ensembl-head
 
 export PERL5LIB=${ENSEMBL_PATH}/modules:${ENSEMBL_ROOT_DIR}/apis/ensembl/pipeline/head/modules:${BIOPERL_PATH}
 
