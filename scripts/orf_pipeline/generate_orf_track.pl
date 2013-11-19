@@ -34,7 +34,7 @@ my %h     = qw(ATG 1 TAA 2 TAG 2 TGA 2);
 my $slice_start;my $slice_end;
 my $sequence;my $slice;
 
-#foreach (qw(IV)){
+#foreach (qw(I)){
 foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito)){
     $slice       = $sa->fetch_by_region('chromosome',$_);
     $slice_start = $slice->start;
@@ -61,10 +61,9 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito)){
 
       while ($sequence =~/(...)/g){
          if($h{$1}){
-            $position = pos($sequence)-3+1 if($frame >3);     
+            $position = pos($sequence)-3+1 if($frame >3);# Note position is on revcom sequence     
             $position = pos($sequence)-3-($frame-1) if($frame <4);     
-            push @{$codons->{$frame}->{$h{$1}}},(pos($sequence)-3+1) if ($frame >3); # Note position is on revcom sequence
-            push @{$codons->{$frame}->{$h{$1}}},(pos($sequence)-3-($frame-1)) if ($frame <4);
+            push @{$codons->{$frame}->{$h{$1}}}, $position; 
          } # if($h{$1}){
      } # while ($equence=~/(...)/g){
 
@@ -86,7 +85,7 @@ sub get_orf {
 
     my @start_pos_sort = sort {$a <=> $b} @$s_pos; # ascending
     my @end_pos_sort   = sort {$a <=> $b} @$e_pos; # ascending
-    
+
     my $analysis       = Bio::EnsEMBL::Analysis->new(
             	           -logic_name   => 'orf_track',
             	           -program      => 'track_ORF.pl',
@@ -125,15 +124,18 @@ sub get_orf {
           my $flag =0;
 
           foreach my $sp (@start_pos_sort){
-            if($end_pos > $sp && $start_pos <= $sp){ 
+
+            if($end_pos > $sp && $start_pos <= $sp+2){ 
    	       my $s_id  = 'NULL';
 
 	       while (my $gene = shift @{$sa->fetch_by_region('chromosome',$chr,$sp+2,$sp+3)->get_all_Genes()} ) {
         	     $s_id    = $gene->stable_id();
 	       }   
 	       $flag      =1 if ($s_id !~/NULL/) ;
-               $start_pos = $sp+3 if($frame==1 || $frame==3);
+               $start_pos = $sp+1 if($frame==1);
                $start_pos = $sp+2 if($frame==2);
+	       $start_pos = $sp+3 if($frame==3);
+               #$start_pos = $sp+3 if($frame==1 || $frame==3);
       	       $pointer   = $sp;
                $len       = $ep-$pointer;
                $len       = $ep-$pointer+1 if($frame==3);
@@ -189,10 +191,10 @@ sub get_orf {
              # Note $sp is on revcom sequence, need to translate
 	     my $sp_2 = $slice_end-$sp;
 
-             if($end_pos > $sp_2 && $start_pos < $sp_2){
+             if($end_pos >= $sp_2-2 && $start_pos < $sp_2){
                 my $s_id  = 'NULL';
 
-	        while (my $gene = shift @{$sa->fetch_by_region('chromosome',$chr,$sp+2,$sp+3)->get_all_Genes()} ) {
+	        while (my $gene = shift @{$sa->fetch_by_region('chromosome',$chr,$sp_2-2,$sp_2-3)->get_all_Genes()} ) {
                      $s_id    = $gene->stable_id();
                 }   
                $flag    =1 if ($s_id !~/NULL/) ;
