@@ -3,6 +3,9 @@
 
 Description:  
 
+
+perl generate_orf_track.pl saccharomyces_cerevisiae
+
 =cut
 use strict;
 use warnings;
@@ -22,8 +25,9 @@ $registry->load_registry_from_db(
      -port    => '4126'
 );
 
-my $sfa   = $registry->get_adaptor('saccharomyces_cerevisiae','Core','SimpleFeature');
-my $sa    = $registry->get_adaptor('saccharomyces_cerevisiae','Core','Slice');
+my $species = $ARGV[0];
+my $sfa     = $registry->get_adaptor($species,'Core','SimpleFeature');
+my $sa      = $registry->get_adaptor($species,'Core','Slice');
 my $min   ='25';# threshold for minimum length of translated peptides
 my %h     = qw(ATG 1 TAA 2 TAG 2 TGA 2);
 
@@ -39,7 +43,7 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito)){
     my $chr      = $_;
     my $codons;
    
-     my $seqobj   = Bio::PrimarySeq->new( 
+    my $seqobj   = Bio::PrimarySeq->new( 
 					  -seq => $seq,
      			                  -id       => 'orf_sequence',
  				          -alphabet => 'dna'
@@ -72,7 +76,7 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito)){
         $sfa->store(@$features) if defined(@$features);
       }
    } #foreach my $frame (1..6){
-} #foreach (qw(II)){
+} #foreach (qw(...)){
 
 ##############
 # SUBROUTINES
@@ -102,30 +106,31 @@ sub get_orf {
           my $offset = 1;
           $len       = $ep-$pointer;
           $len       = $ep-$pointer+1 if($frame==3);
-          # Getting visualization positions
-          # For the first stop codon
-          $start_pos = $slice_start           if($count==0);
-          $start_pos = $slice_start+$offset   if($count==0 && $frame==2);
-          $start_pos = $slice_start+$offset+1 if($count==0 && $frame==3);
+          # Getting web positions
+          #  For the first stop codon
+          $start_pos = $slice_start                 if($count==0);
+          $start_pos = $slice_start+$offset         if($count==0 && $frame==2);
+          $start_pos = $slice_start+$offset+1       if($count==0 && $frame==3);
           $end_pos   = $slice_start+$len-$offset    if($count==0);
           $end_pos   = $slice_start+$len-$offset+2  if($count==0 && $frame==2);
           $end_pos   = $slice_start+$len-$offset+3  if($count==0 && $frame==3);
-          # For subsequent stop codon(s)
-          $start_pos = $slice_start+$pointer   if($count>0);
+          #  For subsequent stop codon(s)
+          $start_pos = $slice_start+$pointer              if($count>0);
           #$start_pos = $slice_start+$pointer+1 if($count>0 && $frame==2);
-          $start_pos = $slice_start+$pointer+2 if($count>0 && $frame==3);
+          $start_pos = $slice_start+$pointer+2            if($count>0 && $frame==3);
 	  $end_pos   = $slice_start+$pointer+$len-$offset if($count>0);
           $end_pos   = $slice_start+$pointer+$len         if($count>0 && $frame==2 || $count>0 && $frame==3);
+
           # To move starting point to ATG<=>M if a genes is found in the slice
           my $flag =0;
 
           foreach my $sp (@start_pos_sort){
             if($end_pos > $sp && $start_pos <= $sp){ 
-
    	       my $s_id  = 'NULL';
+
 	       while (my $gene = shift @{$sa->fetch_by_region('chromosome',$chr,$sp+2,$sp+3)->get_all_Genes()} ) {
         	     $s_id    = $gene->stable_id();
-	       } # while ( my $gene = shift @{$genes} ) {  
+	       }   
 	       $flag      =1 if ($s_id !~/NULL/) ;
                $start_pos = $sp+3 if($frame==1 || $frame==3);
                $start_pos = $sp+2 if($frame==2);
@@ -143,12 +148,12 @@ sub get_orf {
          
          # For sequence starting with a stop codon  
          while($orfseq =~/^(TAA|TAG|TGA)(.+)/){
-               $orfseq = $2;
+               $orfseq    = $2;
                $start_pos = $start_pos+3;
          }
 
-         my $orfseq_len     = length($orfseq);
-         my $prot_len       = $orfseq_len/3;
+         my $orfseq_len   = length($orfseq);
+         my $prot_len     = $orfseq_len/3;
  
          $feature = Bio::EnsEMBL::SimpleFeature->new(
                      -start         => $start_pos,
@@ -167,16 +172,16 @@ sub get_orf {
           my $offset  = 1 ;
           $len        = $ep-$pointer-1;
           # Getting visualization positions        
-          # For the first stop codon
-          $start_pos  = $slice_end-$len+$offset   if($count==0);
-          $start_pos  = $slice_end-$len+$offset-1 if($count==0 && $frame==5);
-          $start_pos  = $slice_end-$len+$offset-2 if($count==0 && $frame==6);
-          $end_pos    = $slice_end           if($count==0);
-          $end_pos    = $slice_end-$offset   if($count==0 && $frame==5);
-          $end_pos    = $slice_end-$offset-1 if($count==0 && $frame==6);
-          # For subsequent stop codon(s)     
+          #  For the first stop codon
+          $start_pos  = $slice_end-$len+$offset    if($count==0);
+          $start_pos  = $slice_end-$len+$offset-1  if($count==0 && $frame==5);
+          $start_pos  = $slice_end-$len+$offset-2  if($count==0 && $frame==6);
+          $end_pos    = $slice_end                 if($count==0);
+          $end_pos    = $slice_end-$offset         if($count==0 && $frame==5);
+          $end_pos    = $slice_end-$offset-1       if($count==0 && $frame==6);
+          #  For subsequent stop codon(s)     
           $start_pos  = $slice_end-$pointer-$len+$offset if($count>0);         
-          $end_pos    = $slice_end-$pointer if($count>0);               
+          $end_pos    = $slice_end-$pointer              if($count>0);               
           # To move starting point to ATG<=>M if gene is found in the slice
           my $flag =0;
           
@@ -189,7 +194,7 @@ sub get_orf {
 
 	        while (my $gene = shift @{$sa->fetch_by_region('chromosome',$chr,$sp+2,$sp+3)->get_all_Genes()} ) {
                      $s_id    = $gene->stable_id();
-                } # while ( my $gene = shift @{$genes} ) {  
+                }   
                $flag    =1 if ($s_id !~/NULL/) ;
                $pointer = $pointer+$end_pos-$sp_2-1;
                $end_pos = $sp_2+1;
@@ -197,6 +202,7 @@ sub get_orf {
              } # if($end_pos > $sp && $start_pos < $sp){
              last if($flag==1);
          } #foreach my $sp (@start_pos_sort){
+
          # Getting translated sequence for orf            
          my $orfseq        = substr($sequence,$pointer,$len);
 
