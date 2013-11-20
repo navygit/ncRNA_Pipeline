@@ -28,14 +28,14 @@ $registry->load_registry_from_db(
 my $species = $ARGV[0];
 my $sfa     = $registry->get_adaptor($species,'Core','SimpleFeature');
 my $sa      = $registry->get_adaptor($species,'Core','Slice');
-my $min   ='25';# threshold for minimum length of translated peptides
+my $min   ='20';# threshold for minimum length of translated peptides
 my %h     = qw(ATG 1 TAA 2 TAG 2 TGA 2);
 
 my $slice_start;my $slice_end;
 my $sequence;my $slice;
 
-#foreach (qw(I)){
-foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito)){
+foreach (qw(II)){
+#foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito)){
     $slice       = $sa->fetch_by_region('chromosome',$_);
     $slice_start = $slice->start;
     $slice_end   = $slice->end;
@@ -86,6 +86,11 @@ sub get_orf {
     my @start_pos_sort = sort {$a <=> $b} @$s_pos; # ascending
     my @end_pos_sort   = sort {$a <=> $b} @$e_pos; # ascending
 
+#my @test = grep {$_ > 125120} @start_pos_sort;
+#my $test = join "\n", @test;
+#print "$test";
+
+
     my $analysis       = Bio::EnsEMBL::Analysis->new(
             	           -logic_name   => 'orf_track',
             	           -program      => 'track_ORF.pl',
@@ -128,8 +133,10 @@ sub get_orf {
             if($end_pos > $sp && $start_pos <= $sp+2){ 
    	       my $s_id  = 'NULL';
 
+print " BEFORE $start_pos $end_pos $sp\n" if ($end_pos==126116);
+
 	       while (my $gene = shift @{$sa->fetch_by_region('chromosome',$chr,$sp+2,$sp+3)->get_all_Genes()} ) {
-        	     $s_id    = $gene->stable_id();
+        	     $s_id    = $gene->stable_id() if($gene->strand==1);
 	       }   
 	       $flag      =1 if ($s_id !~/NULL/) ;
                $start_pos = $sp+1 if($frame==1);
@@ -142,6 +149,8 @@ sub get_orf {
            } # if($end_pos > $sp && $start_pos <= $sp){
          last if($flag==1); 
          } #foreach my $sp (@start_pos_sort){
+
+print " AFTER $start_pos $end_pos\n" if ($end_pos==126116);
 
          # Getting translated sequence for orf 
          my $orfseq = substr($sequence,$pointer,$len);
@@ -195,7 +204,7 @@ sub get_orf {
                 my $s_id  = 'NULL';
 
 	        while (my $gene = shift @{$sa->fetch_by_region('chromosome',$chr,$sp_2-2,$sp_2-3)->get_all_Genes()} ) {
-                     $s_id    = $gene->stable_id();
+                     $s_id    = $gene->stable_id if($gene->strand==-1);
                 }   
                $flag    =1 if ($s_id !~/NULL/) ;
                $pointer = $pointer+$end_pos-$sp_2-1;
