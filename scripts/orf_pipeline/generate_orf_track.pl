@@ -28,13 +28,14 @@ $registry->load_registry_from_db(
 my $species = $ARGV[0];
 my $sfa     = $registry->get_adaptor($species,'Core','SimpleFeature');
 my $sa      = $registry->get_adaptor($species,'Core','Slice');
-my $min   ='20';# threshold for minimum length of translated peptides
+# threshold for minimum length of translated peptides, need to be at least length of the smallest exon, else it will not display 
+my $min   ='3'; 
 my %h     = qw(ATG 1 TAA 2 TAG 2 TGA 2);
 
 my $slice_start;my $slice_end;
 my $sequence;my $slice;
 
-foreach (qw(II)){
+foreach (qw(I II)){
 #foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito)){
     $slice       = $sa->fetch_by_region('chromosome',$_);
     $slice_start = $slice->start;
@@ -86,10 +87,11 @@ sub get_orf {
     my @start_pos_sort = sort {$a <=> $b} @$s_pos; # ascending
     my @end_pos_sort   = sort {$a <=> $b} @$e_pos; # ascending
 
-#my @test = grep {$_ > 125120} @start_pos_sort;
+#if($frame==3){
+#my @test = grep {$_ > 90738} @start_pos_sort;
 #my $test = join "\n", @test;
 #print "$test";
-
+#}
 
     my $analysis       = Bio::EnsEMBL::Analysis->new(
             	           -logic_name   => 'orf_track',
@@ -130,10 +132,10 @@ sub get_orf {
 
           foreach my $sp (@start_pos_sort){
 
-            if($end_pos > $sp && $start_pos <= $sp+2){ 
+            if($end_pos > $sp && $start_pos <= $sp+3){ 
    	       my $s_id  = 'NULL';
 
-print " BEFORE $start_pos $end_pos $sp\n" if ($end_pos==126116);
+#print " BEFORE $start_pos $end_pos $sp\n" if ($end_pos==92027);
 
 	       while (my $gene = shift @{$sa->fetch_by_region('chromosome',$chr,$sp+2,$sp+3)->get_all_Genes()} ) {
         	     $s_id    = $gene->stable_id() if($gene->strand==1);
@@ -150,7 +152,7 @@ print " BEFORE $start_pos $end_pos $sp\n" if ($end_pos==126116);
          last if($flag==1); 
          } #foreach my $sp (@start_pos_sort){
 
-print " AFTER $start_pos $end_pos\n" if ($end_pos==126116);
+#print " AFTER $start_pos $end_pos\n" if ($end_pos==92027);
 
          # Getting translated sequence for orf 
          my $orfseq = substr($sequence,$pointer,$len);
