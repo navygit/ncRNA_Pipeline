@@ -30,7 +30,7 @@ my $species = $ARGV[0];
 my $sfa     = $registry->get_adaptor($species,'Core','SimpleFeature');
 my $sa      = $registry->get_adaptor($species,'Core','Slice');
 # threshold for minimum length of translated peptides, need to be at least length of the smallest exon, else it will not display 
-my $min     ='1'; 
+my $min     ='2'; 
 my %h       = qw(TAA 2 TAG 2 TGA 2);
 my $slice_start;my $slice_end;
 my $sequence;my $slice;
@@ -59,6 +59,7 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
       $seqobj->throw("die in _init, FindORF works only on DNA sequences\n");
    }
 
+  # foreach my $frame (5){
    foreach my $frame (1..6){
       $sequence   = uc $seqobj->revcom()->seq() if($frame > 3);
       $sequence   = uc $seqobj->seq() if($frame < 4);
@@ -98,6 +99,7 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
              my $orfseq;
              $orfseq = substr($sequence,$sp,$ep-$sp+1) if($strand==1);
              $orfseq = substr($sequence,$slice_end-$sp,$ep-$sp+1) if($strand==-1);
+             my $len    = length($orfseq)/3;
 
              my $feature = Bio::EnsEMBL::SimpleFeature->new(
                       -start         => $sp,
@@ -107,9 +109,10 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
                       -analysis      => $analysis,
                       -display_label => 'FRAME '.$frame,
                    );
-            push @features,$feature if(length($orfseq)/3 > $min);
+            #push @features,$feature;
+            push @features,$feature if($len > $min);
             $start_pos = $ep+3 if ($strand==1);
-            $start_pos = ($slice_end-$sp)-3 if ($strand==-1);
+            $start_pos = ($slice_end-$sp)+3 if ($strand==-1);
           } # if($h{$1})
      } # while ($equence=~/(...)/g){
   # store once for each frame 
