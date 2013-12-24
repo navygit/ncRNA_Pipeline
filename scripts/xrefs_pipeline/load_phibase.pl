@@ -8,6 +8,7 @@ use Bio::EnsEMBL::DBEntry;
 use Bio::EnsEMBL::OntologyXref;
 use Data::Dumper;
 use Bio::EnsEMBL::LookUp;
+use Bio::EnsEMBL::Utils::CliHelper;
 use Carp;
 use Log::Log4perl qw(:easy);
 
@@ -16,8 +17,9 @@ my $logger = get_logger();
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 
 # get the basic options for connecting to a database server
-my $optsd =
-  [@{$cli_helper->get_dba_opts()}, @{$cli_helper->get_dba_opts('ont')}];
+my $optsd = [@{$cli_helper->get_dba_opts()},
+			 @{$cli_helper->get_dba_opts('ont')},
+			 @{$cli_helper->get_dba_opts('tax')}];
 
 push(@{$optsd}, "file:s");
 push(@{$optsd}, "verbose");
@@ -33,7 +35,7 @@ else {
 
 Bio::EnsEMBL::LookUp->register_all_dbs(
 							$opts->{host}, $opts->{port}, $opts->{user},
-							$opts->{pass}, $opts->{dbpattern});
+							$opts->{pass}, $opts->{pattern});
 my $lookup = Bio::EnsEMBL::LookUp->new();
 
 my ($ont_dba_details) =
@@ -59,23 +61,6 @@ my $cond_root_term = $ont_adaptor->fetch_by_accession("PHI:002");
 
 my @cond_terms =
   @{$ont_adaptor->fetch_all_by_ancestor_term($cond_root_term)};
-
-#my @core_phibase_dbentries =
-#  @{$db_entry_adaptor->fetch_all_by_source("PHI")};
-#my %core_phibase_ids;
-#my %core_phibase_ids_to_dbentries;
-#my %new_phibase_ids_to_dbentries;
-#my %new_phibase_ids_to_translations;
-#my $to_add = 0;
-#
-#for my $phi_dbentry (@core_phibase_dbentries) {
-#  $core_phibase_ids{$phi_dbentry->display_id()}++;
-#  $core_phibase_ids_to_dbentries{$phi_dbentry->display_id()} =
-#	$phi_dbentry;
-#  print $phi_dbentry->display_id(), ", ";
-#}
-#
-#print "\n\n";
 
 #TODO replace with taxonomy adaptor call
 my %ncbi_host = ('wheat'                  => '4565',
@@ -127,20 +112,20 @@ sub find_translation {
   my @transcripts_ids =
 	$dbentry_adaptor->list_transcript_ids_by_extids($acc);
   my @gene_ids = $dbentry_adaptor->list_gene_ids_by_extids($acc);
-  print join(", ", @transcripts_ids);
-  print " - ";
+#  print join(", ", @transcripts_ids);
+#  print " - ";
 
   if (scalar(@gene_ids) == 0) {
 	@gene_ids = $dbentry_adaptor->list_gene_ids_by_extids($locus);
-	print join(", ", @gene_ids);
+#	print join(", ", @gene_ids);
   }
-  print join(", ", @gene_ids);
-  print " - ";
+#  print join(", ", @gene_ids);
+#  print " - ";
   if (scalar(@gene_ids) == 0) {
 	@gene_ids = $dbentry_adaptor->list_gene_ids_by_extids($gene_name);
-	print join(", ", @gene_ids);
+#	print join(", ", @gene_ids);
   }
-  print "\n\n";
+#  print "\n\n";
   my $translation_adaptor = $dba->get_adaptor("Translation");
   my $transcript_adaptor  = $dba->get_adaptor("Transcript");
   my $gene_adaptor        = $dba->get_adaptor("Gene");
@@ -170,7 +155,7 @@ my %phenotype_voc;
 my $line = <$INP>;
 
 while (my $line = <$INP>) {
-  chomp;
+  chomp $line;
   my ($phibase_id,     $db_name,        $acc,
 	  $locus,          $gene_name,      $species_name,
 	  $tax_id,         $phenotype_name, $literature_db,
@@ -182,8 +167,11 @@ while (my $line = <$INP>) {
   $locus     = rm_sp($locus);
   $gene_name = rm_sp($gene_name);
   # get dbadaptor based on tax ID
-
-  my $dbas = $lookup->get_all_by_taxon_id();
+	$logger->debug(
+"Processing entry: $phibase_id annotation on $db_name:$acc (gene $locus $gene_name) from $species_name ($tax_id)"
+	);
+  $logger->debug("Getting DBAs for tax_id " . $tax_id);
+  my $dbas = $lookup->get_all_by_parent_taxon_id($tax_id, 1);
 
   if (!defined $dbas || scalar(@$dbas) == 0) {
 	$logger->warn("No DBA for for taxon $tax_id (name $species_name)");
@@ -191,18 +179,8 @@ while (my $line = <$INP>) {
   }
 
   for my $dba (@{$dbas}) {
-
+	$logger->debug("Found DBA for species ".$dba->species());
 	my $dbentry_adaptor = $dba->get_DBEntryAdaptor();
-
-	#if ( exists $core_phibase_ids_to_dbentries{$fields[0]} ) {
-	#  next;
-	#}
-	print "Found a PHI-base entry for this species:\n";
-	print 'PHI_ID: ',      $phibase_id, "\n";
-	print 'DATABASE_ID: ', $db_name,    "\n";
-	print 'Accession:',    $acc,        "-\n";
-	print 'Locus ID:',     $locus,      "-\n";
-	print 'Gene_name:',    $gene_name,  "-\n";
 	my @transcripts_ids;
 	my @gene_ids;
 	my $phi_dbentry =
@@ -221,50 +199,52 @@ while (my $line = <$INP>) {
 	my $translation = find_translation($dba, $acc, $locus, $gene_name);
 
 	if (!defined $translation) {
-	  print "Didn't find any translation valid for this annotation\n\n";
+	  $logger->warn("Failed to find translation for $db_name:$acc (gene $locus $gene_name) from $species_name ($tax_id)");
 	  next;
 	}
-	print "Found a translation id to store this xref: ";
-	print $translation->dbID();
-	print "\n";
-	print
-"Proceeding with the the creation of the DBEntry and associated xrefs:\n";
-	#	print $fields[7], " - ", $fields[9], " - ", $fields[12], " - ",
-	#	  $fields[13], "\n";
+	$logger->debug("Found translation " .$translation->stable_id()."/".
+				   $translation->dbID());
 
-	#print Dumper($phi_dbentry);
 	my @phibase_dbentries;
 	my @phibase_types;
-	#deal with the host
-	#print Dumper(@found_hosts);
+	$logger->debug("Processing host(s) $host_names");
 	for my $host_name (split(/;/, $host_names)) {
 	  my $host_tax_id = $ncbi_host{lc $host_name};
 	  if (defined $host_tax_id) {
-		print
-		  "found host term in the file that is on known hosts list: ",
-		  $host_name, "\n";
-		my $host_db_entry = Bio::EnsEMBL::DBEntry->new(
-				 -PRIMARY_ID  => $ncbi_host{$host_name},
-				 -DBNAME      => 'NCBI_TAXONOMY',
-				 -VERSION     => 4,
-				 -DISPLAY_ID  => $host_name,
-				 -DESCRIPTION => $host_name,
-				 -INFO_TYPE   => 'DIRECT',
-				 -RELEASE     => 1);
+		$logger->debug(
+		   "found host term in the file that is on known hosts list: " .
+			 $host_name);
+		my $host_db_entry =
+		  Bio::EnsEMBL::DBEntry->new(
+								  -PRIMARY_ID => $ncbi_host{$host_name},
+								  -DBNAME     => 'NCBI_TAXONOMY',
+								  -VERSION    => 4,
+								  -DISPLAY_ID => $host_name,
+								  -DESCRIPTION => $host_name,
+								  -INFO_TYPE   => 'DIRECT',
+								  -RELEASE     => 1);
 		push @phibase_dbentries, $host_db_entry;
 		push @phibase_types,     'host';
 	  }
 	}
 
 	my $found_phenotype;
+	$logger->debug("Processing phenotype '$phenotype_name'");
 	for my $phenotype (@pheno_terms) {
 	  my $ont_phenotype_name = lc(rm_sp($phenotype->name()));
-	  if ($phenotype_name =~ /$ont_phenotype_name/) {
-		print "found phenotype term in the file that is on ont: ",
-		  $phenotype->accession(), " - ", $phenotype->name(), "\n";
+#$logger->debug("Checking phenotype ".$phenotype_name." vs ".$ont_phenotype_name);
+	  if ($phenotype_name =~ /$ont_phenotype_name/i) {
+		$logger->debug(
+					"Mapped '$phenotype_name' to term ".
+					$phenotype->accession());
 		$found_phenotype = $phenotype;
 		next;
 	  }
+	}
+
+	if (!defined $found_phenotype) {
+	  $logger->warn("Could not find phenotype '$phenotype_name'");
+	  next;
 	}
 	my $phenotype_db_entry =
 	  Bio::EnsEMBL::DBEntry->new(
@@ -283,6 +263,7 @@ while (my $line = <$INP>) {
 	my %fix_cond_divergences = (
 							'complementation' => 'gene complementation',
 							'mutation'        => 'gene mutation',);
+	$logger->debug("Processing condition(s) '$condition_names'");
 	for
 	  my $condition_full_name (split(/;/, lc(rm_sp($condition_names))))
 	{
@@ -293,8 +274,8 @@ while (my $line = <$INP>) {
 	  for my $ont_cond (@cond_terms) {
 		my $ont_cond_name = lc($ont_cond->name());
 		if ($condition_last_name =~ /$ont_cond_name/) {
-		  print "found condition term in the file that is on ont: ",
-			$ont_cond->accession(), "\t", $ont_cond->name(), "\n";
+			$logger->debug("Mapped condition to ".
+			$ont_cond->accession(). "/". $ont_cond->name());
 
 		  my $condition_db_entry =
 			Bio::EnsEMBL::DBEntry->new(
@@ -314,9 +295,10 @@ while (my $line = <$INP>) {
 	} ## end for my $condition_full_name...
 
 	#deal with the publications
+	$logger->debug("Processing literature ref(s) '$literature_ids'");
 	for my $publication (split(/;/, $literature_ids)) {
-	  print "found pubmed id in the file: ", lc(rm_sp($publication)),
-		"\n";
+	  $logger->debug(
+			 "Handling PMID " . lc(rm_sp($publication)));
 	  my $pubmed_db_entry =
 		Bio::EnsEMBL::DBEntry->new(
 								 -PRIMARY_ID => lc(rm_sp($publication)),
@@ -337,7 +319,7 @@ while (my $line = <$INP>) {
 	  }
 	}
 	if ($opts->{write}) {
-	  $logger->debug("Skipping storing " . $phi_dbentry->display_id());
+	  $logger->debug("Storing " . $phi_dbentry->display_id());
 	  $dbentry_adaptor->store($phi_dbentry);
 	}
 	else {
