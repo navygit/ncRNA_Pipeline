@@ -112,20 +112,20 @@ sub find_translation {
   my @transcripts_ids =
 	$dbentry_adaptor->list_transcript_ids_by_extids($acc);
   my @gene_ids = $dbentry_adaptor->list_gene_ids_by_extids($acc);
-#  print join(", ", @transcripts_ids);
-#  print " - ";
+  #  print join(", ", @transcripts_ids);
+  #  print " - ";
 
   if (scalar(@gene_ids) == 0) {
 	@gene_ids = $dbentry_adaptor->list_gene_ids_by_extids($locus);
-#	print join(", ", @gene_ids);
+	#	print join(", ", @gene_ids);
   }
-#  print join(", ", @gene_ids);
-#  print " - ";
+  #  print join(", ", @gene_ids);
+  #  print " - ";
   if (scalar(@gene_ids) == 0) {
 	@gene_ids = $dbentry_adaptor->list_gene_ids_by_extids($gene_name);
-#	print join(", ", @gene_ids);
+	#	print join(", ", @gene_ids);
   }
-#  print "\n\n";
+  #  print "\n\n";
   my $translation_adaptor = $dba->get_adaptor("Translation");
   my $transcript_adaptor  = $dba->get_adaptor("Transcript");
   my $gene_adaptor        = $dba->get_adaptor("Gene");
@@ -154,32 +154,41 @@ my %phenotype_voc;
 
 my $line = <$INP>;
 
+open my $outfile, ">",
+  "failures.txt" || croak "Could not open failures.txt";
+my $n = 0;
+my $x = 0;
 while (my $line = <$INP>) {
   chomp $line;
-  my ($phibase_id,     $db_name,        $acc,
-	  $locus,          $gene_name,      $species_name,
-	  $tax_id,         $phenotype_name, $literature_db,
-	  $literature_ids, $col_11,         $condition_names,
-	  $host_names) = split(/,/, $line);
+  
+  my $msg = '';
+  my $success = 0;
+  
+  my ($phibase_id,      $db_name,        $acc,
+	  $locus,           $gene_name,      $species_name,
+	  $tax_id,          $phenotype_name, $literature_db,
+	  $literature_ids,  $doi,            $ref,
+	  $condition_names, $host_names) = split(',', $line);
 
   $locus =~ s/\..*//;
   $acc       = rm_sp($acc);
   $locus     = rm_sp($locus);
   $gene_name = rm_sp($gene_name);
   # get dbadaptor based on tax ID
-	$logger->debug(
+  $logger->debug(
 "Processing entry: $phibase_id annotation on $db_name:$acc (gene $locus $gene_name) from $species_name ($tax_id)"
-	);
-  $logger->debug("Getting DBAs for tax_id " . $tax_id);
+  );
+  $logger->debug("Getting DBAs for species '$species_name' ($tax_id)");
   my $dbas = $lookup->get_all_by_parent_taxon_id($tax_id, 1);
 
   if (!defined $dbas || scalar(@$dbas) == 0) {
-	$logger->warn("No DBA for for taxon $tax_id (name $species_name)");
-	next;
+	$msg = "No DBA for for taxon $tax_id (name $species_name)";
+	$logger->warn($msg);
   }
 
   for my $dba (@{$dbas}) {
-	$logger->debug("Found DBA for species ".$dba->species());
+	$logger->debug("Found DBA species " . $dba->species() .
+			   " in " . $dba->dbc()->dbname() . "/" . $dba->species_id);
 	my $dbentry_adaptor = $dba->get_DBEntryAdaptor();
 	my @transcripts_ids;
 	my @gene_ids;
@@ -199,11 +208,15 @@ while (my $line = <$INP>) {
 	my $translation = find_translation($dba, $acc, $locus, $gene_name);
 
 	if (!defined $translation) {
-	  $logger->warn("Failed to find translation for $db_name:$acc (gene $locus $gene_name) from $species_name ($tax_id)");
+	  $msg =
+"Failed to find translation for $db_name:$acc (gene $locus $gene_name) from $species_name ($tax_id) in "
+		. $dba->species()
+		. " jn " . $dba->dbc()->dbname() . "/" . $dba->species_id();
+	  $logger->warn($msg);
 	  next;
 	}
-	$logger->debug("Found translation " .$translation->stable_id()."/".
-				   $translation->dbID());
+	$logger->debug("Found translation " .
+				$translation->stable_id() . "/" . $translation->dbID());
 
 	my @phibase_dbentries;
 	my @phibase_types;
@@ -232,18 +245,17 @@ while (my $line = <$INP>) {
 	$logger->debug("Processing phenotype '$phenotype_name'");
 	for my $phenotype (@pheno_terms) {
 	  my $ont_phenotype_name = lc(rm_sp($phenotype->name()));
-#$logger->debug("Checking phenotype ".$phenotype_name." vs ".$ont_phenotype_name);
 	  if ($phenotype_name =~ /$ont_phenotype_name/i) {
-		$logger->debug(
-					"Mapped '$phenotype_name' to term ".
-					$phenotype->accession());
+		$logger->debug("Mapped '$phenotype_name' to term " .
+					   $phenotype->accession());
 		$found_phenotype = $phenotype;
 		next;
 	  }
 	}
 
 	if (!defined $found_phenotype) {
-	  $logger->warn("Could not find phenotype '$phenotype_name'");
+	  $msg = "Could not find phenotype '$phenotype_name'";
+	  $logger->warn($msg);
 	  next;
 	}
 	my $phenotype_db_entry =
@@ -274,8 +286,8 @@ while (my $line = <$INP>) {
 	  for my $ont_cond (@cond_terms) {
 		my $ont_cond_name = lc($ont_cond->name());
 		if ($condition_last_name =~ /$ont_cond_name/) {
-			$logger->debug("Mapped condition to ".
-			$ont_cond->accession(). "/". $ont_cond->name());
+		  $logger->debug("Mapped condition to " .
+					  $ont_cond->accession() . "/" . $ont_cond->name());
 
 		  my $condition_db_entry =
 			Bio::EnsEMBL::DBEntry->new(
@@ -297,8 +309,7 @@ while (my $line = <$INP>) {
 	#deal with the publications
 	$logger->debug("Processing literature ref(s) '$literature_ids'");
 	for my $publication (split(/;/, $literature_ids)) {
-	  $logger->debug(
-			 "Handling PMID " . lc(rm_sp($publication)));
+	  $logger->debug("Handling PMID " . lc(rm_sp($publication)));
 	  my $pubmed_db_entry =
 		Bio::EnsEMBL::DBEntry->new(
 								 -PRIMARY_ID => lc(rm_sp($publication)),
@@ -318,6 +329,9 @@ while (my $line = <$INP>) {
 		$rank++;
 	  }
 	}
+	if($success==0) {
+		$success = 1;
+	}
 	if ($opts->{write}) {
 	  $logger->debug("Storing " . $phi_dbentry->display_id());
 	  $dbentry_adaptor->store($phi_dbentry);
@@ -326,5 +340,16 @@ while (my $line = <$INP>) {
 	  $logger->debug("Skipping storing " . $phi_dbentry->display_id());
 	}
   } ## end for my $dba (@{$dbas})
+  
+  if($success==1) {
+	$n++;  	
+  } else {
+  	print $outfile "# $msg\n";
+  	print $outfile "$line\n";
+  	$x++;
+  }
+  
 } ## end while (my $line = <$INP>)
-
+$logger->info("Completed - wrote $n and skipped $x xrefs");
+close $outfile;
+close $INP;
