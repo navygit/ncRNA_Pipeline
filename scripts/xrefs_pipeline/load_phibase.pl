@@ -152,6 +152,8 @@ my %host_voc;
 my %condition_voc;
 my %phenotype_voc;
 
+my $updated_dbcs = {};
+
 my $line = <$INP>;
 
 open my $outfile, ">",
@@ -160,10 +162,10 @@ my $n = 0;
 my $x = 0;
 while (my $line = <$INP>) {
   chomp $line;
-  
-  my $msg = '';
+
+  my $msg     = '';
   my $success = 0;
-  
+
   my ($phibase_id,      $db_name,        $acc,
 	  $locus,           $gene_name,      $species_name,
 	  $tax_id,          $phenotype_name, $literature_db,
@@ -329,27 +331,73 @@ while (my $line = <$INP>) {
 		$rank++;
 	  }
 	}
-	if($success==0) {
-		$success = 1;
+	if ($success == 0) {
+	  $success = 1;
 	}
 	if ($opts->{write}) {
-	  $logger->debug("Storing " . $phi_dbentry->display_id());
-	  $dbentry_adaptor->store($phi_dbentry);
+	  $updated_dbcs->{$dba->dbc()->dbname()} = $dba->dbc();
+	  $logger->debug("Storing " .
+			 $phi_dbentry->display_id() . " on " . $dba->species() .
+			 " from " . $dba->dbc()->dbname() . "/" . $dba->species_id);
+	  $dbentry_adaptor->store($phi_dbentry, $translation->dbID(),
+							  'Translation');
 	}
 	else {
 	  $logger->debug("Skipping storing " . $phi_dbentry->display_id());
 	}
   } ## end for my $dba (@{$dbas})
-  
-  if($success==1) {
-	$n++;  	
-  } else {
-  	print $outfile "# $msg\n";
-  	print $outfile "$line\n";
-  	$x++;
+
+  if ($success == 1) {
+	$n++;
   }
-  
+  else {
+	print $outfile "# $msg\n";
+	print $outfile "$line\n";
+	$x++;
+  }
+
 } ## end while (my $line = <$INP>)
 $logger->info("Completed - wrote $n and skipped $x xrefs");
 close $outfile;
 close $INP;
+
+# last step - apply the colours
+for my $dbc (values %{$updated_dbcs}) {
+  $logger->info("Applying colours for " . $dbc->dbname());
+# assemble a list of gene colours, dealing with mixed_outcome as required
+  my %gene_color;
+  $dbc->sql_helper()->execute_no_return(
+	-SQL => q/select t.gene_id, x.display_label 
+	from associated_xref a, object_xref o, xref x, transcript t
+	where a.object_xref_id = o.object_xref_id and condition_type = 'phenotype' 
+	and x.xref_id = a.xref_id and o.ensembl_id = t.canonical_translation_id/,
+	-CALLBACK => sub {
+	  my @row   = @{shift @_};
+	  my $color = lc($row[1]);
+	  $color =~ s/^\s*(.*)\s*$/$1/;
+	  $color =~ s/\ /_/g;
+	  if (!exists($gene_color{$row[0]})) {
+		$gene_color{$row[0]} = $color;
+	  }
+	  else {
+		if ($gene_color{$row[0]} eq $color) {
+		  next;
+		}
+		else {
+		  $gene_color{$row[0]} = 'mixed_outcome';
+		}
+	  }
+	  return;
+	});
+  foreach my $gene (keys %gene_color) {
+	$logger->debug("Setting " . $gene . " as " . $gene_color{$gene});
+	$dbc->sql_helper()->execute_update(
+	  -SQL =>
+q/INSERT INTO gene_attrib (gene_id, attrib_type_id, value) VALUES ( ?, 358, ?)/,
+	  -PARAMS => [$gene, $gene_color{$gene}]);
+	$dbc->sql_helper()->execute_update(
+	  -SQL =>
+q/INSERT INTO gene_attrib (gene_id, attrib_type_id, value) VALUES ( ?, 317, 'PHI')/,
+	  -PARAMS => [$gene]);
+  }
+} ## end for my $dbc (values %{$updated_dbcs...})
