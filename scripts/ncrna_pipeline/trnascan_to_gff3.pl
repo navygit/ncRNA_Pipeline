@@ -23,7 +23,7 @@ my $prefix = shift || "";
 
 my $verbose = 0;
 
-print STDERR "gene name prefix set to $prefix\n";
+print STDERR "gene name prefix set to $prefix\n" if $verbose;
 
 if (!defined $in_file) {
   die "input file not specified!\n";
@@ -54,34 +54,36 @@ while (<$in_fh>) {
     next;
   }
   chomp $line;
-  $line =~ /^([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)/;
-  #$line =~ /(\S+)\s+(\d+)\s+(\d+)\s+(\d+)+\s+(\w+)\s+(\w+)\s+(\d+)\s+(\d+)\s+(.+)/;
+  my (
+    $seq,
+    undef,
+    $start,
+    $end,
+    $aa_name,
+    $anticodon,
+    $intron_start,
+    $intron_end,
+    $score
+  ) = split(/\t/, $line);
+
+  # Don't want to store tRNA genes with introns...
+  next if $intron_start > 0;
+  
+  # If you want to, can filter on Cove score here; default threshold is 20
+  # next if $score < 40;
+
+  $anticodon =~ s/T/U/g;
 
   my $biotype = "tRNA";
-  my $seq    = $1;
-  my $start  = $3;
-  my $end    = $4;
   my $strand = "+";
   if ($start > $end) {
-      my $start_tmp = $start;
-      $start = $end;
-      $end   = $start_tmp;
-      $strand = "-";
+    ($start, $end) = ($end, $start);
+    $strand = "-";
   }
-
-  my $aa_name = $5;
-  my $anticodon = $6;
-  $anticodon =~ s/T/U/g;
-  my $score  = $9;
-
   my $frame = ".";
   
   if (!defined $score) {
-      print STDERR "score not defined!\n";
-      $score = "0";
-  }
-  else {
-      # print STDERR "score, $score, is fine!\n";
+    die "Parsing failed, score is undefined";
   }
 
   my $name   = "tRNA-" . $aa_name;
@@ -96,7 +98,7 @@ while (<$in_fh>) {
   $note =~ s/ /\%20/g;
   
   if ($name =~ /pseudo/i) {
-      print STDERR "switched biotype to tRNA_pseudogene\n";
+      print STDERR "switched biotype to tRNA_pseudogene\n" if ($verbose);
       $biotype = "tRNA_pseudogene";
   }
 
