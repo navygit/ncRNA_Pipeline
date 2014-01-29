@@ -140,11 +140,11 @@ fi
 
 echo "Mapping step is done"
 
-# Delete the object_xref entries related to 'Uniprot_genename'
+# Delete the object_xref entries related to 'Uniprot_gn'
 
 # Use a patch SQL command for that
 
-echo "Deleting object_xref entries related to 'Uniprot_genename'..."
+echo "Deleting object_xref entries related to 'Uniprot_g' & 'Uniprot_gn_trans_name'..."
 
 mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $CORE_DB_NAME -e "DELETE FROM object_xref WHERE xref_id IN (SELECT x.xref_id FROM xref x, external_db d WHERE x.external_db_id = d.external_db_id AND d.db_name IN ('Uniprot_gn','Uniprot_gn_trans_name'))"
 
