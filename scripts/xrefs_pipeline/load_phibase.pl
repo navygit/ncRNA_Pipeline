@@ -396,7 +396,7 @@ for my $dbc (values %{$updated_dbcs}) {
 	  }
 	  else {
 		if ($gene_color{$row[0]} eq $color) {
-		  next;
+                    return;
 		}
 		else {
 		  $gene_color{$row[0]} = 'mixed_outcome';
