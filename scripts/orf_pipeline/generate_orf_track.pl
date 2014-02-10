@@ -16,6 +16,7 @@ use Bio::EnsEMBL::DBSQL::DBAdaptor;
 use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::SimpleFeature;
 use Bio::EnsEMBL::Analysis;
+use Bio::Tools::CodonTable;
 
 my $registry = 'Bio::EnsEMBL::Registry';
 
@@ -40,26 +41,30 @@ my $analysis = Bio::EnsEMBL::Analysis->new(
                  -program      => 'generate_orf_track.pl',
                );
 
-#foreach (qw(I)){
-foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
+foreach (qw(Mito)){
+#foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
    $slice       = $sa->fetch_by_region('chromosome',$_);
    $slice_start = $slice->start;
    $slice_end   = $slice->end;
    my $seq      = $slice->seq();
    my $chr      = $_;
-   my $codons;
+   # Get codon table 
+   my ($attrib)       = @{$slice->get_all_Attributes('codon_table') };
+   my $codon_table_id = $attrib->value()if defined $attrib;
+   $codon_table_id  ||= 1; # default codon table (vertebrate)
+   my $codon_table    = Bio::Tools::CodonTable->new( -id => $codon_table_id );
+   print  join (' ', "The name of the codon table no.", $codon_table->id($codon_table_id),"is:", $codon_table->name(), "\n");
    
-   my $seqobj   = Bio::PrimarySeq->new( 
-					 -seq      => $seq,
-     			                 -id       => 'orf_sequence',
- 				         -alphabet => 'dna'
-    				        );
+   my $seqobj         = Bio::PrimarySeq->new( 
+					   -seq      => $seq,
+     			                   -id       => 'orf_sequence',
+ 				           -alphabet => 'dna'
+    				         );
 
    unless($seqobj->alphabet() eq 'dna') {
       $seqobj->throw("die in _init, FindORF works only on DNA sequences\n");
    }
 
-  # foreach my $frame (5){
    foreach my $frame (1..6){
       $sequence   = uc $seqobj->revcom()->seq() if($frame > 3);
       $sequence   = uc $seqobj->seq() if($frame < 4);
@@ -78,7 +83,8 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
       my @features;
 
       while ($sequence =~/(...)/g){
-         if($h{$1}){
+	  if($codon_table->is_ter_codon($1)){
+          #if($h{$1}){
              $end_pos = pos($sequence)+($frame-3) if ($frame < 4);
              $end_pos = pos($sequence)+($frame-7) if ($frame > 3);
 
@@ -92,15 +98,20 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
                 $ep = $end_pos_t;
              } 
              # Move start position of an ORF to gene start if found
+ 
              my ($gene_flag,$gene_start,$gene_end,$gene_biotype) = find_gene($sp,$ep,$chr,$strand);
+             #$sp = $gene_start if ($gene_flag==1 && $strand==1);
              $sp = $gene_start if ($gene_flag==1 && $strand==1 && $gene_biotype eq 'protein_coding');
+             #$ep = $gene_end   if ($gene_flag==1 && $strand==-1);
              $ep = $gene_end   if ($gene_flag==1 && $strand==-1 && $gene_biotype eq 'protein_coding');
              # Getting translated sequence for orf 
              my $orfseq;
              $orfseq = substr($sequence,$sp,$ep-$sp+1) if($strand==1);
              $orfseq = substr($sequence,$slice_end-$sp,$ep-$sp+1) if($strand==-1);
-             my $len    = length($orfseq)/3;
+             #my $len    = length($orfseq)/3;
 
+
+=pod
              my $feature = Bio::EnsEMBL::SimpleFeature->new(
                       -start         => $sp,
                       -end           => $ep,
@@ -109,14 +120,14 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
                       -analysis      => $analysis,
                       -display_label => 'FRAME '.$frame,
                    );
-            #push @features,$feature;
             push @features,$feature if($len > $min);
+=cut
             $start_pos = $ep+3 if ($strand==1);
             $start_pos = ($slice_end-$sp)+3 if ($strand==-1);
           } # if($h{$1})
      } # while ($equence=~/(...)/g){
   # store once for each frame 
-  $sfa->store(@features);
+#  $sfa->store(@features);
   } #foreach my $frame (1..6){
 } #foreach (qw(...)){
 
@@ -125,6 +136,8 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
 ##############
 sub find_gene {
     my ($s_pos,$e_pos,$c,$s)= @_;
+
+print "SP:$s_pos EP:$e_pos C:$c S:$s\n" if($s_pos==4221);
 
     my $flag      = 0;
     my $s_id      = 'NA';
@@ -135,10 +148,17 @@ sub find_gene {
     if($s==1){
        # Need to use end_pos since start_pos may be beyond the start of the gene	       
        while (my $gene = shift @{$sa->fetch_by_region('chromosome',$c,$e_pos-3,$e_pos)->get_all_Genes()} ) {
-         $s_id      = $gene->stable_id();
+  	 $s_id      = $gene->stable_id();
          $g_start   = $gene->seq_region_start();
          $g_end     = $gene->seq_region_end();    
          $g_biotype = $gene->biotype();
+
+my $name = $gene->seq_region_name();
+my $len  = $gene->seq_region_length();
+
+print "$s_id\tgene_start:$g_start\tgene_end:$g_end\t$name\t$len\n" if($e_pos==4413); 
+
+
          last if($g_end-2==$e_pos); 
        } 
        $flag = 1 if ($s_id !~/NA/ && $g_end-2==$e_pos);
