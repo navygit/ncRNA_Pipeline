@@ -30,15 +30,16 @@ my $user       = "ensrw";
 my $pw         = "scr1b3d3";
 my $dsn        = "dbi:$platform:$database:$host:$port";
 my $db         = DBI->connect($dsn,$user,$pw);
-my $sql        = "SELECT seq_region_start FROM simple_feature WHERE analysis_id=41 AND seq_region_start=? AND seq_region_strand=?";
-my $sql_2      = "SELECT seq_region_end FROM simple_feature WHERE analysis_id=41 AND seq_region_end=? AND seq_region_strand=?";
+my $analysis_id= 39;
+my $sql        = "SELECT seq_region_start FROM simple_feature WHERE analysis_id=$analysis_id AND seq_region_start=? AND seq_region_strand=?";
+my $sql_2      = "SELECT seq_region_end FROM simple_feature WHERE analysis_id=$analysis_id AND seq_region_end=? AND seq_region_strand=?";
 my $sth        = $db->prepare($sql);
 my $sth_2      = $db->prepare($sql_2);
 
 my $sa         = $registry->get_adaptor('saccharomyces_cerevisiae','Core','Slice');
 
-foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
-#foreach (qw(I)){
+#foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
+foreach (qw(Mito)){
    my $slice = $sa->fetch_by_region('chromosome',$_);
    
    foreach my $gene (@{$slice->get_all_Genes() } ) {
