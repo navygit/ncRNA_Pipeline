@@ -1,3 +1,22 @@
+=head1 LICENSE
+
+Copyright [1999-2014] EMBL-European Bioinformatics Institute
+and Wellcome Trust Sanger Institute
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+=cut
+
 
 =pod
 
@@ -32,6 +51,7 @@ sub fetch_input {
   my $ct_exons = $self->jobs('ConstitutiveExons');
   my $gene_count = $self->jobs('GeneCount');
   my $gene_gc = $self->jobs('GeneGC');
+  my $genome_stats = $self->jobs('GenomeStats');
   my $meta_coords = $self->jobs('MetaCoords');
   my $meta_levels = $self->jobs('MetaLevels');
   my $pep_stats = $self->jobs('PepStats');
@@ -43,7 +63,6 @@ sub fetch_input {
   my $percent_repeat = $self->jobs('PercentRepeat');
   my $snp_density = $self->jobs('SnpDensity');
   my $snp_count = $self->jobs('SnpCount');
-  my $nonsense = $self->jobs('NonSense');
   my $analyze_tables = $self->jobs('AnalyzeTables');
 
     
@@ -56,6 +75,8 @@ sub fetch_input {
     $gene_count->{failed_jobs},
     $gene_gc->{successful_jobs},
     $gene_gc->{failed_jobs},
+    $genome_stats->{successful_jobs},
+    $genome_stats->{failed_jobs},
     $meta_coords->{successful_jobs},
     $meta_coords->{failed_jobs},
     $meta_levels->{successful_jobs},
@@ -78,8 +99,6 @@ sub fetch_input {
     $snp_density->{failed_jobs},
     $snp_count->{successful_jobs},
     $snp_count->{failed_jobs},
-    $nonsense->{successful_jobs},
-    $nonsense->{failed_jobs},
     $analyze_tables->{successful_jobs},
     $analyze_tables->{failed_jobs},
     $self->failed(),
@@ -87,6 +106,7 @@ sub fetch_input {
     $self->summary($ct_exons),
     $self->summary($gene_count),
     $self->summary($gene_gc),
+    $self->summary($genome_stats),
     $self->summary($pep_stats),
     $self->summary($meta_coords),
     $self->summary($meta_levels),
@@ -98,7 +118,6 @@ sub fetch_input {
     $self->summary($percent_repeat),
     $self->summary($snp_density),
     $self->summary($snp_count),
-    $self->summary($nonsense),
     $self->summary($analyze_tables),
   );
   
@@ -109,6 +128,7 @@ Your Production Pipeline has finished. We have:
   * %d species with constitutive exons (%d failed)
   * %d species with gene count (%d failed)
   * %d species with gene gc (%d failed)
+  * %d species with genome_stats attributes (%d failed)
   * %d species with meta coords (%d failed)
   * %d species with meta levels (%d failed)
   * %d species with pep stats (%d failed)
@@ -120,7 +140,6 @@ Your Production Pipeline has finished. We have:
   * %d species with percent repeat (%d failed)
   * %d species with snp density (%d failed)
   * %d species with snp count (%d failed)
-  * %d species with nonsense attributes (%d failed)
 
   * %d species with analyzed tables (%d failed)
 
@@ -184,7 +203,7 @@ sub jobs {
     };
   }
   my $id = $analysis->dbID();
-  @jobs = @{$aja->generic_fetch("j.analysis_id =$id")};
+  @jobs = @{$aja->fetch_all_by_analysis_id($id)};
   $_->{input} = destringify($_->input_id()) for @jobs;
   @jobs = sort { $a->{input}->{species} cmp $b->{input}->{species} } @jobs;
   my %passed_species = map { $_->{input}->{species}, 1 } grep { $_->status() eq 'DONE' } @jobs;

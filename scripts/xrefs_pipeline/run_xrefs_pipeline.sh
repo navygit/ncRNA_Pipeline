@@ -1,4 +1,19 @@
 #!/bin/sh
+# Copyright [1999-2014] EMBL-European Bioinformatics Institute
+# and Wellcome Trust Sanger Institute
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 
 if [ $# != 1 ]
 then
@@ -125,11 +140,11 @@ fi
 
 echo "Mapping step is done"
 
-# Delete the object_xref entries related to 'Uniprot_genename'
+# Delete the object_xref entries related to 'Uniprot_gn'
 
 # Use a patch SQL command for that
 
-echo "Deleting object_xref entries related to 'Uniprot_genename'..."
+echo "Deleting object_xref entries related to 'Uniprot_g' & 'Uniprot_gn_trans_name'..."
 
 mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $CORE_DB_NAME -e "DELETE FROM object_xref WHERE xref_id IN (SELECT x.xref_id FROM xref x, external_db d WHERE x.external_db_id = d.external_db_id AND d.db_name IN ('Uniprot_gn','Uniprot_gn_trans_name'))"
 
