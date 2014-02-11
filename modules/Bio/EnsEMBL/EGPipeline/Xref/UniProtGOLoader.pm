@@ -36,7 +36,7 @@ sub new {
 sub load_go_terms {
   my ($self, $dba) = @_;
   if (defined $self->{replace_all}) {
-	$self->remove_xrefs($dba);
+	$self->remove_uniprot_go($dba);
   }
   # get translation_id,UniProt xref
   my $translation_uniprot = $self->get_translation_uniprot($dba);
@@ -87,6 +87,7 @@ sub add_go_terms {
   while (my ($tid, $uniprot) = each %$translation_uniprot) {
 	$tN++;
 	$uN += $self->store_go_term($ddba, $tid, $uniprot);
+	$uN += $n;	
 	$self->logger()->info("Processed $tN translations ($uN xrefs)")
 	  if ($tN % 1000 == 0);
   }
@@ -95,8 +96,12 @@ sub add_go_terms {
 
 sub store_go_term {
   my ($self, $ddba, $tid, $uniprot) = @_;
+  my $gos = $self->get_go_for_uniprot($uniprot->primary_id());
+  if($self->{replace_all} && scalar(@$gos)>0) {
+	  $self->remove_interpro2go($ddba, $tid);  	
+  }
   my $n = 0;
-  for my $go (@{$self->get_go_for_uniprot($uniprot->primary_id())}) {
+  for my $go (@{$gos}) {
 	$n++;
 	my $go_xref =
 	  Bio::EnsEMBL::OntologyXref->new(-DBNAME     => 'GO',
@@ -126,7 +131,27 @@ sub get_go_for_uniprot {
 		return $gos;
 }
 
-sub remove_xrefs {
+sub remove_interpro2go {
+  my ($self, $dba, $tid) = @_;
+   $self->logger()->debug("Removing existing GO-InterPro cross-references from translation $id");
+	  my $sql = q/delete oox.*,ox.* from 
+object_xref ox
+join ontology_xref oox using (object_xref_id)
+join xref x on (ox.xref_id=x.xref_id)
+join external_db d on (d.external_db_id=x.external_db_id)
+join xref sx on (sx.xref_id=oox.source_xref_id)
+join external_db sd on (sd.external_db_id=sx.external_db_id)
+where
+ox.ensembl_id=? and ox.ensembl_object_type='Translation'
+and d.db_name='GO'
+and sd.db_name='Interpro'/;
+  $dba->dbc()->sql_helper()->execute_update(
+	-SQL => $sql,
+	-PARAMS => [$tid]);
+  return;
+ }
+
+sub remove_uniprot_go {
   my ($self, $dba) = @_;
   $self->logger()
 	->info("Removing existing GO-UniProt cross-references");
