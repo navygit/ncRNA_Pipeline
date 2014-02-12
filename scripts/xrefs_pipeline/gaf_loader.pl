@@ -25,123 +25,166 @@ limitations under the License.
 $Author: ckong $
 
 =cut
-
+use warnings;
 use strict;
-use warning;
+use Bio::EnsEMBL::Utils::CliHelper;
+use Log::Log4perl qw/:easy/;
 use Data::Dumper;
 use Bio::EnsEMBL::DBEntry;
-use Bio::EnsEMBL::OntologyXref;
+use Bio::EnsEMBL::Registry;
+use Bio::EnsEMBL::Analysis;
 
-my $dba  = new Bio::EnsEMBL::DBSQL::DBAdaptor (
-          -host    => 'mysql-eg-staging-2.ebi.ac.uk',
-          -user    => 'ensrw',
-          -pass    => 'scr1b3s2',
-          -port    => '4275',
-          -dbname  => 'arabidopsis_thaliana_core_20_73_10',
-          -species => 'arabidopsis_thaliana',
-          -group   => 'core'
-        );
+my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
+my $optsd      = $cli_helper->get_dba_opts();
+my $opts       = $cli_helper->process_args($optsd, \&usage);
 
-my $file = $ARGV[0];
-open(FILE, $file) || die;
-my $gene_adaptor = $dba->get_GeneAdaptor();
+warn "Creating db adaptors...\n";
+# use the command line options to get an array of database details
+my $dba;
 
-while (<FILE>) {
-    my $line         = $_;
-    
-    chomp ($line);
-    next unless $line=~/^TAIR/; #to be updated for different species
-    my ($db,$db_objID,$db_objSym,$qual,$GO,$db_ref,$evidence,$qual_2,$ontology,$db_objName,$db_objSyn,$db_objTyp,$taxon,$date,$source,@misc) = split /\t/;
-    next unless $qual!~/^NOT/;
-    my $gene;
-
-    if ($db_objSym =~/^AT.{6}[0-9]$/){
-    #   print "CASE1:$db_objSym\t$db_objName\n";
-       $gene         = $gene_adaptor->fetch_by_stable_id($db_objSym);
-    }
-    elsif($db_objName =~/^AT.{6}[0-9]$/){ # This record has problem where where stable_id is assigned to wrong column
-    #   print "CASE2:$db_objSym\t$db_objName\n";
-       $gene         = $gene_adaptor->fetch_by_stable_id($db_objName);
-    }
-    else { # This record has problem where synonyms is assigned to stable_id column
-    #   print "CASE3:$db_objSym\t$db_objName\n";
-       $gene        = $gene_adaptor->fetch_by_display_label($db_objSym);
-    }
-    print "$line\n"if (!defined $gene);
-    next unless (defined $gene);    
-
-    my $ensembl_id   = $gene->dbID(); 
-    # Define the set of Annotations
-    my $ontology_term;
-    $ontology_term   = 'Biological Process' if $ontology=='P';
-    $ontology_term   = 'Cellular Component' if $ontology=='C';
-    $ontology_term   = 'Molecular Function' if $ontology=='M';
-
-    my $term_dbentry = Bio::EnsEMBL::OntologyXref -> new (
-                -PRIMARY_ID  => $GO,
-                -DBNAME      => 'GO',
-                -DISPLAY_ID  => $GO,
-                -DESCRIPTION => $ontology_term,
-                -INFO_TYPE   => '',
-                -INFO_TEXT   => 'GAF loader'
-            );
-   
-   my $annot_ext_pub_dbentry = Bio::EnsEMBL::DBEntry -> new (
-                -PRIMARY_ID  => $db_ref,
-                -DBNAME      => 'PUBMED',
-                -DISPLAY_ID  => $db_ref,
-                -DESCRIPTION => 'PUBMED xref ',
-                -INFO_TYPE   => '',
-                -INFO_TEXT   => 'GAF loader '.$date.'_'.$source               
-             );
-
-   $term_dbentry->add_linkage_type($evidence,$annot_ext_pub_dbentry);
-
-   my $analysis = Bio::EnsEMBL::Analysis-> new( 
-               -logic_name      => 'GAF loader',
-               -db              => $term_dbentry->dbname,
-               -db_version      => ' ',
-               -program         => 'gaf_loader.pl ',
-               -description     => 'GAF loader implemented by CK',
-               -display_label   => 'GAF loader',
-              );
-
-   # Attach the new analysis
-   $term_dbentry->analysis($analysis);
-   # Finally add you annotation term to the ensembl object,
-   # in this case it is a transcript.
-   $dba->get_DBEntryAdaptor->store($term_dbentry,$ensembl_id,'Transcript',0);
+for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
+   $dba = new Bio::EnsEMBL::DBSQL::DBAdaptor(%{$db_args});
 }
-close(FILE) || die "Couldn't close file properly";
+
+die "GAF file is required !\n" unless @ARGV;
+
+my $analysis_obj = Bio::EnsEMBL::Analysis->
+    new( -logic_name      => 'gaf_loader',
+         -program         => 'gaf_loader.pl',
+         -description     => 'GAF loader',
+         -display_label   => 'GAF loader',
+    );
+
+warn "Getting adaptors...\n";
+my $ga    = $dba->get_GeneAdaptor() || die "problem getting gene adaptor\n";
+#my $dbea  = $dba->get_DBEntryAdaptor() || die "problem getting DBentry adaptor\n";
+
+my %count;
+my $file            = $ARGV[0];
+open(FILE, $file) || die "problem opening GAF file";
+
+warn "Start parsing GAF file...\n";
+while (<FILE>) {
+       my $line = $_;
+       
+       next if $line =~/^!/;
+       chomp ($line);
+       my @cols      = split(/\t/, $_, 17);
+
+       die "Is the format GAF2.0?\n" unless @cols == 17;
+
+       my ($db, $db_objID, $db_objSym, $qual, $go_id,
+           $db_ref, $evidence_code, $with_or_froms, $aspect,
+           $db_objName, $db_objSyn, $db_objTyp,
+           $taxons, $date, $assigned_by, $annot_ext,
+           $gene_product_form_id
+          ) = @cols;
 
 =pod
-Eg of GAF data:
-TAIR    locus:2193997   P40             GO:0000028      TAIR:Communication:501741973    IBA     PANTHER:PTHR11489_AN0   P       AT1G72370       AT1G72370|P4
-0|AP40|RP40|RPSAA|40s ribosomal protein SA|T10D10.16|T10D10_16  protein taxon:3702      20110729        RefGenome               TAIR:locus:2193997
 
-TAIR    locus:2058324   AT2G04390               GO:0000028      TAIR:Communication:501741973    IBA     PANTHER:PTHR10732_AN0   P       AT2G04390       AT2G
-04390|T1O3.20|T1O3_20   protein taxon:3702      20110729        RefGenome               TAIR:locus:2058324
-
-Columns are:
-1:  DB, database contributing the file (always "TAIR" for this file).
-2:  DB_Object_ID  (TAIR's unique identifier for genes). => 'locus:2193997'
-3:  DB_Object_Symbol, see below => 'P40'
-4:  Qualifier (optional), one or more of 'NOT', 'contributes_to',
-    'colocalizes_with' as qualifier(s) for a GO annotation, when needed,
-    multiples separated by pipe (|)
-5:  GO ID, unique numeric identifier for the GO term. => 'GO:0000028'
-6:  DB:Reference(|DB:Reference), the reference associated with the GO annotation. => 'TAIR:Communication:501741973' 
-7:  Evidence, the evidence code for the GO annotation. => 'IBA'
-8:  With (or) From (optional), any With or From qualifier for the GO annotation. => 'PANTHER:PTHR11489_AN0' 
-9:  Aspect, which ontology the GO term belongs (Function, Process or Component). => 'P'
-10: DB_Object_Name(|Name) (optional), a name for the gene product in words, e.g. 'acid phosphatase' => 'AT1G72370'
-11: DB_Object_Synonym(|Synonym) (optional), see below. => 'AT1G72370|P40|AP40|RP40|RPSAA|40s ribosomal protein SA|T10D10.16|T10D10_16'
-12: DB_Object_Type, type of object annotated, e.g. gene, protein, etc. => 'protein'
-13: taxon(|taxon), taxonomic identifier of species encoding gene product. => 'taxon:3702'
-14: Date, date GO annotation was made in the format. => '20110729'
-15: Assigned_by, source of the annotation (either "TAIR" or "TIGR")
+UniProtKB	A2P2R3	YMR084W		GO:0003674	GO_REF:0000015	ND		F	Putative glutamine--fructose-6-phosphate aminotransfer
+ase [isomerizing]	YM084_YEAST|YMR084W	protein	taxon:559292	20030203	SGD		
+UniProtKB	A2P2R3	YMR084W		GO:0004360	GO_REF:0000003	IEA	EC:2.6.1.16	F	Putative glutamine--fructose-6-phosphate amino
+transferase [isomerizing]	YM084_YEAST|YMR084W	protein	taxon:559292	20140118	UniProt		
+UniProtKB	A2P2R3	YMR084W		GO:0005575	GO_REF:0000015	ND		C	Putative glutamine--fructose-6-phosphate aminotransfer
+ase [isomerizing]	YM084_YEAST|YMR084W	protein	taxon:559292	20030203	SGD		
+UniProtKB	A2P2R3	YMR084W		GO:0006048	GO_REF:0000041	IEA	UniPathway:UPA00113	P	Putative glutamine--fructose-6-phospha
+te aminotransferase [isomerizing]	YM084_YEAST|YMR084W	protein	taxon:559292	20140118	UniProt	
 
 =cut
+      # Check for mandatory columns 
+      die "'",
+      join("'\t'",
+           $db, $db_objID, $db_objSym, $go_id,
+           $db_ref, $evidence_code, $aspect, $db_objTyp,
+           $taxons, $date, $assigned_by,
+          ), "'\n"
+      unless
+           $db && $db_objID && $db_objSym && $go_id &&
+           $db_ref && $evidence_code && $aspect && $db_objTyp && 
+           $taxons && $date && $assigned_by;
+
+      next if
+        ( $go_id eq 'GO:0005575' ||   # Cellular component
+          $go_id eq 'GO:0003674' ||   # Molecular function
+          $go_id eq 'GO:0008150' ) && # Biological process
+          $db_ref eq 'TAIR:Communication:1345790' && $evidence_code eq 'ND';
+
+      my @qual               = split(/\|/, $qual);
+      my @db_ref             = split(/\|/, $db_ref);
+      my @with_or_froms      = split(/\|/, $with_or_froms);
+      my @db_objSyn          = split(/\|/, $db_objSyn);
+      my ($taxon, $pathogen) = split(/\|/, $taxons, 2);
+      my @annot_ext          = split(/\|/, $annot_ext);
+
+      my $gene_obj;
+
+      # use the db_obj_name as a stable_id...
+      if ($db_objName){
+	   $gene_obj = $ga->fetch_by_stable_id($db_objName);
+      }
+
+      # else check if there is *one* xref for the db_objSym
+      unless ($gene_obj){
+        my $gene_obj_aref = $ga->fetch_all_by_external_name($db_objSym );
+        if (@$gene_obj_aref == 1){
+            $gene_obj = $gene_obj_aref->[0];
+        }
+      }
+
+      # else use synonyms as xrefs
+      unless ($gene_obj){
+        if(@db_objSyn){
+            my %best_guess;
+            # Can have > 1 synonyms
+            for my $db_object_synonym (@db_objSyn){
+                my $gene_obj_aref = $ga->fetch_all_by_external_name( $db_objSyn );
+                # each synonym match > 1 gene
+                for my $gene_obj (@$gene_obj_aref){
+		    $best_guess{$gene_obj->stable_id}++;
+                }
+            }
+ 	    my ($best_guess) = (sort {$best_guess{$b} <=> $best_guess{$a}} keys %best_guess);
+            $gene_obj =  $ga->fetch_by_stable_id( $best_guess );
+	}
+     }
+
+     unless ($gene_obj){
+        warn "Can't match this record\n$line\n\n";
+        $count{'not found'}++;
+        next;
+     }
+
+     print join("\t",$gene_obj->stable_id, $go_id), "\n";
+
+     # Annotate genes 'canonical translation'
+     my $ensembl_obj      = $gene_obj->canonical_transcript->translation;
+     my $ensembl_obj_type = 'Translation';
+
+     # Annotate genes 'transcript' for genes (such as snoRNAs or annotated pseudogenes) that don't have a translation
+     unless($ensembl_obj){
+        $ensembl_obj      = $gene_obj->canonical_transcript;
+        $ensembl_obj_type = 'Transcript';
+    }
+
+    unless($ensembl_obj){
+        warn "line $. : No ensembl objects can be match and annotate on!\n";
+        next;
+    }
+
+    my $dbEntry = Bio::EnsEMBL::DBEntry->
+        new( -primary_id   => $go_id,
+             -display_id   => $go_id,
+             -dbname       => 'GO',
+             -linkage_type => $evidence_code,
+             -analysis     => $analysis_obj,
+             -linkage_annotation => $ARGV,
+        );
+
+    $ensembl_obj->add_DBEntry( $dbEntry );
+
+    $dba->get_DBEntryAdaptor->store( $dbEntry, $ensembl_obj->dbID, $ensembl_obj_type, 1 );
+}
 
 
 
