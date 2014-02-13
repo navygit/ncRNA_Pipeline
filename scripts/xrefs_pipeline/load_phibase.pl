@@ -246,7 +246,7 @@ while (my $line = <$INP>) {
 			 $host_name);
 		my $host_db_entry =
 		  Bio::EnsEMBL::DBEntry->new(
-								  -PRIMARY_ID => $ncbi_host{$host_name},
+								  -PRIMARY_ID => $ncbi_host{lc $host_name},
 								  -DBNAME     => 'NCBI_TAXONOMY',
 								  -VERSION    => 4,
 								  -DISPLAY_ID => $host_name,
