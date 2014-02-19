@@ -34,11 +34,15 @@ use Bio::EnsEMBL::DBEntry;
 use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::Analysis;
 
+Log::Log4perl->easy_init($INFO);
+my $logger     = Log::Log4perl->get_logger();
+
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 my $optsd      = $cli_helper->get_dba_opts();
+push(@{$optsd},"file:s");
 my $opts       = $cli_helper->process_args($optsd, \&usage);
 
-warn "Creating db adaptors...\n";
+$logger->info('Creating db adaptors...\n');
 # use the command line options to get an array of database details
 my $dba;
 
@@ -46,7 +50,14 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
    $dba = new Bio::EnsEMBL::DBSQL::DBAdaptor(%{$db_args});
 }
 
-die "GAF file is required !\n" unless @ARGV;
+#for my $db_args ( @{ $cli_helper->get_dba_args_for_opts( $opts, 0 ) } ) {
+
+#        my $dba = new Bio::EnsEMBL::DBSQL::DBAdaptor(%$db_args);
+#}
+
+#my $db_args = $cli_helper->get_dba_args_for_opts( $srcopts, 0 );
+
+#die "GAF file is required !\n" unless @ARGV;
 
 my $analysis_obj = Bio::EnsEMBL::Analysis->
     new( -logic_name      => 'gaf_loader',
@@ -55,15 +66,16 @@ my $analysis_obj = Bio::EnsEMBL::Analysis->
          -display_label   => 'GAF loader',
     );
 
-warn "Getting adaptors...\n";
+
+$logger->info('Getting adaptors...\n');
 my $ga    = $dba->get_GeneAdaptor() || die "problem getting gene adaptor\n";
-#my $dbea  = $dba->get_DBEntryAdaptor() || die "problem getting DBentry adaptor\n";
 
 my %count;
-my $file            = $ARGV[0];
+my $file = $opts->{file};
+#my $file = $ARGV[0];
 open(FILE, $file) || die "problem opening GAF file";
 
-warn "Start parsing GAF file...\n";
+$logger->info('Start parsing GAF file...\n');
 while (<FILE>) {
        my $line = $_;
        
@@ -150,12 +162,14 @@ te aminotransferase [isomerizing]	YM084_YEAST|YMR084W	protein	taxon:559292	20140
      }
 
      unless ($gene_obj){
-        warn "Can't match this record\n$line\n\n";
+	$logger->info('Can\'t match this record\n$line\n\n');
         $count{'not found'}++;
         next;
      }
 
-     print join("\t",$gene_obj->stable_id, $go_id), "\n";
+     my $string = join("\t",$gene_obj->stable_id, $go_id), "\n";
+     $logger->info($string);
+     #print join("\t",$gene_obj->stable_id, $go_id), "\n";
 
      # Annotate genes 'canonical translation'
      my $ensembl_obj      = $gene_obj->canonical_transcript->translation;
@@ -168,7 +182,7 @@ te aminotransferase [isomerizing]	YM084_YEAST|YMR084W	protein	taxon:559292	20140
     }
 
     unless($ensembl_obj){
-        warn "line $. : No ensembl objects can be match and annotate on!\n";
+	$logger->info('line $. : No ensembl objects can be match and annotate on!\n');
         next;
     }
 
