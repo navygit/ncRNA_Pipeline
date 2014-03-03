@@ -68,20 +68,7 @@ sub get_translation_upis {
         where
         tr.biotype='protein_coding' and
 	cs.species_id=? and 
-	upie.db_name='UniParc' and
-        tl.translation_id not in 
-        (select tl.translation_id
-	from 
-	translation tl
-	join transcript tr using (transcript_id)
-	join seq_region sr using (seq_region_id)
-	join coord_system cs using (coord_system_id)
-	join object_xref uniox on (uniox.ensembl_object_type='Translation' and uniox.ensembl_id=tl.translation_id)
-	join xref unix using (xref_id) 
-	join external_db unie using (external_db_id) 
-        where
-	cs.species_id=? and 
-	unie.db_name in ('Uniprot\/SWISSPROT','Uniprot\/TREMBL'))
+	upie.db_name='UniParc'
 	/,
 	-CALLBACK => sub {
 	  my ($tid, $upi, $gene_id) = @{$_[0]};
