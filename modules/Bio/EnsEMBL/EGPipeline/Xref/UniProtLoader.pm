@@ -41,7 +41,7 @@ sub new {
 
 sub add_xrefs {
   my ($self, $dba) = @_;
-  if (defined $self->{replace_all}) {
+  if (defined $self->{replace_all} && $self->{replace_all} == 1) {
 	$self->remove_xrefs($dba);
   }
   # get translation_id,UPIs where UniProt not set and UPI is set
@@ -52,6 +52,8 @@ sub add_xrefs {
 
 sub get_translation_upis {
   my ($self, $dba) = @_;
+  $self->logger()->info("Finding translation-UPI pairs");
+
   my $translation_upis = {};
   $dba->dbc()->sql_helper()->execute_no_return(
 	-SQL => q/
@@ -87,6 +89,11 @@ sub get_translation_upis {
 	  return;
 	},
 	-PARAMS => [$dba->species_id(), $dba->species_id]);
+
+  $self->logger()
+	->info("Found " .
+		   scalar(keys %$translation_upis) . " translation-UPI pairs");
+
   return $translation_upis;
 } ## end sub get_translation_upis
 
@@ -112,7 +119,7 @@ sub add_uniprot_xrefs {
   }
 
   if (defined $self->{gene_names} && $self->{gene_names} == 1) {
-	$self->set_gene_names($gdba, $gene_attribs);
+	$self->set_gene_names($ddba, $gene_attribs);
   }
   if (defined $self->{descriptions} && $self->{descriptions} == 1) {
 	$self->set_descriptions($gdba, $gene_attribs);
@@ -151,7 +158,7 @@ sub store_uniprot_xrefs {
 		  "Storing $dbname " . $uniprot->{ac} . " on translation $tid");
 	$ddba->store(Bio::EnsEMBL::DBEntry->new(
 								-PRIMARY_ID    => $uniprot->{ac},
-								-DISPLAY_LABEL => $uniprot->{ac},
+								-DISPLAY_ID => $uniprot->{ac},
 								-DESCRIPTION => $uniprot->{description},
 								-DBNAME      => $dbname),
 				 $tid,
@@ -163,7 +170,7 @@ sub store_uniprot_xrefs {
 		'[Source:' . $dbname . ';Acc:' . $uniprot->{ac} . ']';
 	}
 	if (defined $uniprot->{gene_name}) {
-	  $gene_attribs->{names}->{$gene_id}->{$dbname}
+	  $gene_attribs->{gene_names}->{$gene_id}->{$dbname}
 		->{$uniprot->{gene_name}} += 1;
 	  if (defined $uniprot->{synonyms}) {
 		for my $synonym (@{$uniprot->{synonyms}}) {
@@ -212,7 +219,7 @@ sub set_descriptions {
 } ## end sub set_descriptions
 
 sub set_gene_names {
-  my ($self, $gdba, $gene_attribs) = @_;
+  my ($self, $ddba, $gene_attribs) = @_;
   my $nNames = 0;
   while (my ($gid, $names) = each %{$gene_attribs->{gene_names}}) {
 	# work out the best name
@@ -229,9 +236,9 @@ sub set_gene_names {
 		# create dbentry
 		my $gd =
 		  Bio::EnsEMBL::DBEntry->new(
-				  -PRIMARY_ID => $gene_name . ' ' . $gdba->species_id(),
-				  -DISPLAY_LABEL => $gene_name,
-				  -DBNAME        => 'Uniprot_gn');
+				  -PRIMARY_ID => $gene_name . ' ' . $ddba->species_id(),
+				  -DISPLAY_ID => $gene_name,
+				  -DBNAME     => 'Uniprot_gn');
 		# synonyms for this name (assume this is unique...?)
 		my $synonyms = $gene_attribs->{synonyms}->{$gene_name};
 		if (defined $synonyms) {
@@ -245,7 +252,7 @@ sub set_gene_names {
 		$self->logger()
 		  ->debug("Setting gene $gene_id name to '$gene_name'");
 		$nNames++;
-		$gdba->dbc()->sql_helper()->execute_update(
+		$ddba->dbc()->sql_helper()->execute_update(
 		   -SQL => q/update gene set display_xref_id=? where gene_id=?/,
 		   -PARAMS => [$gd->dbID(), $gid]);
 	  }
