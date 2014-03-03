@@ -14,6 +14,7 @@ my $optsd = [@{$cli_helper->get_dba_opts()}, @{$cli_helper->get_dba_opts('unipar
 push(@{$optsd}, "verbose");
 push(@{$optsd}, "gene_names");
 push(@{$optsd}, "descriptions");
+push(@{$optsd}, "replace_all");
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 
@@ -34,6 +35,7 @@ my $loader = Bio::EnsEMBL::EGPipeline::Xref::UniProtLoader->new(
 	-UNIPROT_DBA => $uniprot_dba,
 	-GENE_NAMES=> $opts->{gene_names}?1:0,
 	-DESCRIPTIONS=> $opts->{descriptions}?1:0,
+	-REPLACE_ALL=>$opts->{replace_all}?1:0
 );
 
 $logger->info("Connecting to core database(s)");
