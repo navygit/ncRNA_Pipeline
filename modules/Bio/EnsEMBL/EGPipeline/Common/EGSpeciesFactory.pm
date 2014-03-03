@@ -22,7 +22,7 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::EGPipeline::CoreStatistics::EGSpeciesFactory
+Bio::EnsEMBL::EGPipeline::Common::EGSpeciesFactory
 
 =head1 DESCRIPTION
 
@@ -36,12 +36,21 @@ James Allen
 
 =cut
 
-package Bio::EnsEMBL::EGPipeline::CoreStatistics::EGSpeciesFactory;
+package Bio::EnsEMBL::EGPipeline::Common::EGSpeciesFactory;
 
 use strict;
 use warnings;
 
 use base qw/Bio::EnsEMBL::Production::Pipeline::Production::ClassSpeciesFactory/;
+
+sub param_defaults {
+  my ($self) = @_;
+  
+  return {
+    %{$self->SUPER::param_defaults},
+    antispecies => []
+  };
+}
 
 sub run {
   my ($self) = @_;
