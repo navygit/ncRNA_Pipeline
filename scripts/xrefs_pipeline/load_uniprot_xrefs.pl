@@ -6,11 +6,14 @@ use Bio::EnsEMBL::Utils::CliHelper;
 use Log::Log4perl qw/:easy/;
 use Pod::Usage;
 use Bio::EnsEMBL::EGPipeline::Xref::UniProtLoader;
+use Data::Dumper;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
 my $optsd = [@{$cli_helper->get_dba_opts()}, @{$cli_helper->get_dba_opts('uniparc')}, @{$cli_helper->get_dba_opts('uniprot')}];
 push(@{$optsd}, "verbose");
+push(@{$optsd}, "gene_names");
+push(@{$optsd}, "descriptions");
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 
@@ -28,7 +31,9 @@ my ($uniprot_dba) = @{$cli_helper->get_dbas_for_opts($opts, 1, 'uniprot')};
 
 my $loader = Bio::EnsEMBL::EGPipeline::Xref::UniProtLoader->new(
 	-UNIPARC_DBA => $uniparc_dba,
-	-UNIPROT_DBA => $uniprot_dba
+	-UNIPROT_DBA => $uniprot_dba,
+	-GENE_NAMES=> $opts->{gene_names}?1:0,
+	-DESCRIPTIONS=> $opts->{descriptions}?1:0,
 );
 
 $logger->info("Connecting to core database(s)");
