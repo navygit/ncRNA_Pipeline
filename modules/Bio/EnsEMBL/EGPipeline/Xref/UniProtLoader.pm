@@ -41,6 +41,8 @@ sub new {
 
 sub add_xrefs {
   my ($self, $dba) = @_;
+  $self->{analysis} =
+	$self->get_analysis($dba, 'xrefuniparc');
   if (defined $self->{replace_all} && $self->{replace_all} == 1) {
 	$self->remove_xrefs($dba);
   }
@@ -149,13 +151,14 @@ sub store_uniprot_xrefs {
 	$self->logger()
 	  ->debug(
 		  "Storing $dbname " . $uniprot->{ac} . " on translation $tid");
-	$ddba->store(Bio::EnsEMBL::DBEntry->new(
+	my $dbentry =
+	  Bio::EnsEMBL::DBEntry->new(
 								-PRIMARY_ID  => $uniprot->{ac},
 								-DISPLAY_ID  => $uniprot->{ac},
 								-DESCRIPTION => $uniprot->{description},
-								-DBNAME      => $dbname),
-				 $tid,
-				 'Translation');
+								-DBNAME      => $dbname);
+	$dbentry->analysis($self->{analysis});
+	$ddba->store($dbentry, $tid, 'Translation');
 	# track names and descriptions
 	if (defined $uniprot->{description}) {
 	  push @{$gene_attribs->{descriptions}->{$gene_id}->{$dbname}
