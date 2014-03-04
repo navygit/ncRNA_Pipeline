@@ -75,7 +75,7 @@ sub get_translation_upis {
 	  $translation_upis->{$tid} = {upi => $upi, gene_id => $gene_id};
 	  return;
 	},
-	-PARAMS => [$dba->species_id(), $dba->species_id]);
+	-PARAMS => [$dba->species_id()]);
 
   $self->logger()
 	->info("Found " .
