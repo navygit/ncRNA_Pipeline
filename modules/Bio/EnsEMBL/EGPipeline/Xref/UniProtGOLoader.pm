@@ -35,6 +35,7 @@ sub new {
 
 sub load_go_terms {
   my ($self, $dba) = @_;
+    $self->{analysis} = $self->get_analysis($dba, 'xrefuniprot');
   if (defined $self->{replace_all}) {
 	$self->remove_uniprot_go($dba);
   }
@@ -67,7 +68,7 @@ sub get_translation_uniprot {
 	join external_db unie using (external_db_id) 
         where
 	cs.species_id=? and 
-	unie.db_name in ('Uniprot\/SWISSPROT','Uniprot\/TREMBL')
+	unie.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL')
 	/,
 	-CALLBACK => sub {
 	  my ($tid, $xid) = @{$_[0]};
@@ -87,7 +88,7 @@ sub add_go_terms {
   while (my ($tid, $uniprot) = each %$translation_uniprot) {
 	$tN++;
 	$uN += $self->store_go_term($ddba, $tid, $uniprot);
-	$uN += $n;	
+	$uN += $n;
 	$self->logger()->info("Processed $tN translations ($uN xrefs)")
 	  if ($tN % 1000 == 0);
   }
@@ -97,8 +98,8 @@ sub add_go_terms {
 sub store_go_term {
   my ($self, $ddba, $tid, $uniprot) = @_;
   my $gos = $self->get_go_for_uniprot($uniprot->primary_id());
-  if($self->{replace_all} && scalar(@$gos)>0) {
-	  $self->remove_interpro2go($ddba, $tid);  	
+  if ($self->{replace_all} && scalar(@$gos) > 0) {
+	$self->remove_interpro2go($ddba, $tid);
   }
   my $n = 0;
   for my $go (@{$gos}) {
@@ -107,6 +108,7 @@ sub store_go_term {
 	  Bio::EnsEMBL::OntologyXref->new(-DBNAME     => 'GO',
 									  -PRIMARY_ID => $go->{TERM},
 									  -DISPLAY_ID => $go->{TERM});
+	$go_xref->analysis($self->{analysis});
 	my $linkage_type = $go->{EVIDENCE};
 	if ($linkage_type) {
 	  $go_xref->add_linkage_type($linkage_type, $uniprot);
@@ -127,14 +129,17 @@ sub get_go_for_uniprot {
 		dbentry_2_database dd where d.dbentry_id = dd.dbentry_id
 		and dd.database_id='GO'
 		and
-		d.accession=?/, -PARAMS => [$ac]);
-		return $gos;
+		d.accession=?/,
+	-PARAMS => [$ac]);
+  return $gos;
 }
 
 sub remove_interpro2go {
   my ($self, $dba, $tid) = @_;
-   $self->logger()->debug("Removing existing GO-InterPro cross-references from translation $id");
-	  my $sql = q/delete oox.*,ox.* from 
+  $self->logger()
+	->debug(
+"Removing existing GO-InterPro cross-references from translation $id");
+  my $sql = q/delete oox.*,ox.* from 
 object_xref ox
 join ontology_xref oox using (object_xref_id)
 join xref x on (ox.xref_id=x.xref_id)
@@ -145,11 +150,10 @@ where
 ox.ensembl_id=? and ox.ensembl_object_type='Translation'
 and d.db_name='GO'
 and sd.db_name='Interpro'/;
-  $dba->dbc()->sql_helper()->execute_update(
-	-SQL => $sql,
-	-PARAMS => [$tid]);
+  $dba->dbc()->sql_helper()
+	->execute_update(-SQL => $sql, -PARAMS => [$tid]);
   return;
- }
+}
 
 sub remove_uniprot_go {
   my ($self, $dba) = @_;
@@ -170,10 +174,9 @@ join external_db sd on (sd.external_db_id=sx.external_db_id)
 where cs.species_id=? 
 and d.db_name='GO'
 and sd.db_name in ('Uniprot\/SWISSPROT','Uniprot\/TREMBL')/;
-  $dba->dbc()->sql_helper()->execute_update(
-	-SQL => $sql,
-	-PARAMS => [$dba->species_id()]);
+  $dba->dbc()->sql_helper()
+	->execute_update(-SQL => $sql, -PARAMS => [$dba->species_id()]);
   return;
-} ## end sub remove_xrefs
+}
 
 1;
