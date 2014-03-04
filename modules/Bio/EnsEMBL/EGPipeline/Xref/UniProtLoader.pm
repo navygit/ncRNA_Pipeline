@@ -135,17 +135,23 @@ sub store_uniprot_xrefs {
   my $n = 0;
   return $n if scalar(@$uniprots) == 0;
   for my $uniprot (@$uniprots) {
-	$n++;
+
 	my $dbname =
 	  ($uniprot->{type} eq 'UniProtKB/Swiss-Prot') ?
 	  'Uniprot/SWISSPROT' :
 	  'Uniprot/SPTREMBL';
+	if (!$uniprot->{ac} || $uniprot->{ac} eq '') {
+	  $self->logger()
+		->warn(
+"Empty $dbname accession retrieved from UniProt for translation $tid");
+	  next;
+	}
 	$self->logger()
 	  ->debug(
 		  "Storing $dbname " . $uniprot->{ac} . " on translation $tid");
 	$ddba->store(Bio::EnsEMBL::DBEntry->new(
-								-PRIMARY_ID    => $uniprot->{ac},
-								-DISPLAY_ID => $uniprot->{ac},
+								-PRIMARY_ID  => $uniprot->{ac},
+								-DISPLAY_ID  => $uniprot->{ac},
 								-DESCRIPTION => $uniprot->{description},
 								-DBNAME      => $dbname),
 				 $tid,
@@ -166,6 +172,7 @@ sub store_uniprot_xrefs {
 		}
 	  }
 	}
+	$n++;
   } ## end for my $uniprot (@$uniprots)
   return $n;
 } ## end sub store_uniprot_xrefs
@@ -287,32 +294,40 @@ LEFT OUTER JOIN SPTR.description_subcategory sc3
 ON (dc3.category_id        = sc3.category_id
 AND sc3.subcategory_type_id=1)
 left join gene g on ( d.dbentry_id = g.dbentry_id)
-join gene_name gn on (g.gene_id = gn.gene_id)
-join cv_gene_name_type cgnt on (gn.gene_name_type_id = cgnt.gene_name_type_id )
+left join gene_name gn on (g.gene_id = gn.gene_id)
+left join cv_gene_name_type cgnt on (gn.gene_name_type_id = cgnt.gene_name_type_id )
 WHERE d.accession = ?
 	/,
 	  -PARAMS   => [$ac],
 	  -CALLBACK => sub {
 		my ($ac, $name, $des, $type, $gene_name, $gene_name_type) =
 		  @{$_[0]};
-		if (!defined $uniprot->{ac}) {
-		  $uniprot->{ac}          = $ac;
+		if (defined $ac && $ac ne '') {
+		  $uniprot->{ac} = $ac;
+		}
+		if (defined $des && $des ne '') {
 		  $uniprot->{description} = $des;
-		  $uniprot->{name}        = $name;
+		}
+		if (defined $name && $name ne '') {
+		  $uniprot->{name} = $name;
+		}
+		if (defined $type && $type ne '') {
 		  $uniprot->{type} =
 			$type == 0 ? "Uniprot/SWISSPROT" : "Uniprot/SPTREMBL";
-		  $uniprot->{synonyms} = [];
 		}
-		if ($gene_name_type eq 'Name') {
-		  $uniprot->{gene_name} = $gene_name;
-		}
-		else {
-		  push @{$uniprot->{synonyms}}, $gene_name;
+		if (defined $gene_name) {
+		  if ($gene_name_type eq 'Name') {
+			$uniprot->{gene_name} = $gene_name;
+		  }
+		  else {
+			push @{$uniprot->{synonyms}}, $gene_name;
+		  }
 		}
 		return;
 	  });
-
-	push @$uniprots, $uniprot;
+	if (defined $uniprot->{ac}) {
+	  push @$uniprots, $uniprot;
+	}
   } ## end for my $ac (@uniprot_acs)
   return $uniprots;
 
