@@ -16,6 +16,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+=pod
+
+=head1 NAME
+
+Bio::EnsEMBL::EGPipeline::Xref::UniProtXrefLoader
+
+=head1 DESCRIPTION
+
+Loader that adds new xrefs to translations based on existing UniProt cross-references
+
+=head1 Author
+
+Dan Staines
+
 =cut
 
 package Bio::EnsEMBL::EGPipeline::Xref::UniProtXrefLoader;
@@ -25,6 +39,21 @@ use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Digest::MD5;
 use Data::Dumper;
 
+=head1 CONSTRUCTOR
+=head2 new
+  Arg [-UNIPROT_DBA]  : 
+       string - adaptor for UniProt Oracle database (e.g. SWPREAD)
+  Arg [-DBNAMES]    : 
+       array - array of database names to process (default is ArrayExpress, PDB, EMBL)
+
+  Example    : $ldr = Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader->new(...);
+  Description: Creates a new loader object
+  Returntype : Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+
+=cut
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
@@ -37,6 +66,15 @@ sub new {
   return $self;
 }
 
+=head1 METHODS
+=head2 load_xrefs
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Description: Add xrefs to supplied core
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub load_xrefs {
   my ($self, $dba) = @_;
   $self->{analysis} = $self->get_analysis($dba, 'xrefuniprot');
@@ -51,35 +89,15 @@ sub load_xrefs {
   return;
 }
 
-sub get_translation_uniprot {
-  my ($self, $dba) = @_;
-  # get hash of xrefs by translation ID
-  my $translation_accs = {};
-  my $dbea             = $dba->get_DBEntryAdaptor();
-  $dba->dbc()->sql_helper()->execute_no_return(
-	-SQL => q/
-		select tl.translation_id,unix.xref_id
-		from
-	translation tl
-	join transcript tr using (transcript_id)
-	join seq_region sr using (seq_region_id)
-	join coord_system cs using (coord_system_id)
-	join object_xref uniox on (uniox.ensembl_object_type='Translation' and uniox.ensembl_id=tl.translation_id)
-	join xref unix using (xref_id) 
-	join external_db unie using (external_db_id) 
-        where
-	cs.species_id=? and 
-	unie.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL') limit 10
-	/,
-	-CALLBACK => sub {
-	  my ($tid, $xid) = @{$_[0]};
-	  $translation_accs->{$tid} = $dbea->fetch_by_dbID($xid);
-	  return;
-	},
-	-PARAMS => [$dba->species_id()]);
-  return $translation_accs;
-} ## end sub get_translation_uniprot
-
+=head2 add_xrefs
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Arg        : hashref of translation ID to UniProt accessions
+  Description: Add xrefs to specified translations
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub add_xrefs {
   my ($self, $dba, $translation_uniprot) = @_;
   my $ddba = $dba->get_DBEntryAdaptor();
@@ -94,8 +112,19 @@ sub add_xrefs {
 	  if ($tN % 1000 == 0);
   }
   $self->logger()->info("Stored $uN xrefs on $tN translations");
+  return;
 }
 
+=head2 store_xref
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Arg        : Translation dbID
+  Arg        : Bio::EnsEMBL::DBEntry for UniProt record
+  Description: Add xrefs to specified translation
+  Returntype : number of xrefs attached
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub store_xref {
   my ($self, $ddba, $tid, $uniprot) = @_;
   # get xrefs we're interested in
@@ -120,6 +149,7 @@ sub store_xref {
   my $n = 0;
   for my $xref (@xrefs) {
 	$n++;
+	$self->logger()->debug("Attaching ".$xref->{DBNAME}.":".$xref->{PRIMARY_ID}." to translation ".$tid);
 	$ddba->dbc()->sql_helper()->execute_update(
 	  -SQL => q/delete ox.* from object_xref ox 
 	join xref x using (xref_id) 
@@ -137,6 +167,14 @@ sub store_xref {
   return $n;
 } ## end sub store_xref
 
+=head2 get_xrefs_for_uniprot
+  Arg        : UniProt accession
+  Description: Find xrefs from UniProt for given accession
+  Returntype : Array of hashref of xrefs
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub get_xrefs_for_uniprot {
   my ($self, $ac) = @_;
   $self->logger()->info("Getting xrefs for $ac");

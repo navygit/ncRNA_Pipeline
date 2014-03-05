@@ -16,6 +16,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+=pod
+
+=head1 NAME
+
+Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader
+
+=head1 DESCRIPTION
+
+Loader that adds UPI xrefs to translations based on checksums
+
+=head1 Author
+
+Dan Staines
+
 =cut
 
 package Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader;
@@ -23,7 +37,41 @@ use base Bio::EnsEMBL::EGPipeline::Xref::XrefLoader;
 use Log::Log4perl qw/:easy/;
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Digest::MD5;
+=head1 CONSTRUCTOR
+=head2 new
+  Arg [-NAME]  : 
+       string - human readable version of the name of the genome
+  Arg [-SPECIES]    : 
+       string - computable version of the name of the genome (lower case, no spaces)
+  Arg [-DBNAME] : 
+       string - name of the core database in which the genome can be found
+  Arg [-SPECIES_ID]  : 
+       int - identifier of the species within the core database for this genome
+  Arg [-TAXONOMY_ID] :
+        string - NCBI taxonomy identifier
+  Arg [-ASSEMBLY_NAME] :
+        string - name of the assembly
+  Arg [-ASSEMBLY_ID] :
+        string - INSDC assembly accession
+  Arg [-ASSEMBLY_LEVEL] :
+        string - highest assembly level (chromosome, supercontig etc.)
+  Arg [-GENEBUILD]:
+        string - identifier for genebuild
+  Arg [-DIVISION]:
+        string - name of Ensembl Genomes division (e.g. EnsemblBacteria, EnsemblPlants)
+  Arg [-STRAIN]:
+        string - name of strain to which genome belongs
+  Arg [-SEROTYPE]:
+        string - name of serotype to which genome belongs
 
+  Example    : $info = Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(...);
+  Description: Creates a new info object
+  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+
+=cut
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
@@ -31,7 +79,15 @@ sub new {
 	rearrange(['UNIPARC_DBA'], @args);
   return $self;
 }
-
+=head1 METHODS
+=head2 species
+  Arg        : (optional) species to set
+  Description: Gets/sets species (computationally safe name for species)
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub add_upis {
   my ($self, $dba, $preserve_old) = @_;
   if (!defined $preserve_old) {

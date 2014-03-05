@@ -16,6 +16,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+=pod
+
+=head1 NAME
+
+Bio::EnsEMBL::EGPipeline::Xref::LoadUniProtGO
+
+=head1 DESCRIPTION
+
+Runnable that invokes LoadUniProtGO on a core database
+
+=head1 Author
+
+Dan Staines
+
 =cut
 
 package Bio::EnsEMBL::EGPipeline::Xref::UniProtLoader;
@@ -26,6 +40,27 @@ use Digest::MD5;
 use List::MoreUtils qw/uniq/;
 use Data::Dumper;
 
+=head1 CONSTRUCTOR
+=head2 new
+  Arg [-UNIPROT_DBA]  : 
+       string - adaptor for UniProt Oracle database (e.g. SWPREAD)
+  Arg [-UNIPARC_DBA]  : 
+       string - adaptor for UniParc Oracle database (e.g. UAPRO)
+  Arg [-REPLACE_ALL]    : 
+       boolean - remove all GO references first
+  Arg [-GENE_NAMES]    : 
+       boolean - add gene names from SwissProt
+  Arg [-DESCRIPTIONS]    : 
+       boolean - add descriptions from SwissProt
+
+  Example    : $ldr = Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader->new(...);
+  Description: Creates a new loader object
+  Returntype : Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+
+=cut
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
@@ -39,6 +74,15 @@ sub new {
   return $self;
 }
 
+=head1 METHODS
+=head2 add_xrefs
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Description: Add xrefs to supplied core
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub add_xrefs {
   my ($self, $dba) = @_;
   $self->{analysis} =
@@ -52,6 +96,14 @@ sub add_xrefs {
   return;
 }
 
+=head2 get_translation_uniprot
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Description: Get mapping of UniParc to translation
+  Returntype : Hash of translation IDs to UniParc accessions
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub get_translation_upis {
   my ($self, $dba) = @_;
   $self->logger()->info("Finding translation-UPI pairs");
@@ -86,6 +138,15 @@ sub get_translation_upis {
   return $translation_upis;
 } ## end sub get_translation_upis
 
+=head2 add_uniprot_xrefs
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Arg        : hashref of translation ID to UniParc accessions
+  Description: Add UniProt to specified translations
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub add_uniprot_xrefs {
   my ($self, $dba, $translation_upis) = @_;
   my $taxid = $dba->get_MetaContainer()->get_taxonomy_id();
@@ -116,6 +177,18 @@ sub add_uniprot_xrefs {
   $self->logger()->info("Stored $uN UniProt xrefs on $tN translations");
 } ## end sub add_uniprot_xrefs
 
+=head2 store_uniprot_xrefs
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Arg        : Translation dbID
+  Arg        : Bio::EnsEMBL::DBEntry for UniProt record
+  Arg        : Corresponding gene dbID
+  Arg        : Hash of gene-related identifiers
+  Description: Add UniProt xrefs to specified translation
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub store_uniprot_xrefs {
   my ($self, $ddba, $tid, $uniprots, $gene_id, $gene_attribs) = @_;
   # remove existing uniprots for this translation first
@@ -180,6 +253,15 @@ sub store_uniprot_xrefs {
   return $n;
 } ## end sub store_uniprot_xrefs
 
+=head2 set_descriptions
+  Arg        : Bio::EnsEMBL::DBSQL::GeneAdaptor for core database to write to
+  Arg        : Hash of gene-related identifiers
+  Description: Add descriptions to names based on matched UniProt records
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub set_descriptions {
   my ($self, $gdba, $gene_attribs) = @_;
   my $nDes = 0;
@@ -215,6 +297,15 @@ sub set_descriptions {
   return;
 } ## end sub set_descriptions
 
+=head2 set_gene_names
+  Arg        : Bio::EnsEMBL::DBSQL::DBEntryAdaptor for core database to write to
+  Arg        : Hash of gene-related identifiers
+  Description: Add gene names to names based on matched UniProt records
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub set_gene_names {
   my ($self, $ddba, $gene_attribs) = @_;
   my $nNames = 0;
@@ -259,6 +350,15 @@ sub set_gene_names {
   return;
 } ## end sub set_gene_names
 
+=head2 get_uniprot_for_upi
+  Arg        : Taxonomy ID
+  Arg        : UniParc identifier
+  Description: Find UniProt accession for UPI and taxonomy
+  Returntype : hashref of matching UniProt records
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub get_uniprot_for_upi {
   my ($self, $taxid, $upi) = @_;
   my @uniprot_acs = @{
@@ -336,6 +436,14 @@ WHERE d.accession = ?
 
 } ## end sub get_uniprot_for_upi
 
+=head2 remove_xrefs
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Description: Remove existing UniProt cross-references from genome
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub remove_xrefs {
   my ($self, $dba) = @_;
   $self->logger()->info("Removing existing UniProt cross-references");

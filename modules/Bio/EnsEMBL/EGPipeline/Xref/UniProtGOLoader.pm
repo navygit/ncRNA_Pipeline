@@ -16,6 +16,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+=pod
+
+=head1 NAME
+
+Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader
+
+=head1 DESCRIPTION
+
+Loader that adds GO annotation to translations based on existing UniProt cross-references
+
+=head1 Author
+
+Dan Staines
+
 =cut
 
 package Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader;
@@ -25,6 +39,21 @@ use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Digest::MD5;
 use Data::Dumper;
 
+=head1 CONSTRUCTOR
+=head2 new
+  Arg [-UNIPROT_DBA]  : 
+       string - adaptor for UniProt Oracle database (e.g. SWPREAD)
+  Arg [-REPLACE_ALL]    : 
+       string - remove all GO references first
+
+  Example    : $ldr = Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader->new(...);
+  Description: Creates a new loader object
+  Returntype : Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+
+=cut
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
@@ -33,6 +62,15 @@ sub new {
   return $self;
 }
 
+=head1 METHODS
+=head2 load_go_terms
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Description: Add GO terms to supplied core
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub load_go_terms {
   my ($self, $dba) = @_;
     $self->{analysis} = $self->get_analysis($dba, 'xrefuniprot');
@@ -50,35 +88,15 @@ sub load_go_terms {
   return;
 }
 
-sub get_translation_uniprot {
-  my ($self, $dba) = @_;
-  # get hash of xrefs by translation ID
-  my $translation_accs = {};
-  my $dbea             = $dba->get_DBEntryAdaptor();
-  $dba->dbc()->sql_helper()->execute_no_return(
-	-SQL => q/
-		select tl.translation_id,unix.xref_id
-		from
-	translation tl
-	join transcript tr using (transcript_id)
-	join seq_region sr using (seq_region_id)
-	join coord_system cs using (coord_system_id)
-	join object_xref uniox on (uniox.ensembl_object_type='Translation' and uniox.ensembl_id=tl.translation_id)
-	join xref unix using (xref_id) 
-	join external_db unie using (external_db_id) 
-        where
-	cs.species_id=? and 
-	unie.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL')
-	/,
-	-CALLBACK => sub {
-	  my ($tid, $xid) = @{$_[0]};
-	  $translation_accs->{$tid} = $dbea->fetch_by_dbID($xid);
-	  return;
-	},
-	-PARAMS => [$dba->species_id()]);
-  return $translation_accs;
-} ## end sub get_translation_uniprot
-
+=head2 add_go_terms
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Arg        : hashref of translation ID to UniProt accessions
+  Description: Add GO terms to specified translation
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub add_go_terms {
   my ($self, $dba, $translation_uniprot) = @_;
   my $ddba = $dba->get_DBEntryAdaptor();
@@ -93,8 +111,19 @@ sub add_go_terms {
 	  if ($tN % 1000 == 0);
   }
   $self->logger()->info("Stored $uN GO terms on $tN translations");
+  return;
 }
 
+=head2 store_go_term
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Arg        : Translation dbID
+  Arg        : Bio::EnsEMBL::DBEntry for UniProt record
+  Description: Add GO terms to specified translation
+  Returntype : number of terms attached
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub store_go_term {
   my ($self, $ddba, $tid, $uniprot) = @_;
   my $gos = $self->get_go_for_uniprot($uniprot->primary_id());
@@ -118,6 +147,14 @@ sub store_go_term {
   return $n;
 }
 
+=head2 get_go_for_uniprot
+  Arg        : UniProt accession
+  Description: Find GO terms from UniProt for given accession
+  Returntype : Array of hashref of GO terms
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub get_go_for_uniprot {
   my ($self, $ac) = @_;
   my $gos = $self->{uniprot_dba}->dbc()->sql_helper()->execute(
@@ -134,6 +171,15 @@ sub get_go_for_uniprot {
   return $gos;
 }
 
+=head2 remove_interpro2go
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Arg        : Translation dbID
+  Description: Remove InterPro derived GO terms from translation
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub remove_interpro2go {
   my ($self, $dba, $tid) = @_;
   $self->logger()
@@ -155,6 +201,14 @@ and sd.db_name='Interpro'/;
   return;
 }
 
+=head2 remove_uniprot_go
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
+  Description: Remove UniProt derived GO terms from all translations
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub remove_uniprot_go {
   my ($self, $dba) = @_;
   $self->logger()

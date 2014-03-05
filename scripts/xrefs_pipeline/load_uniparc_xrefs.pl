@@ -1,6 +1,5 @@
 #!/usr/bin/env perl
-# Copyright [1999-2014] EMBL-European Bioinformatics Institute
-# and Wellcome Trust Sanger Institute
+# Copyright [2009-2014] EMBL-European Bioinformatics Institute
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +12,50 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+=head1 DESCRIPTION
+
+This script is used to add UniParc cross-references to one or more Ensembl cores
+
+=head1 EXAMPLE
+
+perl -I modules scripts/xrefs_pipeline/load_uniparc_xrefs.pl -host mysql-eg-devel-1
+ -port 4126 -user ensrw -pass xxxx -dbname gibberella_zeae_core_20_73_3
+ -uniparchost mysql-eg-pan-1 -uniparcport 4276 -uniparcuser ensro -uniparcdbname uniparc
+	
+=head1 USAGE
+
+  --user=user                      username for the core database server
+
+  --pass=pass                      password for core database server
+
+  --host=host                      release core server 
+
+  --port=port                      port for release database server 
+  
+  --dbname=dbname                  name of core database
+  
+  --uniparcdriver=dbname           driver to use for UniParc database
+
+  --uniparcuser=user               username for the UniParc database
+
+  --uniparcpass=pass               password for UniParc database
+
+  --uniparchost=host               server where the UniParc database is stored
+
+  --uniparcport=port               port for UniParc database
+  
+  --uniparcdbname=dbname           name/SID of UniParc database to process
+   
+  --verbose                        Increase logging level to debug
+  
+
+=head1 AUTHOR
+
+dstaines
+
+=cut
+
 
 use warnings;
 use strict;
