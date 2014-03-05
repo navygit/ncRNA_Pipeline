@@ -28,7 +28,7 @@ my ($uniprot_dba) = @{$cli_helper->get_dbas_for_opts($opts, 1, 'uniprot')};
 
 my $loader = Bio::EnsEMBL::EGPipeline::Xref::UniProtXrefLoader->new(
 	-UNIPROT_DBA => $uniprot_dba,
-	-DBNAMES=>$opts->{dbnames}||[qw/ArrayExpress PDB/]
+	-DBNAMES=>$opts->{dbnames}||[qw/ArrayExpress PDB EMBL/]
 );
 
 $logger->info("Connecting to core database(s)");
