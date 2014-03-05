@@ -31,7 +31,7 @@ sub new {
   ($self->{uniprot_dba}, $self->{dbnames}) =
 	rearrange(['UNIPROT_DBA', 'DBNAMES'], @args);
   if (!defined $self->{dbnames}) {
-	$self->{dbnames} = qw/ArrayExpress PDB/;
+	$self->{dbnames} = qw/ArrayExpress PDB EMBL/;
   }
   $self->{dbnames} = {%hash = map { $_ => 1 } @{$self->{dbnames}}};
   return $self;
@@ -39,7 +39,7 @@ sub new {
 
 sub load_xrefs {
   my ($self, $dba) = @_;
-    $self->{analysis} = $self->get_analysis($dba, 'xrefuniprot');
+  $self->{analysis} = $self->get_analysis($dba, 'xrefuniprot');
   # get translation_id,UniProt xref
   my $translation_uniprot = $self->get_translation_uniprot($dba);
   $self->logger()
@@ -69,7 +69,7 @@ sub get_translation_uniprot {
 	join external_db unie using (external_db_id) 
         where
 	cs.species_id=? and 
-	unie.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL')
+	unie.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL') limit 10
 	/,
 	-CALLBACK => sub {
 	  my ($tid, $xid) = @{$_[0]};
@@ -98,29 +98,39 @@ sub add_xrefs {
 
 sub store_xref {
   my ($self, $ddba, $tid, $uniprot) = @_;
-  my @xrefs = grep { defined $self->{dbnames}{$_->{dbname}} }
-	@{$self->get_xrefs_for_uniprot($uniprot->primary_id())};
+  # get xrefs we're interested in
+  my @xrefs = @{$self->get_xrefs_for_uniprot($uniprot->primary_id())};
+  my @xrefs = grep { defined $self->{dbnames}{$_->{DBNAME}} }
+	@xrefs;
+  # special rules for ENA - we don't want genomic references where we have the CDS
+  @xrefs = 
+	map {
+	  if ($_->{DBNAME} eq 'EMBL' &&
+		  defined $_->{QUATERNARY_ID} &&
+		  defined $_->{SECONDARY_ID}  &&
+		  $_->{QUATERNARY_ID} eq 'Genomic_DNA')
+	  {
+		$_->{PRIMARY_ID} = $_->{SECONDARY_ID};
+		$_->{DBNAME} = 'protein_id';
+	  }
+	  $_;
+	  }
+	  @xrefs;	
+
   my $n = 0;
   for my $xref (@xrefs) {
 	$n++;
-	my $des;
-	if (defined $xref->{secondary_id} &&
-		$xref->{secondary_id} ne $xref->{primary_id})
-	{
-	  $des = $xref->{secondary_id};
-	}
 	$ddba->dbc()->sql_helper()->execute_update(
 	  -SQL => q/delete ox.* from object_xref ox 
 	join xref x using (xref_id) 
 	join external_db e using (external_db_id) 
 	where ox.ensembl_id=? and ox.ensembl_object_type='Translation'
 	and e.db_name=? and x.dbprimary_acc=?/,
-	  -PARAMS => [$tid, $xref->{dbname}, $xref->{primary_id}]);
+	  -PARAMS => [$tid, $xref->{DBNAME}, $xref->{PRIMARY_ID}]);
 	my $dbentry =
-	  Bio::EnsEMBL::DBEntry->new(-DBNAME      => $xref->{dbname},
-								 -PRIMARY_ID  => $xref->{primary_id},
-								 -DISPLAY_ID  => $xref->{primary_id},
-								 -DESCRIPTION => $des);
+	  Bio::EnsEMBL::DBEntry->new(-DBNAME      => $xref->{DBNAME},
+								 -PRIMARY_ID  => $xref->{PRIMARY_ID},
+								 -DISPLAY_ID  => $xref->{PRIMARY_ID});
 	$dbentry->analysis($self->{analysis});
 	$ddba->store($dbentry, $tid, 'Translation');
   }
@@ -129,6 +139,7 @@ sub store_xref {
 
 sub get_xrefs_for_uniprot {
   my ($self, $ac) = @_;
+  $self->logger()->info("Getting xrefs for $ac");
   my $xrefs = $self->{uniprot_dba}->dbc()->sql_helper()->execute(
 	-USE_HASHREFS => 1,
 	-SQL          => q/
@@ -144,6 +155,6 @@ sub get_xrefs_for_uniprot {
 		d.accession=?/,
 	-PARAMS => [$ac]);
   return $xrefs;
-}
+} ## end sub get_xrefs_for_uniprot
 
 1;
