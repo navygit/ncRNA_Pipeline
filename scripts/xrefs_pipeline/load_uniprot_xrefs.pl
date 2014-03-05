@@ -1,17 +1,13 @@
 #!/usr/bin/env perl
-# Copyright [2009-2014] EMBL-European Bioinformatics Institute
-# 
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-# 
-#      http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+=head1 LICENSE
+
+  Copyright (c) 1999-2014 The European Bioinformatics Institute and
+  Genome Research Limited.  All rights reserved.
+
+  This software is distributed under a modified Apache license.
+  For license details, please see
+
+    http://www.ensembl.org/info/about/code_licence.html
 
 =head1 DESCRIPTION
 
@@ -19,13 +15,11 @@ This script is used to add UniProt cross-references to one or more Ensembl cores
 
 =head1 EXAMPLE
 
-
  perl -I modules scripts/xrefs_pipeline/load_uniprot.pl -host mysql-eg-devel-1 -port 4126
   -user ensrw -pass scr1b3d1 -dbname  schizosaccharomyces_pombe_core_22_75_2 -uniprothost whisky.ebi.ac.uk
    -uniprotport 1531 -uniprotuser spselect -uniprotpass spselect -uniprotdbname SWPREAD
     -uniprotdriver Oracle -uniparchost ora-vm-004.ebi.ac.uk -uniparcport 1551
      -uniparcuser uniparc_read -uniparcpass uniparc -uniparcdbname UAPRO -uniparcdriver Oracle
-
 
 =head1 USAGE
 
