@@ -194,14 +194,13 @@ sub store_uniprot_xrefs {
   # remove existing uniprots for this translation first
   $ddba->dbc()->sql_helper()->execute_update(
 	-SQL => q/
-		delete ox.* 
-		from object_xref ox,
-		xref x,
-		external_db d
+		delete ox.*,ix.*
+		from object_xref ox
+		join  xref x using (xref_id)
+		join external_db d using (external_db_id)
+		left join identity_xref ix using (object_xref_id)
 		where
 		d.db_name in ('Uniprot\/SWISSPROT','Uniprot\/TREMBL')
-		and d.external_db_id=x.external_db_id
-		and x.xref_id = ox.xref_id
 		and ox.ensembl_id = ?
 		and ox.ensembl_object_type = 'Translation'
 	/,
@@ -233,12 +232,12 @@ sub store_uniprot_xrefs {
 	$dbentry->analysis($self->{analysis});
 	$ddba->store($dbentry, $tid, 'Translation');
 	# track names and descriptions
-	if (defined $uniprot->{description}) {
+	if (defined $uniprot->{description} && $dbname eq 'Uniprot/SWISSPROT') {
 	  push @{$gene_attribs->{descriptions}->{$gene_id}->{$dbname}
 		  ->{$uniprot->{description}}},
 		'[Source:' . $dbname . ';Acc:' . $uniprot->{ac} . ']';
 	}
-	if (defined $uniprot->{gene_name}) {
+	if (defined $uniprot->{gene_name}  && $dbname eq 'Uniprot/SWISSPROT') {
 	  $gene_attribs->{gene_names}->{$gene_id}->{$dbname}
 		->{$uniprot->{gene_name}} += 1;
 	  if (defined $uniprot->{synonyms}) {
@@ -449,23 +448,17 @@ sub remove_xrefs {
   $self->logger()->info("Removing existing UniProt cross-references");
   $dba->dbc()->sql_helper()->execute_update(
 	-SQL => q/
-		delete ox.* 
-		from object_xref ox,
-		xref x,
-		external_db d,
-		translation tl,
-		transcript tr,
-		seq_region sr,
-		coord_system cs
+		delete ox.*, ix.*
+		from object_xref ox
+		join xref x using(xref_id)
+		join external_db d using (external_db_id)
+		join translation tl on (tl.translation_id=ox.ensembl_id and ox.ensembl_object_type = 'Translation')
+		join transcript tr using (transcript_id)
+		join seq_region sr using (seq_region_id)
+		join coord_system cs using (coord_system_id)
+		left join identity_xref ix using (object_xref_id)
 		where
 		d.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL')
-		and d.external_db_id=x.external_db_id
-		and x.xref_id = ox.xref_id
-		and ox.ensembl_id = tl.translation_id
-		and ox.ensembl_object_type = 'Translation'
-		and tl.transcript_id=tr.transcript_id
-		and tr.seq_region_id=sr.seq_region_id
-		and sr.coord_system_id=cs.coord_system_id
 		and cs.species_id=?
 	/,
 	-PARAMS => [$dba->species_id()]);
