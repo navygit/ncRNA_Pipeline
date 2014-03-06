@@ -37,40 +37,17 @@ use base Bio::EnsEMBL::EGPipeline::Xref::XrefLoader;
 use Log::Log4perl qw/:easy/;
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Digest::MD5;
+
 =head1 CONSTRUCTOR
 =head2 new
-  Arg [-NAME]  : 
-       string - human readable version of the name of the genome
-  Arg [-SPECIES]    : 
-       string - computable version of the name of the genome (lower case, no spaces)
-  Arg [-DBNAME] : 
-       string - name of the core database in which the genome can be found
-  Arg [-SPECIES_ID]  : 
-       int - identifier of the species within the core database for this genome
-  Arg [-TAXONOMY_ID] :
-        string - NCBI taxonomy identifier
-  Arg [-ASSEMBLY_NAME] :
-        string - name of the assembly
-  Arg [-ASSEMBLY_ID] :
-        string - INSDC assembly accession
-  Arg [-ASSEMBLY_LEVEL] :
-        string - highest assembly level (chromosome, supercontig etc.)
-  Arg [-GENEBUILD]:
-        string - identifier for genebuild
-  Arg [-DIVISION]:
-        string - name of Ensembl Genomes division (e.g. EnsemblBacteria, EnsemblPlants)
-  Arg [-STRAIN]:
-        string - name of strain to which genome belongs
-  Arg [-SEROTYPE]:
-        string - name of serotype to which genome belongs
-
-  Example    : $info = Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(...);
-  Description: Creates a new info object
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg [-UNIPARC]  : 
+       Bio::EnsEMBL::DBSQL::DBAdaptor - UniParc database
+  Example    : $loader = Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader->new(...);
+  Description: Creates a new loader
+  Returntype : Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader
   Exceptions : none
   Caller     : general
   Status     : Stable
-
 =cut
 sub new {
   my ($proto, @args) = @_;
@@ -80,10 +57,11 @@ sub new {
   return $self;
 }
 =head1 METHODS
-=head2 species
-  Arg        : (optional) species to set
-  Description: Gets/sets species (computationally safe name for species)
-  Returntype : string
+=head2 add_upis
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor (core)
+  Arg        : (optional) set to preserve old UPIs
+  Description: Adds UPIs to supplied core
+  Returntype : none
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -117,6 +95,14 @@ sub add_upis {
   return;
 } ## end sub add_upis
 
+=head2 remove_upis
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor (core)
+  Description: Remove existing UPIs from supplied core
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub remove_upis {
   my ($self, $dba) = @_;
   $self->logger()->info("Removing existing UniParc cross-references");
@@ -145,6 +131,16 @@ sub remove_upis {
   return;
 } ## end sub remove_upis
 
+=head2 add_upi
+  Arg        : Bio::EnsEMBL::DBSQL::DBEntryAdaptor (core)
+  Arg        : Bio::EnsEMBL::Translation - translation to analysis
+  Arg        : Bio::EnsEMBL::Analysis - analysis to use
+  Description: Find and add UPI for supplied translation
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub add_upi {
   my ($self, $ddba, $translation, $analysis) = @_;
   my $stored = 0;
@@ -182,6 +178,14 @@ sub add_upi {
   return $stored;
 } ## end sub add_upi
 
+=head2 md5_checksum
+  Arg        : Bio::EnsEMBL::Translation
+  Description: Calculate checksum for supplied sequence
+  Returntype : string
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub md5_checksum {
   my ($self, $sequence) = @_;
   my $digest = Digest::MD5->new();
