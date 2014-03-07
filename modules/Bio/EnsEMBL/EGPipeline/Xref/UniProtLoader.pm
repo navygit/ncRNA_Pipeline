@@ -210,10 +210,6 @@ sub store_uniprot_xrefs {
   return $n if scalar(@$uniprots) == 0;
   for my $uniprot (@$uniprots) {
 
-	my $dbname =
-	  ($uniprot->{type} eq 'UniProtKB/Swiss-Prot') ?
-	  'Uniprot/SWISSPROT' :
-	  'Uniprot/SPTREMBL';
 	if (!$uniprot->{ac} || $uniprot->{ac} eq '') {
 	  $self->logger()
 		->warn(
@@ -226,19 +222,19 @@ sub store_uniprot_xrefs {
 	my $dbentry =
 	  Bio::EnsEMBL::DBEntry->new(
 								-PRIMARY_ID  => $uniprot->{ac},
-								-DISPLAY_ID  => $uniprot->{ac},
+								-DISPLAY_ID  => $uniprot->{name},
 								-DESCRIPTION => $uniprot->{description},
-								-DBNAME      => $dbname);
+								-DBNAME      => $uniprot->{type});
 	$dbentry->analysis($self->{analysis});
 	$ddba->store($dbentry, $tid, 'Translation');
 	# track names and descriptions
-	if (defined $uniprot->{description} && $dbname eq 'Uniprot/SWISSPROT') {
+	if (defined $uniprot->{description} && $uniprot->{type} eq 'Uniprot/SWISSPROT') {
 	  push @{$gene_attribs->{descriptions}->{$gene_id}->{$dbname}
 		  ->{$uniprot->{description}}},
 		'[Source:' . $dbname . ';Acc:' . $uniprot->{ac} . ']';
 	}
-	if (defined $uniprot->{gene_name}  && $dbname eq 'Uniprot/SWISSPROT') {
-	  $gene_attribs->{gene_names}->{$gene_id}->{$dbname}
+	if (defined $uniprot->{gene_name}  && $uniprot->{type} eq 'Uniprot/SWISSPROT') {
+	  $gene_attribs->{gene_names}->{$gene_id}->{$uniprot->{type}}
 		->{$uniprot->{gene_name}} += 1;
 	  if (defined $uniprot->{synonyms}) {
 		for my $synonym (@{$uniprot->{synonyms}}) {
