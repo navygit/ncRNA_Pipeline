@@ -19,7 +19,7 @@ perl -I modules scripts/xrefs_pipeline/load_uniprot_transitive_xrefs.pl
  -host 127.0.0.1 -port 4126 -user ensrw -pass scr1b3d1
   -dbname saccharomyces_cerevisiae_core_22_75_4 -uniprothost 127.0.0.1
    -uniprotport 15310 -uniprotuser proteomes_prod -uniprotpass pprod
-    -uniprotdbname SWPREAD -uniprotdriver Oracle -dbnames PDB EMBL
+    -uniprotdbname SWPREAD -uniprotdriver Oracle -dbnames PDB -dbnames EMBL
 
 =head1 USAGE
 
@@ -81,7 +81,6 @@ my $logger = get_logger();
 
 $logger->info("Connecting to UniProt database");
 my ($uniprot_dba) = @{$cli_helper->get_dbas_for_opts($opts, 1, 'uniprot')};
-
 my $loader = Bio::EnsEMBL::EGPipeline::Xref::UniProtXrefLoader->new(
 	-UNIPROT_DBA => $uniprot_dba,
 	-DBNAMES=>$opts->{dbnames}||[qw/ArrayExpress PDB EMBL/]
