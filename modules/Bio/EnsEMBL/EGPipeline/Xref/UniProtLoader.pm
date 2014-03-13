@@ -204,7 +204,7 @@ sub store_uniprot_xrefs {
 		join external_db d using (external_db_id)
 		left join identity_xref ix using (object_xref_id)
 		where
-		d.db_name in ('Uniprot\/SWISSPROT','Uniprot\/TREMBL')
+		d.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL')
 		and ox.ensembl_id = ?
 		and ox.ensembl_object_type = 'Translation'
 	/,
@@ -217,12 +217,12 @@ sub store_uniprot_xrefs {
 	if (!$uniprot->{ac} || $uniprot->{ac} eq '') {
 	  $self->logger()
 		->warn(
-"Empty $dbname accession retrieved from UniProt for translation $tid");
+"Empty $uniprot->{type} accession retrieved from UniProt for translation $tid");
 	  next;
 	}
 	$self->logger()
 	  ->debug(
-		  "Storing $dbname " . $uniprot->{ac} . " on translation $tid");
+		  "Storing $uniprot->{type} " . $uniprot->{ac} . " on translation $tid");
 	my $dbentry =
 	  $ddba->fetch_by_db_accession($uniprot->{type}, $uniprot->{ac});
 	if (!defined $dbentry) {
@@ -239,9 +239,9 @@ sub store_uniprot_xrefs {
 	if (defined $uniprot->{description} &&
 		$uniprot->{type} eq 'Uniprot/SWISSPROT')
 	{
-	  push @{$gene_attribs->{descriptions}->{$gene_id}->{$dbname}
+	  push @{$gene_attribs->{descriptions}->{$gene_id}->{$uniprot->{type}}
 		  ->{$uniprot->{description}}},
-		'[Source:' . $dbname . ';Acc:' . $uniprot->{ac} . ']';
+		'[Source:' . $uniprot->{type} . ';Acc:' . $uniprot->{ac} . ']';
 	}
 	if (defined $uniprot->{gene_name} &&
 		$uniprot->{type} eq 'Uniprot/SWISSPROT')
