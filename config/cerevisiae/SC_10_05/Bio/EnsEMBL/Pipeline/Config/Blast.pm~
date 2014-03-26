@@ -1,7 +1,4 @@
 # EnsEMBL module for Bio::EnsEMBL::Pipeline::Config::Blast;
-#
-# You may distribute this module under the same terms as perl itself
-
 
 =head1 NAME
 

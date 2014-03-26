@@ -1,9 +1,28 @@
+=head1 LICENSE
+
+Copyright [1999-2014] EMBL-European Bioinformatics Institute
+and Wellcome Trust Sanger Institute
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+=cut
+
 
 =pod
 
 =head1 NAME
 
-Bio::EnsEMBL::EGPipeline::CoreStatistics::EGSpeciesFactory
+Bio::EnsEMBL::EGPipeline::Common::EGSpeciesFactory
 
 =head1 DESCRIPTION
 
@@ -17,12 +36,21 @@ James Allen
 
 =cut
 
-package Bio::EnsEMBL::EGPipeline::CoreStatistics::EGSpeciesFactory;
+package Bio::EnsEMBL::EGPipeline::Common::EGSpeciesFactory;
 
 use strict;
 use warnings;
 
 use base qw/Bio::EnsEMBL::Production::Pipeline::Production::ClassSpeciesFactory/;
+
+sub param_defaults {
+  my ($self) = @_;
+  
+  return {
+    %{$self->SUPER::param_defaults},
+    antispecies => []
+  };
+}
 
 sub run {
   my ($self) = @_;
@@ -85,8 +113,15 @@ sub process_dba {
 				last;
 			}
 		}
-		$dba->dbc()->disconnect_if_idle();
 	}
+  if ( $result == 1 && @{$self->param('antispecies')} ) {
+    for my $antispecies (@{$self->param('antispecies')}) {
+      if ($dba->species() eq $antispecies) {
+        $result = 0;
+        last;
+      }
+    }
+  }
 	return $result;
 }
 

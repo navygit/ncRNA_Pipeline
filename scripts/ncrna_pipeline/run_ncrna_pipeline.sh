@@ -1,4 +1,19 @@
 #!/bin/sh
+# Copyright [1999-2014] EMBL-European Bioinformatics Institute
+# and Wellcome Trust Sanger Institute
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 
 # Todo: Check that the ncRNA analysis entry exist already in the database
 # Maybe when missing add the ncRNA one from ../sql/ncRNA_analysis.sql
@@ -76,11 +91,13 @@ echo ""
 OUTPUT_DIR=/nfs/nobackup2/ensemblgenomes/${USER}/ncgenes_pipelines/data/${SPECIES_SHORT_NAME}
 LSF_OUTPUT=${OUTPUT_DIR}/lsf_output
 
-NCGENES_MODULES_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/eg-pipelines/scripts/ncrna_pipeline
-NCGENES_SCRIPTS_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/eg-pipelines/scripts/ncrna_pipeline
-NCGENES_SQL_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/eg-pipelines/sql
+CODE_ROOT_DIR=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines
+
+NCGENES_MODULES_PATH=${CODE_ROOT_DIR}/eg-pipelines/scripts/ncrna_pipeline
+NCGENES_SCRIPTS_PATH=${CODE_ROOT_DIR}/eg-pipelines/scripts/ncrna_pipeline
+NCGENES_SQL_PATH=${CODE_ROOT_DIR}/eg-pipelines/sql
 #ENSEMBL_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/69/ensembl
-ENSEMBL_PATH=/nfs/panda/ensemblgenomes/production/ncgenes_pipelines/ensembl-head
+ENSEMBL_PATH=${CODE_ROOT_DIR}/ensembl-head
 ENSEMBL_ANALYSIS_PATH=/nfs/panda/ensemblgenomes/apis/ensembl/analysis/head
 PERL_PATH=/nfs/panda/ensemblgenomes/perl/
 BIOPERL_PATH=/nfs/panda/ensemblgenomes/apis/bioperl/stable/
@@ -134,6 +151,9 @@ then
 
 	# Dump all sequences into one file - then split it up, 100 sequences per file
     
+	cd ${ENSEMBL_ANALYSIS_PATH}/scripts/
+	echo "Dumping genomic sequences"
+
 	echo "perl sequence_dump.pl -dbhost $DB_HOST -dbport $DB_PORT -dbuser $DB_USER -dbpass $DB_PASS -dbname $DB_NAME -coord_system_name $COORD_SYSTEM -output_dir ${OUTPUT_DIR} -onefile"
 
 	perl sequence_dump.pl -dbhost $DB_HOST -dbport $DB_PORT -dbuser $DB_USER -dbpass $DB_PASS -dbname $DB_NAME -coord_system_name $COORD_SYSTEM -output_dir ${OUTPUT_DIR} -onefile
