@@ -22,11 +22,12 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::EGPipeline::CoreStatistics::AnalyzeTables
+Bio::EnsEMBL::EGPipeline::Common::SqlCmd
 
 =head1 DESCRIPTION
 
-Analyze (or optionally optimize) all tables in the database.
+This is a simple wrapper around the Hive module; all it's really doing
+is creating an appropriate dbconn for that module.
 
 =head1 Author
 
@@ -34,19 +35,32 @@ James Allen
 
 =cut
 
-package Bio::EnsEMBL::EGPipeline::CoreStatistics::AnalyzeTables;
+package Bio::EnsEMBL::EGPipeline::Common::SqlCmd;
 
 use strict;
 use warnings;
 
-use base qw/Bio::EnsEMBL::Production::Pipeline::Base/;
+use base (
+  'Bio::EnsEMBL::EGPipeline::Common::Base',
+  'Bio::EnsEMBL::Hive::RunnableDB::SqlCmd'
+);
 
-sub run {
+sub param_defaults {
   my ($self) = @_;
-  my $command = $self->param('optimize_tables') ? 'OPTIMIZE' : 'ANALYZE';
-  my $dbc = $self->get_DBAdaptor->dbc;
-  my $tables = $dbc->db_handle->selectcol_arrayref('SHOW TABLES;');
-  map {$dbc->do("$command TABLE $_;")} @$tables;
+  
+  return {
+    %{$self->SUPER::param_defaults},
+    'type' => 'core',
+  };
+  
+}
+
+sub fetch_input {
+  my $self = shift @_;
+  $self->SUPER::fetch_input();
+  
+  $self->param('db_conn', $self->get_DBAdaptor($self->param('type'))->dbc);
+  
 }
 
 1;

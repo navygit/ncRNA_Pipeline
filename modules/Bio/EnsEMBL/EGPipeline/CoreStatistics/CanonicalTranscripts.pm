@@ -69,7 +69,7 @@ sub run {
       "$options",
     $dbc->host, $dbc->port, $dbc->username, $dbc->password, $dbc->dbname
   );
-  #`$command`;
+  
  	unless (system($command) == 0) {
     throw "Failed to execute script: '$command'.";
 	}
