@@ -22,11 +22,10 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::EGPipeline::CoreStatistics::SqlHealthcheck
+Bio::EnsEMBL::EGPipeline::Common::SqlCmd
 
 =head1 DESCRIPTION
 
-Run SQL to check on results. Defaults to treating >0 rows as an error.
 This is a simple wrapper around the Hive module; all it's really doing
 is creating an appropriate dbconn for that module.
 
@@ -36,33 +35,37 @@ James Allen
 
 =cut
 
-package Bio::EnsEMBL::EGPipeline::CoreStatistics::SqlHealthcheck;
+package Bio::EnsEMBL::EGPipeline::Common::RunnableDB::SqlCmd;
 
 use strict;
 use warnings;
 
-use base qw/Bio::EnsEMBL::Hive::RunnableDB::SqlHealthcheck/;
+use base (
+  'Bio::EnsEMBL::Hive::RunnableDB::SqlCmd',
+  'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base'
+);
 
-
-sub run {
-  my $self = shift @_;
-  $self->param('db_conn', $self->get_DBAdaptor->dbc());
+sub param_defaults {
+  my ($self) = @_;
   
-  my @failures = ();
-  foreach my $test (@{$self->param('tests')}) {
-    push @failures, $test unless $self->_run_test($test);
-  }
-  die "The following tests have failed:\n".join('', map {sprintf(" - %s\n   > %s\n", $_->{description}, $_->{subst_query})} @failures) if @failures;
+  return {
+    %{$self->SUPER::param_defaults},
+    'db_type' => 'core',
+  };
+  
 }
 
-# Registry is loaded by Hive (see beekeeper_extra_cmdline_options() in conf)
-sub get_DBAdaptor {
-  my ($self, $type) = @_;
-
-  $type ||= 'core';
-  my $species = ($type eq 'production') ? 'multi' : $self->param('species');
-
-  return Bio::EnsEMBL::Registry->get_DBAdaptor($species, $type);
+sub fetch_input {
+  my $self = shift @_;
+  $self->SUPER::fetch_input();
+  
+  my $db_type = $self->param('db_type');
+  if ($db_type eq 'hive') {
+    $self->param('db_conn', $self->dbc);
+  } else {
+    $self->param('db_conn', $self->get_DBAdaptor($db_type)->dbc);
+  }
+  
 }
 
 1;

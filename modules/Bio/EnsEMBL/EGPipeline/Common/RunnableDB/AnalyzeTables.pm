@@ -22,11 +22,11 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::EGPipeline::CoreStatistics::AnalyzeTables
+Bio::EnsEMBL::EGPipeline::Common::AnalyzeTables
 
 =head1 DESCRIPTION
 
-Analyze (or optionally optimize) all tables in the database.
+Analyze (or optionally optimize) all tables in a database.
 
 =head1 Author
 
@@ -34,19 +34,33 @@ James Allen
 
 =cut
 
-package Bio::EnsEMBL::EGPipeline::CoreStatistics::AnalyzeTables;
+package Bio::EnsEMBL::EGPipeline::Common::RunnableDB::AnalyzeTables;
 
 use strict;
 use warnings;
 
-use base qw/Bio::EnsEMBL::Production::Pipeline::Base/;
+use base ('Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base');
+
+sub param_defaults {
+  my ($self) = @_;
+  
+  return {
+    'optimize_tables' => 0,
+    'db_types' => ['core'],
+  };
+  
+}
 
 sub run {
   my ($self) = @_;
+  
   my $command = $self->param('optimize_tables') ? 'OPTIMIZE' : 'ANALYZE';
-  my $dbc = $self->get_DBAdaptor->dbc;
-  my $tables = $dbc->db_handle->selectcol_arrayref('SHOW TABLES;');
-  map {$dbc->do("$command TABLE $_;")} @$tables;
+  foreach my $db_type (@{$self->param('db_types')}) {
+    my $dbc = $self->get_DBAdaptor($db_type)->dbc;
+    my $tables = $dbc->db_handle->selectcol_arrayref('SHOW TABLES;');
+    map {$dbc->do("$command TABLE $_;")} @$tables;
+  }
+  
 }
 
 1;

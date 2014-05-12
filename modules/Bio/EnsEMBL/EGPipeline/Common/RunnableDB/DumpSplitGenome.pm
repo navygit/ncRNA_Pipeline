@@ -19,14 +19,13 @@ limitations under the License.
 =head1 Bio::EnsEMBL::EGPipeline::Common::DumpSplitSequence
 =cut
 
-package Bio::EnsEMBL::EGPipeline::Common::DumpSplitGenome;
+package Bio::EnsEMBL::EGPipeline::Common::RunnableDB::DumpSplitGenome;
 
 use strict;
-use base ('Bio::EnsEMBL::EGPipeline::Common::Base');
+use base ('Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base');
 use IO::File;
 use DBI qw(:sql_types);
 use Carp;
-use String::Numeric qw( is_int );
 
 sub run {
     my $self = shift @_;

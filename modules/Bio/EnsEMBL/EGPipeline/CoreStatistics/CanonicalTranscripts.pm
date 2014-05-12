@@ -41,7 +41,6 @@ use strict;
 use warnings;
 
 use base qw/Bio::EnsEMBL::Production::Pipeline::Base/;
-use Bio::EnsEMBL::Utils::Exception qw(throw warning);
 
 sub run {
   my ($self) = @_;
@@ -53,7 +52,7 @@ sub run {
   
   my $options = '';
   if ($out_dir) {
-    throw "Output directory '$out_dir' does not exist." unless -e $out_dir;
+    $self->throw("Output directory '$out_dir' does not exist.") unless -e $out_dir;
     $options = "--verbose &> $out_dir/".$dbc->dbname."_$species_id.can_transcript.out";
   }
   
@@ -69,9 +68,9 @@ sub run {
       "$options",
     $dbc->host, $dbc->port, $dbc->username, $dbc->password, $dbc->dbname
   );
-  #`$command`;
+  
  	unless (system($command) == 0) {
-    throw "Failed to execute script: '$command'.";
+    $self->throw("Failed to execute script: '$command'.");
 	}
   
   my $sth = $dbc->prepare(
@@ -80,7 +79,7 @@ sub run {
 	$sth->execute();
 	my $count = ( $sth->fetchrow_array() )[0];
 	if ($count != 0) {
-    throw "Canonical transcripts not specified for $count genes.";
+    $self->throw("Canonical transcripts not specified for $count genes.");
 	}
 }
 
