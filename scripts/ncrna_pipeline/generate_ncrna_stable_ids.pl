@@ -1,4 +1,5 @@
-#!/sw/arch/bin/perl -w
+#!/usr/bin/env perl
+
 # Copyright [1999-2014] EMBL-European Bioinformatics Institute
 # and Wellcome Trust Sanger Institute
 # 
@@ -28,9 +29,11 @@ perl scripts/generate_ncrna_stable_ids_ashbya_gossypii.pl \
     --start EFAGO00000000000
 =cut
 
+use warnings;
 use strict;
 use DBI;
 use Getopt::Long;
+
 my $port = 3306; 
 my ($host, $dbname, $user, $pass, @types, $start);
 
