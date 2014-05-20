@@ -22,7 +22,7 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::EGPipeline::Common::SqlCmd
+Bio::EnsEMBL::EGPipeline::Common::DatabaseDumper
 
 =head1 DESCRIPTION
 
@@ -35,13 +35,15 @@ James Allen
 
 =cut
 
-package Bio::EnsEMBL::EGPipeline::Common::RunnableDB::SqlCmd;
+package Bio::EnsEMBL::EGPipeline::Common::RunnableDB::DatabaseDumper;
 
 use strict;
 use warnings;
+use File::Basename qw(dirname);
+use File::Path qw(make_path);
 
 use base (
-  'Bio::EnsEMBL::Hive::RunnableDB::SqlCmd',
+  'Bio::EnsEMBL::Hive::RunnableDB::DatabaseDumper',
   'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base'
 );
 
@@ -50,21 +52,41 @@ sub param_defaults {
   
   return {
     %{$self->SUPER::param_defaults},
-    'db_type' => 'core',
+    'db_type'   => 'core',
+    'overwrite' => 0,
   };
   
 }
 
 sub fetch_input {
   my $self = shift @_;
-  $self->SUPER::fetch_input();
+  
+  my $output_file = $self->param('output_file');
+  if (defined $output_file) {
+    if (-e $output_file) {
+      if ($self->param('overwrite')) {
+        $self->warning("Output file '$output_file' already exists, and will be overwritten.");
+      } else {
+        $self->warning("Output file '$output_file' already exists, and won't be overwritten.");
+        $self->param('skip_dump', 1);
+      }
+    } else {
+      my $output_dir = dirname($output_file);
+      if (!-e $output_dir) {
+        $self->warning("Output directory '$output_dir' does not exist. I shall create it.");
+        make_path($output_dir) or $self->throw("Failed to create output directory '$output_dir'");
+      }
+    }
+  }
   
   my $db_type = $self->param('db_type');
   if ($db_type eq 'hive') {
-    $self->param('db_conn', $self->dbc);
+    $self->param('src_db_conn', $self->dbc);
   } else {
-    $self->param('db_conn', $self->get_DBAdaptor($db_type)->dbc);
+    $self->param('src_db_conn', $self->get_DBAdaptor($db_type)->dbc);
   }
+  
+  $self->SUPER::fetch_input();
   
 }
 
