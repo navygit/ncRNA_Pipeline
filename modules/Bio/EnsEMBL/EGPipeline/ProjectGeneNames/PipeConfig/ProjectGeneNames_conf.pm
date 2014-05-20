@@ -24,19 +24,17 @@ sub default_options {
         division 	  => [], # EnsemblMetazoa, EnsemblProtists, EnsemblFungi, EnsemblPlants
 	    run_all       => 0,
 
-		## Projection Species
-		# The species to use as the source
-        from_species     => 'arabidopsis_thaliana',
+		# The source species to 
+		from_species     => 'arabidopsis_thaliana',
         # The target species.
         # use -species, -division option during pipeline creation
 
 		# ensembl object type to attach to, default 'Translation', options 'Transcript'
-		ensemblObj_type  => 'Gene',
+		#ensemblObj_type  => 'Gene',
 
-		## 
         taxon_filter     => 'eudicotyledons', # i.e Liliopsida,eudicotyledons
 		geneName_source  => ['UniProtKB/Swiss-Prot', 'TAIR_SYMBOL'],
-		geneDesc_source  => ['UniProtKB/Swiss-Prot', 'TAIR_LOCUS', 'UniProtKB/TrEMBL'] ,
+		#geneDesc_source  => ['UniProtKB/Swiss-Prot', 'TAIR_LOCUS', 'UniProtKB/TrEMBL'] ,
 
 		method_link_type => 'ENSEMBL_ORTHOLOGUES',
 		## only certain types of homology are considered
@@ -55,7 +53,6 @@ sub default_options {
            -user   => $self->o('user'),
            -pass   => $self->o('pass'),
            -dbname => $self->o('dbname'),
-#           $self->o('pipeline_db','-dbname')
            -driver => 'mysql',
       },
 		
@@ -101,35 +98,6 @@ sub pipeline_analyses {
          },
       },
 
-     {  -logic_name    => 'BackupTables',
-        -module        => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::SqlCmd',
-        -parameters    => {
-          sql => [
-           'drop table if exists gene_preProj_backup;',
-           'drop table if exists transcript_preProj_backup;',
-           'drop table if exists xref_preProj_backup;',
-           'drop table if exists object_xref_preProj_backup;',
-           'drop table if exists external_synonym_preProj_backup;',
-
-           'create table gene_preProj_backup             like gene ;',
-           'create table transcript_preProj_backup       like transcript;',
-           'create table xref_preProj_backup             like xref;',
-           'create table object_xref_preProj_backup      like object_xref;',
-           'create table external_synonym_preProj_backup like external_synonym;',
-
-           'insert into gene_preProj_backup              select * from gene ;',
-           'insert into transcript_preProj_backup        select * from transcript;',
-           'insert into xref_preProj_backup              select * from xref;',
-           'insert into object_xref_preProj_backup       select * from object_xref;',
-           'insert into external_synonym_preProj_backup  select * from external_synonym;',         
-         ]
-       },
-       -rc_name       => 'default',
-       -flow_into  => {
-			             '1' => [ 'SpeciesProjection' ],
-                      },
-    },
-
     {  -logic_name      => 'ProjectionFactory',
         -module         => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::EGSpeciesFactory',
         -parameters     => {
@@ -151,13 +119,12 @@ sub pipeline_analyses {
        -module     => 'Bio::EnsEMBL::EGPipeline::ProjectGeneNames::RunnableDB::SpeciesProjection',
        -parameters => {
 			'geneName_source'		  => $self->o('geneName_source'),  
-			'geneDesc_source'		  => $self->o('geneDesc_source'),  
+#			'geneDesc_source'		  => $self->o('geneDesc_source'),  
 		    'taxon_filter'			  => $self->o('taxon_filter'),
-
 		    'from_species'            => $self->o('from_species'),
 		    'compara'                 => $self->o('compara'),
    		    'release'                 => $self->o('release'),
-   		    'ensemblObj_type'	      => $self->o('ensemblObj_type'),
+#  		    'ensemblObj_type'	      => $self->o('ensemblObj_type'),
    		    'method_link_type'        => $self->o('method_link_type'),
    		    'homology_types_allowed ' => $self->o('homology_types_allowed'),
             'percent_id_filter'       => $self->o('percent_id_filter'),
