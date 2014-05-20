@@ -44,7 +44,7 @@ sub fetch_input {
     $release                = $self->param('release');
 
     $geneName_source        = $self->param('geneName_source');
-    $geneDesc_source        = $self->param('geneDesc_source');
+    #$geneDesc_source        = $self->param('geneDesc_source');
     $taxon_filter           = $self->param('taxon_filter');
 
     $method_link_type       = $self->param('method_link_type');
@@ -53,7 +53,7 @@ sub fetch_input {
     $log_file               = $self->param('output_dir');
     $output_dir             = $self->param('output_dir');
  
-    $self->throw('to_species, from_species, compara, release, geneName_source, geneDesc_source, taxon_filter, method_link_type, homology_types_allowed, percent_id_filter, log_file, output_dir are obligatory parameters') unless (defined $to_species && defined $from_species && defined $release && defined $compara && defined $geneName_source && defined $geneDesc_source && defined $taxon_filter && defined $method_link_type && defined $homology_types_allowed && defined $log_file);
+    $self->throw('to_species, from_species, compara, release, geneName_source, taxon_filter, method_link_type, homology_types_allowed, percent_id_filter, log_file, output_dir are obligatory parameters') unless (defined $to_species && defined $from_species && defined $release && defined $compara && defined $geneName_source && defined $taxon_filter && defined $method_link_type && defined $homology_types_allowed && defined $log_file);
 
 return;
 }
@@ -292,7 +292,8 @@ sub project_genenames {
 
    # Project gene_description to target_gene
    if(defined $from_gene->description() 
-       && !defined $to_gene->description())
+       && !defined $to_gene->description()
+       && $flag_store_projections==1)
    {
         print $data "\t\tProject from: ".$from_gene->stable_id()." ";
         print $data "Gene Description: ".$from_gene->description()." ";
