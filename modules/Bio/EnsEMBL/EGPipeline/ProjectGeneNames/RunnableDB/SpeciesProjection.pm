@@ -274,7 +274,7 @@ sub project_genenames {
        foreach my $dbEntry (@{$from_gene->get_all_DBEntries($from_gene_dbname)}) { 
 
           if($dbEntry->display_id=~/$from_gene_display_id/  
-               && $flag_store_projections==0 
+               && $flag_store_projections==1 
                && grep (/$from_gene_dbname/, @$geneName_source))
           {
               print $data "\t\tProject from: ".$from_gene->stable_id()." ";
