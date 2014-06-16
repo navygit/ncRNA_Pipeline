@@ -31,21 +31,21 @@ use Bio::EnsEMBL::Analysis;
 my $registry = 'Bio::EnsEMBL::Registry';
 
 $registry->load_registry_from_db(
-     -host    => 'mysql-eg-devel-3.ebi.ac.uk',
+     -host    => 'mysql-eg-devel-1.ebi.ac.uk',
      -user    => 'ensrw',
-     -pass    => 'scr1b3d3',
-     -port    => '4208'
+     -pass    => 'scr1b3d1',
+     -port    => '4126'
 );
 
 my $platform   = "mysql";
-my $database   = "saccharomyces_cerevisiae_core_20_73_4";
-my $host       = "mysql-eg-devel-3.ebi.ac.uk";
-my $port       = "4208";
+my $database   = "saccharomyces_cerevisiae_core_22_75_4";
+my $host       = "mysql-eg-devel-1.ebi.ac.uk";
+my $port       = "4126";
 my $user       = "ensrw";
-my $pw         = "scr1b3d3";
+my $pw         = "scr1b3d1";
 my $dsn        = "dbi:$platform:$database:$host:$port";
 my $db         = DBI->connect($dsn,$user,$pw);
-my $analysis_id= 39;
+my $analysis_id= 239;
 my $sql        = "SELECT seq_region_start FROM simple_feature WHERE analysis_id=$analysis_id AND seq_region_start=? AND seq_region_strand=?";
 my $sql_2      = "SELECT seq_region_end FROM simple_feature WHERE analysis_id=$analysis_id AND seq_region_end=? AND seq_region_strand=?";
 my $sth        = $db->prepare($sql);
@@ -53,7 +53,7 @@ my $sth_2      = $db->prepare($sql_2);
 
 my $sa         = $registry->get_adaptor('saccharomyces_cerevisiae','Core','Slice');
 
-#foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
+#foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito)){
 foreach (qw(Mito)){
    my $slice = $sa->fetch_by_region('chromosome',$_);
    
