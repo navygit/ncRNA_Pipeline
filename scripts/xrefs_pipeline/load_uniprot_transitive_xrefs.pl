@@ -8,17 +8,18 @@
   For license details, please see
 
     http://www.ensembl.org/info/about/code_licence.html
-    
+
 =head1 DESCRIPTION
 
-This script is used to add GO terms to one or more Ensembl cores, using UniProt annotation
+This script is used to add cross-references to one or more Ensembl cores, using UniProt annotation
 
 =head1 EXAMPLE
 
-perl -I modules scripts/xrefs_pipeline/load_uniprot_go.pl -host mysql-eg-devel-1
- -port 4126 -user ensrw -pass scr1b3d1 -dbname  schizosaccharomyces_pombe_core_22_75_2
- -uniprothost whisky.ebi.ac.uk -uniprotport 1531 -uniprotuser spselect -uniprotpass spselect
- -uniprotdbname SWPREAD -uniprotdriver Oracle
+perl -I modules scripts/xrefs_pipeline/load_uniprot_transitive_xrefs.pl 
+ -host 127.0.0.1 -port 4126 -user ensrw -pass scr1b3d1
+  -dbname saccharomyces_cerevisiae_core_22_75_4 -uniprothost 127.0.0.1
+   -uniprotport 15310 -uniprotuser proteomes_prod -uniprotpass pprod
+    -uniprotdbname SWPREAD -uniprotdriver Oracle -dbnames PDB -dbnames EMBL
 
 =head1 USAGE
 
@@ -44,6 +45,8 @@ perl -I modules scripts/xrefs_pipeline/load_uniprot_go.pl -host mysql-eg-devel-1
   
   --uniprotdbname=dbname           name/SID of uniprot database to process
   
+  --dbnames                        list of database names to copy from UniProt
+  
   --verbose                        Increase logging level to debug
 
 =head1 AUTHOR
@@ -51,17 +54,19 @@ perl -I modules scripts/xrefs_pipeline/load_uniprot_go.pl -host mysql-eg-devel-1
 dstaines
 
 =cut
+
 use warnings;
 use strict;
 
 use Bio::EnsEMBL::Utils::CliHelper;
 use Log::Log4perl qw/:easy/;
 use Pod::Usage;
-use Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader;
+use Bio::EnsEMBL::EGPipeline::Xref::UniProtXrefLoader;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
 my $optsd = [@{$cli_helper->get_dba_opts()}, @{$cli_helper->get_dba_opts('uniprot')}];
+push (@{$optsd},"dbnames:s@");
 push(@{$optsd}, "verbose");
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
@@ -76,15 +81,14 @@ my $logger = get_logger();
 
 $logger->info("Connecting to UniProt database");
 my ($uniprot_dba) = @{$cli_helper->get_dbas_for_opts($opts, 1, 'uniprot')};
-
-my $loader = Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader->new(
+my $loader = Bio::EnsEMBL::EGPipeline::Xref::UniProtXrefLoader->new(
 	-UNIPROT_DBA => $uniprot_dba,
-	-REPLACE_ALL => 1
+	-DBNAMES=>$opts->{dbnames}||[qw/ArrayExpress PDB EMBL/]
 );
 
 $logger->info("Connecting to core database(s)");
 for my $core_dba_details (@{$cli_helper->get_dba_args_for_opts($opts)}) {
   my $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(%{$core_dba_details});
   $logger->info("Processing " . $dba->species());
-  $loader->load_go_terms($dba);
+  $loader->load_xrefs($dba);
 }

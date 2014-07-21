@@ -16,6 +16,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+=pod
+
+=head1 NAME
+
+Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader
+
+=head1 DESCRIPTION
+
+Loader that adds UPI xrefs to translations based on checksums
+
+=head1 Author
+
+Dan Staines
+
 =cut
 
 package Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader;
@@ -24,6 +38,17 @@ use Log::Log4perl qw/:easy/;
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Digest::MD5;
 
+=head1 CONSTRUCTOR
+=head2 new
+  Arg [-UNIPARC]  : 
+       Bio::EnsEMBL::DBSQL::DBAdaptor - UniParc database
+  Example    : $loader = Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader->new(...);
+  Description: Creates a new loader
+  Returntype : Bio::EnsEMBL::EGPipeline::Xref::UniParcLoader
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
@@ -31,7 +56,16 @@ sub new {
 	rearrange(['UNIPARC_DBA'], @args);
   return $self;
 }
-
+=head1 METHODS
+=head2 add_upis
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor (core)
+  Arg        : (optional) set to preserve old UPIs
+  Description: Adds UPIs to supplied core
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub add_upis {
   my ($self, $dba, $preserve_old) = @_;
   if (!defined $preserve_old) {
@@ -61,6 +95,14 @@ sub add_upis {
   return;
 } ## end sub add_upis
 
+=head2 remove_upis
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor (core)
+  Description: Remove existing UPIs from supplied core
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub remove_upis {
   my ($self, $dba) = @_;
   $self->logger()->info("Removing existing UniParc cross-references");
@@ -89,6 +131,16 @@ sub remove_upis {
   return;
 } ## end sub remove_upis
 
+=head2 add_upi
+  Arg        : Bio::EnsEMBL::DBSQL::DBEntryAdaptor (core)
+  Arg        : Bio::EnsEMBL::Translation - translation to analysis
+  Arg        : Bio::EnsEMBL::Analysis - analysis to use
+  Description: Find and add UPI for supplied translation
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub add_upi {
   my ($self, $ddba, $translation, $analysis) = @_;
   my $stored = 0;
@@ -126,6 +178,14 @@ sub add_upi {
   return $stored;
 } ## end sub add_upi
 
+=head2 md5_checksum
+  Arg        : Bio::EnsEMBL::Translation
+  Description: Calculate checksum for supplied sequence
+  Returntype : string
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub md5_checksum {
   my ($self, $sequence) = @_;
   my $digest = Digest::MD5->new();
