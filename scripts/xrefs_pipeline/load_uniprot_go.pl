@@ -5,7 +5,7 @@ use strict;
 use Bio::EnsEMBL::Utils::CliHelper;
 use Log::Log4perl qw/:easy/;
 use Pod::Usage;
-use Bio::EnsEMBL::EGPipeline::Xref::GOALoader;
+use Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
@@ -25,7 +25,7 @@ my $logger = get_logger();
 $logger->info("Connecting to UniProt database");
 my ($uniprot_dba) = @{$cli_helper->get_dbas_for_opts($opts, 1, 'uniprot')};
 
-my $loader = Bio::EnsEMBL::EGPipeline::Xref::GOALoader->new(
+my $loader = Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader->new(
 	-UNIPROT_DBA => $uniprot_dba,
 	-REPLACE_ALL => 1
 );
