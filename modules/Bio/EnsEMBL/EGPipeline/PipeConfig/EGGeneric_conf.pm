@@ -43,7 +43,8 @@ package Bio::EnsEMBL::EGPipeline::PipeConfig::EGGeneric_conf;
 use strict;
 use warnings;
 
-use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');
+use Bio::EnsEMBL::Hive::Version 2.0;
+use base ('Bio::EnsEMBL::Hive::PipeConfig::EnsemblGeneric_conf');
 
 sub default_options {
   my ($self) = @_;
@@ -62,6 +63,10 @@ sub default_options {
     
     # Generic EG-related options.
     email => $self->o('ENV', 'USER').'@ebi.ac.uk',
+    
+    # Don't fall over if someone has the temerity to use 'pass' instead of 'password'
+    pass => $self->o('password'),
+    password => $self->o('pass'),
   }
 }
 

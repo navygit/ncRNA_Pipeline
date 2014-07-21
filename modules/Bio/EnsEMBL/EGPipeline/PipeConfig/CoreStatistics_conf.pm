@@ -53,6 +53,7 @@ sub default_options {
     pipeline_name => 'core_statistics_'.$self->o('ensembl_release'),
     
     species => [],
+    antispecies => [],
     division => [],
     run_all => 0,
     
@@ -66,11 +67,10 @@ sub default_options {
     
     emboss_dir => '/nfs/panda/ensemblgenomes/external/EMBOSS',
     canonical_transcripts_script => $self->o('ensembl_cvs_root_dir').
-     '/ensembl/misc-scripts/canonical_transcripts/set_canonical_transcripts.pl',
+     '/ensembl/misc-scripts/canonical_transcripts/select_canonical_transcripts.pl',
     canonical_transcripts_out_dir => undef,
     meta_coord_dir => undef,
     optimize_tables => 0,
-    email => $self->o('ENV', 'USER').'@ebi.ac.uk',
   };
 }
 
@@ -138,9 +138,10 @@ sub pipeline_analyses {
   return [
     {
       -logic_name => 'ScheduleSpecies',
-      -module     => 'Bio::EnsEMBL::EGPipeline::CoreStatistics::EGSpeciesFactory',
+      -module     => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::EGSpeciesFactory',
       -parameters => {
         species  => $self->o('species'),
+        antispecies  => $self->o('antispecies'),
         division => $self->o('division'),
         run_all  => $self->o('run_all'),
       },
@@ -165,7 +166,7 @@ sub pipeline_analyses {
 
     {
       -logic_name => 'CanonicalTranscripts_Check',
-      -module     => 'Bio::EnsEMBL::EGPipeline::CoreStatistics::SqlHealthcheck',
+      -module     => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::SqlHealthcheck',
       -parameters => {
         description => 'Every gene should have a canonical transcript.',
         query => 'SELECT gene.stable_id FROM gene LEFT OUTER JOIN transcript ON canonical_transcript_id = transcript_id WHERE transcript_id IS NULL',
@@ -197,7 +198,7 @@ sub pipeline_analyses {
 
     {
       -logic_name => 'GeneCount_Check',
-      -module     => 'Bio::EnsEMBL::EGPipeline::CoreStatistics::SqlHealthcheck',
+      -module     => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::SqlHealthcheck',
       -parameters => {
         description => 'Every gene should be included in one of the counts.',
         query =>
@@ -221,7 +222,7 @@ sub pipeline_analyses {
 
     {
       -logic_name => 'GeneGC_Check',
-      -module     => 'Bio::EnsEMBL::EGPipeline::CoreStatistics::SqlHealthcheck',
+      -module     => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::SqlHealthcheck',
       -parameters => {
         description => 'Every gene should have GC calculated.',
         query =>
@@ -263,7 +264,7 @@ sub pipeline_analyses {
 
     {
       -logic_name => 'MetaLevels_Check',
-      -module     => 'Bio::EnsEMBL::EGPipeline::CoreStatistics::SqlHealthcheck',
+      -module     => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::SqlHealthcheck',
       -parameters => {
         description => 'Genes should be on the top level.',
         query => 'SELECT * FROM meta WHERE meta_key = "genebuild.level" and meta_value = "toplevel"',
@@ -290,7 +291,7 @@ sub pipeline_analyses {
 
     {
       -logic_name => 'PepStats_Check',
-      -module     => 'Bio::EnsEMBL::EGPipeline::CoreStatistics::SqlHealthcheck',
+      -module     => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::SqlHealthcheck',
       -parameters => {
         description => 'Every translation should have 5 peptide statistics.',
         query =>
@@ -416,14 +417,13 @@ sub pipeline_analyses {
 
     {
       -logic_name => 'AnalyzeTables',
-      -module     => 'Bio::EnsEMBL::EGPipeline::CoreStatistics::AnalyzeTables',
+      -module     => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::AnalyzeTables',
       -parameters => {
         optimize_tables => $self->o('optimize_tables'),
       },
       -max_retry_count  => 2,
       -hive_capacity    => 10,
       -rc_name          => 'normal',
-      -can_be_empty     => 1,
     },
 
     {

@@ -22,7 +22,7 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::EGPipeline::CoreStatistics::EGSpeciesFactory
+Bio::EnsEMBL::EGPipeline::Common::EGSpeciesFactory
 
 =head1 DESCRIPTION
 
@@ -36,13 +36,37 @@ James Allen
 
 =cut
 
-package Bio::EnsEMBL::EGPipeline::CoreStatistics::EGSpeciesFactory;
+package Bio::EnsEMBL::EGPipeline::Common::RunnableDB::EGSpeciesFactory;
 
 use strict;
 use warnings;
 
 use base qw/Bio::EnsEMBL::Production::Pipeline::Production::ClassSpeciesFactory/;
 
+sub param_defaults {
+  my ($self) = @_;
+  
+  return {
+    %{$self->SUPER::param_defaults},
+    antispecies => []
+  };
+}
+
+sub fetch_input {
+  my ($self) = @_;
+  my $species = $self->param('species') || [];
+  my $division = $self->param('division') || [];
+  my $run_all = $self->param('run_all') || 0;
+  
+  if ($run_all ne 1) {
+    unless (scalar(@$species) || scalar(@$division)) {
+      $self->throw('You must supply one of the following parameters: species, division, run_all');
+    }
+  }
+  
+  $self->SUPER::fetch_input;
+}
+  
 sub run {
   my ($self) = @_;
   my @dbs;
@@ -109,8 +133,15 @@ sub process_dba {
 				last;
 			}
 		}
-		$dba->dbc()->disconnect_if_idle();
 	}
+  if ( $result == 1 && @{$self->param('antispecies')} ) {
+    for my $antispecies (@{$self->param('antispecies')}) {
+      if ($dba->species() eq $antispecies) {
+        $result = 0;
+        last;
+      }
+    }
+  }
 	return $result;
 }
 

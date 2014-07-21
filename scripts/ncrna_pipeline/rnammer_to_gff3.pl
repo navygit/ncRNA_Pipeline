@@ -1,4 +1,5 @@
-#!/sw/arch/bin/perl -w
+#!/usr/bin/env perl
+
 # Copyright [1999-2014] EMBL-European Bioinformatics Institute
 # and Wellcome Trust Sanger Institute
 # 
@@ -14,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+use warnings;
 use strict;
 use FileHandle;
 

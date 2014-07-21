@@ -31,14 +31,15 @@ use Bio::EnsEMBL::DBSQL::DBAdaptor;
 use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::SimpleFeature;
 use Bio::EnsEMBL::Analysis;
+use Bio::Tools::CodonTable;
 
 my $registry = 'Bio::EnsEMBL::Registry';
 
 $registry->load_registry_from_db(
-     -host    => 'mysql-eg-devel-3.ebi.ac.uk',
+     -host    => 'mysql-eg-devel-1.ebi.ac.uk',
      -user    => 'ensrw',
-     -pass    => 'scr1b3d3',
-     -port    => '4208'
+     -pass    => 'scr1b3d1',
+     -port    => '4126'
 );
 
 my $species = $ARGV[0];
@@ -55,26 +56,32 @@ my $analysis = Bio::EnsEMBL::Analysis->new(
                  -program      => 'generate_orf_track.pl',
                );
 
-#foreach (qw(I)){
-foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
-   $slice       = $sa->fetch_by_region('chromosome',$_);
+#foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito)){
+foreach my $chromosome ( @{ $sa->fetch_all('chromosome') } ) {
+   $slice       = $sa->fetch_by_region('chromosome',$chromosome->seq_region_name());
+   #$slice       = $sa->fetch_by_region('chromosome',$_);
    $slice_start = $slice->start;
    $slice_end   = $slice->end;
    my $seq      = $slice->seq();
-   my $chr      = $_;
-   my $codons;
+   #my $chr      = $_;
+   my $chr      = $chromosome->seq_region_name();
+   # Get codon table 
+   my ($attrib)       = @{$slice->get_all_Attributes('codon_table') };
+   my $codon_table_id = $attrib->value()if defined $attrib;
+   $codon_table_id  ||= 1; # default codon table (vertebrate)
+   my $codon_table    = Bio::Tools::CodonTable->new( -id => $codon_table_id );
+   print  join (' ', "The name of the codon table no.", $codon_table->id($codon_table_id),"is:", $codon_table->name(), "\n");
    
-   my $seqobj   = Bio::PrimarySeq->new( 
-					 -seq      => $seq,
-     			                 -id       => 'orf_sequence',
- 				         -alphabet => 'dna'
-    				        );
+   my $seqobj         = Bio::PrimarySeq->new( 
+					   -seq      => $seq,
+     			                   -id       => 'orf_sequence',
+ 				           -alphabet => 'dna'
+    				         );
 
    unless($seqobj->alphabet() eq 'dna') {
       $seqobj->throw("die in _init, FindORF works only on DNA sequences\n");
    }
 
-  # foreach my $frame (5){
    foreach my $frame (1..6){
       $sequence   = uc $seqobj->revcom()->seq() if($frame > 3);
       $sequence   = uc $seqobj->seq() if($frame < 4);
@@ -93,7 +100,8 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
       my @features;
 
       while ($sequence =~/(...)/g){
-         if($h{$1}){
+	  if($codon_table->is_ter_codon($1)){
+          #if($h{$1}){
              $end_pos = pos($sequence)+($frame-3) if ($frame < 4);
              $end_pos = pos($sequence)+($frame-7) if ($frame > 3);
 
@@ -107,6 +115,7 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
                 $ep = $end_pos_t;
              } 
              # Move start position of an ORF to gene start if found
+ 
              my ($gene_flag,$gene_start,$gene_end,$gene_biotype) = find_gene($sp,$ep,$chr,$strand);
              $sp = $gene_start if ($gene_flag==1 && $strand==1 && $gene_biotype eq 'protein_coding');
              $ep = $gene_end   if ($gene_flag==1 && $strand==-1 && $gene_biotype eq 'protein_coding');
@@ -124,8 +133,8 @@ foreach (qw(I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI)){
                       -analysis      => $analysis,
                       -display_label => 'FRAME '.$frame,
                    );
-            #push @features,$feature;
             push @features,$feature if($len > $min);
+
             $start_pos = $ep+3 if ($strand==1);
             $start_pos = ($slice_end-$sp)+3 if ($strand==-1);
           } # if($h{$1})
@@ -150,10 +159,11 @@ sub find_gene {
     if($s==1){
        # Need to use end_pos since start_pos may be beyond the start of the gene	       
        while (my $gene = shift @{$sa->fetch_by_region('chromosome',$c,$e_pos-3,$e_pos)->get_all_Genes()} ) {
-         $s_id      = $gene->stable_id();
+  	 $s_id      = $gene->stable_id();
          $g_start   = $gene->seq_region_start();
          $g_end     = $gene->seq_region_end();    
          $g_biotype = $gene->biotype();
+
          last if($g_end-2==$e_pos); 
        } 
        $flag = 1 if ($s_id !~/NA/ && $g_end-2==$e_pos);
