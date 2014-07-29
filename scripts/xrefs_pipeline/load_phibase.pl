@@ -49,9 +49,10 @@ else {
   Log::Log4perl->easy_init($INFO);
 }
 
+$logger->info("Loading registry");
 Bio::EnsEMBL::Registry->load_registry_from_db(-USER=>$opts->{user}, -PASS=>$opts->{pass}, -HOST=>$opts->{host}, -PORT=>$opts->{port});
-
-my $lookup = Bio::EnsEMBL::LookUp::LocalLookUp->new();
+$logger->info("Loading helper");
+my $lookup = Bio::EnsEMBL::LookUp::LocalLookUp->new(-SKIP_CONTIGS=>1);
 
 if ( $opts->{clean} ) {
   for my $dbc ( @{ $lookup->get_all_DBConnections() } ) {
@@ -64,6 +65,13 @@ join object_xref ox using (xref_id)
 join associated_xref ax using (object_xref_id) 
 left join associated_group ag using (associated_group_id) 
 where e.db_name='PHI'/ );
+
+	$dbc->sql_helper()->execute_update(
+	  -SQL => q/delete from gene_attrib where attrib_type_id=358/ );
+
+	$dbc->sql_helper()->execute_update(
+	  -SQL => q/delete from gene_attrib where attrib_type_id=317 and value='PHI'/ );
+	$dbc->disconnect_if_idle();
   }
 }
 
@@ -144,14 +152,15 @@ open my $fail_outfile, ">",
   "unmapped_phibase.txt" || croak "Could not open unmapped_phibase.txt";
 my $n = 0;
 my $x = 0;
-while ( my $line = <$INP> ) {
+LINE: while ( my $line = <$INP> ) {
 	
-	print "$line";
+#	print "$line";
 	
   chomp $line;
 
   my $msg     = '';
   my $success = 0;
+  my $found = 0;
 
   # 0 PHI-base accession no,
   # 1 PHI-base accession,
@@ -212,10 +221,19 @@ while ( my $line = <$INP> ) {
   my $gene_name       = $cols[10];
   my $tax_id          = $cols[13];
   my $species_name    = $cols[14];
-  my $host_names      = $cols[18];
+  my $host_ids      = $cols[18];
+  my $host_names      = $cols[19];
   my $phenotype_name  = $cols[24];
   my $condition_names = $cols[38];
   my $literature_ids  = $cols[42];
+
+  for my $var ($phibase_id,$acc,$tax_id,$phenotype_name) {
+      if(!defined $var) {
+	  $success = 0;
+	  $msg = "Cannot parse line";
+	  next LINE;
+      }
+  }
 
   $locus =~ s/\..*//;
   $acc       = rm_sp($acc);
@@ -237,7 +255,9 @@ while ( my $line = <$INP> ) {
 	$logger->warn($msg);
   }
 
-  for my $dba ( @{$dbas} ) {
+	my $dba;
+
+  for $dba ( @{$dbas} ) {
 	$logger->debug( "Found DBA species " . $dba->species() .
 			  " in " . $dba->dbc()->dbname() . "/" . $dba->species_id );
 	my $dbentry_adaptor = $dba->get_DBEntryAdaptor();
@@ -252,10 +272,6 @@ while ( my $line = <$INP> ) {
 								  -INFO_TYPE   => 'DIRECT',
 								  -RELEASE     => 1 );
 
-	$logger->info(
-"Starting insertion of xref identifier in the core database if possible"
-	);
-
 	my $translation =
 	  find_translation( $dba, $acc, $locus, $gene_name );
 
@@ -267,52 +283,47 @@ while ( my $line = <$INP> ) {
 	  $logger->warn($msg);
 	  next;
 	}
+	$found = 1;
 	$logger->debug( "Found translation " .
 			   $translation->stable_id() . "/" . $translation->dbID() );
 
 	my @phibase_dbentries;
-	my @phibase_types;
-	$logger->debug("Processing host(s) $host_names");
-	for my $host_name (split(/;/, $host_names)) {
+	my @phibase_types; 
+	$logger->debug("Processing host(s) $host_ids/$host_names");
+	my @host_names = split(/;/, $host_names);
+	my $hN = 0;
+	for my $host_id (split(/;/, $host_ids)) {
 	  my $host_tax_id;
-	  if ( $host_name =~ m/^[0-9]+$/ ) {
-		$host_tax_id = $host_name;
+	  if ( $host_id =~ m/^[0-9]+$/ ) {
+		$host_tax_id = $host_id;
           }
-	  if (defined $host_tax_id) {
-		$logger->debug(
-		   "found host term in the file that is on known hosts list: " .
-			 $host_name);
-		my $host_db_entry =
-		  Bio::EnsEMBL::DBEntry->new(
-								  -PRIMARY_ID => $ncbi_host{$host_name},
-								  -DBNAME     => 'NCBI_TAXONOMY',
-								  -VERSION    => 4,
-								  -DISPLAY_ID => $host_name,
-								  -DESCRIPTION => $host_name,
-								  -INFO_TYPE   => 'DIRECT',
-								  -RELEASE     => 1);
-		push @phibase_dbentries, $host_db_entry;
-		push @phibase_types,     'host';
-	  }
-	  else {
-		$host_tax_id = $ncbi_host{ lc $host_name };
+	  if (!defined $host_tax_id) {
+		$host_tax_id = $ncbi_host{ lc $host_id };
 		if ( defined $host_tax_id ) {
 		  $logger->debug(
 			 "found host term in the file that is on known hosts list: "
-			   . $host_name );
+			   . $host_id );
 		}
 	  }
-	  my $host_db_entry =
+	  if(defined $host_tax_id) {
+	      my $host_db_entry =
 		Bio::EnsEMBL::DBEntry->new(
-							 -PRIMARY_ID => $ncbi_host{ lc $host_name },
+							 -PRIMARY_ID => $host_tax_id,
 							 -DBNAME     => 'NCBI_TAXONOMY',
 							 -VERSION    => 4,
-							 -DISPLAY_ID => $host_name,
-							 -DESCRIPTION => $host_name,
+							 -DISPLAY_ID => $host_names[$hN],
+							 -DESCRIPTION => $host_names[$hN],
 							 -INFO_TYPE   => 'DIRECT',
 							 -RELEASE     => 1 );
+
+
+	      print "HOST:".$host_tax_id." ".$host_names[$hN]." \n";
 	  push @phibase_dbentries, $host_db_entry;
 	  push @phibase_types,     'host';
+	  } else {
+	      $logger->warn("Could not find host $host_id");
+	  }
+	  $hN++;
 	} ## end for my $host_name ( split...)
 
 	my $found_phenotype;
@@ -418,17 +429,25 @@ while ( my $line = <$INP> ) {
 	else {
 	  $logger->debug("Skipping storing " . $phi_dbentry->display_id() );
 	}
-	print $ok_outfile,
+	print $ok_outfile
 	  join( "\t",
 			$dba->species(),
 			$translation->stable_id(),
-			$phi_dbentry->display_id() );
+			$phi_dbentry->display_id() )."\n";
+
   } ## end for my $dba ( @{$dbas} )
+	continue {
+	    if(defined $dba) {
+		$dba->dbc()->disconnect_if_idle();
+	    }
+	}
 
   if ( $success == 1 ) {
 	$n++;
-  }
-  else {
+  } else {
+      if($found==0) {
+	  $msg = "Gene not found in any target genomes";
+      }
 	print $fail_outfile "# $msg\n";
 	print $fail_outfile "$line\n";
 	$x++;
