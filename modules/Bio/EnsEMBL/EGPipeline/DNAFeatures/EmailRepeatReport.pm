@@ -44,7 +44,6 @@ sub fetch_input {
   my ($self) = @_;
   my $species = $self->param_required('species');
   
-  my $reports;
   my $dbh = $self->core_dbh();
   
   my $seq_region_length_sql = '
@@ -56,10 +55,67 @@ sub fetch_input {
   ;';
   my ($seq_region_length) = $dbh->selectrow_array($seq_region_length_sql);
   
+  my $reports = $self->text_summary($dbh, $seq_region_length);
   $reports .= $self->report_one($dbh, $seq_region_length);
   $reports .= $self->report_two($dbh, $seq_region_length);
   
   $self->param('text', $reports);
+}
+
+sub text_summary {
+  my ($self, $dbh, $seq_region_length) = @_;
+  
+  my $sql = "
+    SELECT 
+      display_label, 
+      logic_name, 
+      COUNT(*) AS count_of_features, 
+      SUM(seq_region_end - seq_region_start+1) AS total_repeat_length, 
+      ROUND(SUM(seq_region_end - seq_region_start+1) / $seq_region_length, 4) AS repeat_coverage 
+    FROM  
+      analysis LEFT OUTER JOIN 
+      analysis_description USING (analysis_id) INNER JOIN 
+      repeat_feature USING (analysis_id) 
+    GROUP BY 
+      display_label, 
+      logic_name 
+    ORDER BY 
+      display_label 
+  ;";
+  
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+  
+  my @results_text;
+  my $results = $sth->fetchall_arrayref();
+  foreach my $result (@$results) {
+    my ($display_label, $logic_name, $count, $length, $coverage) = @$result;
+    $length = sprintf('%.0f', $length/1000000);
+    $coverage = sprintf('%.1f', $coverage*100);
+    if ($logic_name =~ /^repeatmask/) {
+      my $library_text;
+      if ($logic_name =~ /customlib/) {
+        $library_text = "a custom";
+      } else {
+        $library_text = "the RepBase";
+      }
+      push @results_text,
+        "$count RepeatMasker features (with $library_text library), ".
+        "covering $length Mb ($coverage% of the genome)";
+    } else {
+      push @results_text,
+        "$count $display_label features, ".
+        "covering $length Mb ($coverage% of the genome)";
+    }
+  }
+  
+  my $text = "Recommended summary text for static content:\n".
+    "Repeats were annotated with the <a href='http://ensemblgenomes.org/info/data/repeat_features>".
+    "Ensembl Genomes repeat feature pipeline</a>. There are: ";
+  $text .= join("; ", @results_text);
+  $text .= ".\n\n";
+  
+  return $text;
 }
 
 sub report_one {
@@ -113,12 +169,18 @@ sub report_two {
       repeat_class,
       COUNT(*) AS count_of_features, 
       SUM(seq_region_end - seq_region_start+1) AS total_repeat_length, 
-      ROUND(SUM(seq_region_end - seq_region_start+1) / $seq_region_length, 4) AS repeat_coverage 
+      ROUND(SUM(seq_region_end - seq_region_start+1) / analysis_length, 4) AS repeat_proportion
     FROM  
       analysis LEFT OUTER JOIN 
       analysis_description USING (analysis_id) INNER JOIN 
       repeat_feature USING (analysis_id) INNER JOIN
-      repeat_consensus USING (repeat_consensus_id)
+      repeat_consensus USING (repeat_consensus_id) INNER JOIN
+      ( SELECT 
+          analysis_id, 
+          SUM(seq_region_end - seq_region_start+1) as analysis_length 
+        FROM repeat_feature
+        GROUP BY analysis_id
+      ) as analysis_length_tbl USING (analysis_id)
     GROUP BY 
       display_label, 
       program, 
