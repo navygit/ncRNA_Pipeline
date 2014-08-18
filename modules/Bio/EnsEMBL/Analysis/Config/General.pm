@@ -50,6 +50,8 @@ use vars qw(%Config);
   DATA_DIR => '/nfs/panda/ensemblgenomes/external/data',
   LIB_DIR  => '/nfs/panda/ensemblgenomes/external/lib',
   ANALYSIS_WORK_DIR => '/tmp',
+  CORE_VERBOSITY    => 'WARNING',
+  LOGGER_VERBOSITY  => 0,
 );
 
 sub import {
