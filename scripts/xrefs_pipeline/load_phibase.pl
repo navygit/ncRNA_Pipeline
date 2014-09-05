@@ -39,7 +39,7 @@ my $optsd = [ @{ $cli_helper->get_dba_opts() },
 push( @{$optsd}, "file:s" );
 push( @{$optsd}, "verbose" );
 push( @{$optsd}, "write" );
-push( @{$optsd}, "clean" );
+#push( @{$optsd}, "clean" );
 # process the command line with the supplied options plus a help subroutine
 my $opts = $cli_helper->process_args( $optsd, \&pod2usage );
 if ( $opts->{verbose} ) {
@@ -49,31 +49,16 @@ else {
   Log::Log4perl->easy_init($INFO);
 }
 
-$logger->info("Loading registry");
-Bio::EnsEMBL::Registry->load_registry_from_db(-USER=>$opts->{user}, -PASS=>$opts->{pass}, -HOST=>$opts->{host}, -PORT=>$opts->{port});
+if(defined $opts->{dbname}) {
+    $logger->info("Loading ".$opts->{dbname});
+    Bio::EnsEMBL::DBSQL::DBAdaptor->new(-USER=>$opts->{user}, -PASS=>$opts->{pass}, -HOST=>$opts->{host}, -PORT=>$opts->{port}, -DBNAME=>$opts->{dbname});
+} else {
+    $logger->info("Loading registry");
+    Bio::EnsEMBL::Registry->load_registry_from_db(-USER=>$opts->{user}, -PASS=>$opts->{pass}, -HOST=>$opts->{host}, -PORT=>$opts->{port});
+}
 $logger->info("Loading helper");
 my $lookup = Bio::EnsEMBL::LookUp::LocalLookUp->new(-SKIP_CONTIGS=>1);
 
-if ( $opts->{clean} ) {
-  for my $dbc ( @{ $lookup->get_all_DBConnections() } ) {
-	$logger->info(
-			   "Removing existing annotations from " . $dbc->dbname() );
-	$dbc->sql_helper()->execute_update(
-	  -SQL => q/delete x.*,ox.*,ax.*,ag.* from external_db e 
-join xref x using (external_db_id) 
-join object_xref ox using (xref_id) 
-join associated_xref ax using (object_xref_id) 
-left join associated_group ag using (associated_group_id) 
-where e.db_name='PHI'/ );
-
-	$dbc->sql_helper()->execute_update(
-	  -SQL => q/delete from gene_attrib where attrib_type_id=358/ );
-
-	$dbc->sql_helper()->execute_update(
-	  -SQL => q/delete from gene_attrib where attrib_type_id=317 and value='PHI'/ );
-	$dbc->disconnect_if_idle();
-  }
-}
 
 my ($ont_dba_details) =
   @{ $cli_helper->get_dba_args_for_opts( $opts, 1, 'ont' ) };
@@ -143,9 +128,6 @@ my %phenotype_voc;
 
 my $updated_dbcs = {};
 
-# skip the header
-my $line = <$INP>;
-
 open my $ok_outfile, ">",
   "mapped_phibase.txt" || croak "Could not open mapped_phibase.txt";
 open my $fail_outfile, ">",
@@ -153,8 +135,9 @@ open my $fail_outfile, ">",
 my $n = 0;
 my $x = 0;
 LINE: while ( my $line = <$INP> ) {
-	
-#	print "$line";
+
+
+    next if $line =~ m/^PHI-base accession no.*/;
 	
   chomp $line;
 
@@ -419,40 +402,69 @@ LINE: while ( my $line = <$INP> ) {
 	  $success = 1;
 	}
 	if ( $opts->{write} ) {
-	  $updated_dbcs->{ $dba->dbc()->dbname() } = $dba->dbc();
+	    
+	    my $dbc = $dba->dbc();
+	    my $dbname = $dbc->dbname();
+
+	    if(!defined $updated_dbcs->{ $dbname }) {
+		$logger->debug("Cleaning database ".$dbname);
+
+# clean if its the first time we've seen it
+	    $logger->info(
+		"Removing existing annotations from " . $dbc->dbname() );
+	    $dbc->sql_helper()->execute_update(
+		-SQL => q/delete x.*,ox.*,ax.*,ag.* from external_db e 
+join xref x using (external_db_id) 
+join object_xref ox using (xref_id) 
+join associated_xref ax using (object_xref_id) 
+left join associated_group ag using (associated_group_id) 
+where e.db_name='PHI'/ );
+
+	$dbc->sql_helper()->execute_update(
+	  -SQL => q/delete from gene_attrib where attrib_type_id=358/ );
+	    
+	    $dbc->sql_helper()->execute_update(
+	  -SQL => q/delete from gene_attrib where attrib_type_id=317 and value='PHI'/ );
+	    
+	    
+		
+		$updated_dbcs->{ $dbname } = $dba->dbc();
+	    }
+
+  
 	  $logger->debug( "Storing " .
-			$phi_dbentry->display_id() . " on " . $dba->species() .
-			" from " . $dba->dbc()->dbname() . "/" . $dba->species_id );
-	  $dbentry_adaptor->store( $phi_dbentry, $translation->dbID(),
-							   'Translation' );
+			  $phi_dbentry->display_id() . " on " . $dba->species() .
+			  " from " . $dba->dbc()->dbname() . "/" . $dba->species_id );
+	    $dbentry_adaptor->store( $phi_dbentry, $translation->dbID(),
+				     'Translation' );
 	}
 	else {
-	  $logger->debug("Skipping storing " . $phi_dbentry->display_id() );
+	    $logger->debug("Skipping storing " . $phi_dbentry->display_id() );
 	}
 	print $ok_outfile
-	  join( "\t",
-			$dba->species(),
-			$translation->stable_id(),
-			$phi_dbentry->display_id() )."\n";
-
+	    join( "\t",
+		  $dba->species(),
+		  $translation->stable_id(),
+		  $phi_dbentry->display_id() )."\n";
+	
   } ## end for my $dba ( @{$dbas} )
-	continue {
-	    if(defined $dba) {
-		$dba->dbc()->disconnect_if_idle();
-	    }
-	}
-
+  continue {
+      if(defined $dba) {
+	  $dba->dbc()->disconnect_if_idle();
+      }
+  }
+  
   if ( $success == 1 ) {
-	$n++;
+      $n++;
   } else {
       if($found==0) {
 	  $msg = "Gene not found in any target genomes";
       }
-	print $fail_outfile "# $msg\n";
-	print $fail_outfile "$line\n";
-	$x++;
+      print $fail_outfile "# $msg\n";
+      print $fail_outfile "$line\n";
+      $x++;
   }
-
+  
 } ## end while ( my $line = <$INP>)
 $logger->info("Completed - wrote $n and skipped $x xrefs");
 close $fail_outfile;
