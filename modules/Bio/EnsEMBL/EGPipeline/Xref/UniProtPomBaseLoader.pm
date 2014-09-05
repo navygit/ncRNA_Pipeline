@@ -234,14 +234,19 @@ sub store_uniprot_xrefs {
 sub get_uniprot_for_pombase {
   my ($self, $pombase) = @_;
   $self->logger()->debug("Finding UniProt accessions for $pombase");
+
+  my $sql = q/SELECT d.accession from dbentry d 
+  join gene g on ( d.dbentry_id = g.dbentry_id) 
+  join gene_name gn on (g.gene_id = gn.gene_id) 
+  join cv_gene_name_type cgnt on (gn.gene_name_type_id = cgnt.gene_name_type_id ) 
+  WHERE gn.name=? and cgnt.type='ORFNames' and d.deleted='N' and d.entry_type in (0,1) and d.merge_status <> 'R'/;
+
   my @uniprot_acs = @{
 	$self->{uniprot_dba}->dbc()->sql_helper()->execute_simple(
-	  -SQL => q/select d.accession from dbentry d 
-	  join dbentry_2_database dd using (dbentry_id) 
-	  join database_name dn using (database_id) 
-	  where dd.primary_id=? and dn.abbreviation='PomBase' and d.deleted='N'/,
+	  -SQL => $sql,
 	  -PARAMS => [$pombase])
   };
+  
 
   my $uniprots = [];
 
