@@ -122,6 +122,8 @@ my %ncbi_host = ( 'wheat'                  => '4565',
 				  'gerbera'                => '13546',
 				  'grape'                  => '29760', );
 
+my %ncbi_host_ids = reverse %ncbi_host;
+
 # Get all phibase rows in the cvs file that are also in the core db
 
 my $phibase_file = $opts->{file};
@@ -282,30 +284,51 @@ LINE: while ( my $line = <$INP> ) {
 	my @phibase_types;
 	$logger->debug("Processing host(s) $host_ids/$host_names");
 	my @host_names = split( /;/, $host_names );
+	my @host_ids = split( /;/, $host_ids);
+	if(scalar(@host_ids)==0 && scalar(@host_names)>0) {
+	    @host_ids = (undef) x scalar(@host_names);
+	}
 	my $hN = 0;
-	for my $host_id ( split( /;/, $host_ids ) ) {
+	for my $host_id ( @host_ids ) {
 	  my $host_tax_id;
-	  if ( $host_id =~ m/^[0-9]+$/ ) {
+	  my $host_name  = rm_sp($host_names[$hN]);
+	  if ( defined $host_id && $host_id =~ m/^[0-9]+$/ ) {
 		$host_tax_id = $host_id;
 	  }
-	  if ( !defined $host_tax_id ) {
-		$host_tax_id = $ncbi_host{ lc $host_id };
+	  if ( !defined $host_tax_id || $host_tax_id eq '' ) {
+		$host_tax_id = $ncbi_host{ lc $host_name };
 		if ( defined $host_tax_id ) {
 		  $logger->debug(
 			 "found host term in the file that is on known hosts list: "
-			   . $host_id );
+			   . $host_tax_id ."/".$host_name);
 		}
 	  }
-	  if ( defined $host_tax_id ) {
 
+	  if ( !defined $host_name || $host_name eq '' ) {
+	      $host_name = $ncbi_host_ids{$host_tax_id};
+	      if ( defined $host_name ) {
+		  $logger->debug(
+		      "found host name in the file that is on known hosts list: "
+		      . $host_name );
+	      }
+	  }
+	  
+	  if ( defined $host_tax_id && defined $host_name && $host_tax_id ne '' && $host_name ne '' ) {
+	      
 		$translation_ass->{host} =
-		  { id => $host_tax_id, label => $host_names[$hN] };
+		  { id => $host_tax_id, label => $host_name };
 
 	  }
 	  else {
 		$logger->warn("Could not find host $host_id");
 	  }
 	  $hN++;
+	}
+
+	if(!defined $translation_ass->{host}{id} || !defined $translation_ass->{host}{label}){ 
+	    my $msg = "Host ID/label not defined for $phibase_id";
+	    $logger->warn($msg);
+	    next;
 	}
 
 	my $found_phenotype;
@@ -426,7 +449,7 @@ if ( $opts->{write} ) {
 		-SQL => q/delete x.*,ox.*,ax.*,ag.* from external_db e 
 join xref x using (external_db_id) 
 join object_xref ox using (xref_id) 
-join associated_xref ax using (object_xref_id) 
+left join associated_xref ax using (object_xref_id) 
 left join associated_group ag using (associated_group_id) 
 where e.db_name='PHI'/ );
 
@@ -445,10 +468,14 @@ q/delete from gene_attrib where attrib_type_id=317 and value='PHI'/ );
 
 	$logger->info("Storing xrefs for $genome");
 	my $group = 0;
+	my $tN = 0;
+	my $xN = 0;
 	while ( my ( $translation, $phis ) = each %$translations ) {
+	    $tN++;
 	  $logger->info(
 				  "Storing xrefs for $genome translation $translation");
 	  while ( my ( $phi, $asses ) = each %$phis ) {
+	      $xN++;
 		$logger->info(
 				   "Storing $phi for $genome translation $translation");
 		my $phi_dbentry =
@@ -471,59 +498,58 @@ q/delete from gene_attrib where attrib_type_id=317 and value='PHI'/ );
 			else {
 			  $pubs = ['ND'];
 			}
-			my $condition_db_entry =
-			  Bio::EnsEMBL::DBEntry->new(
-								 -PRIMARY_ID => $ass->{condition}{id},
-								 -DBNAME     => 'PHIE',
-								 -RELEASE    => 1,
-								 -DISPLAY_ID => $ass->{condition}{label}
-			  );
-			my $host_db_entry =
-			  Bio::EnsEMBL::DBEntry->new(
-									  -PRIMARY_ID => $ass->{host}{id},
-									  -DBNAME     => 'NCBI_TAXONOMY',
-									  -RELEASE    => 1,
-									  -DISPLAY_ID => $ass->{host}{label}
-			  );
-			my $phenotype_db_entry =
-			  Bio::EnsEMBL::DBEntry->new(
-								 -PRIMARY_ID => $ass->{phenotype}{id},
-								 -DBNAME     => 'PHIP',
-								 -RELEASE    => 1,
-								 -DISPLAY_ID => $ass->{phenotype}{label}
-			  );
-
-			my $rank = 0;
-			for my $pub (@$pubs) {
-			  $group++;
-			  print "Storing $pub\n";
-			  my $pub_entry = Bio::EnsEMBL::DBEntry->new(
-					  -PRIMARY_ID => lc( rm_sp($pub) ),
-					  -DBNAME     => $pub_name,
-					  -DISPLAY_ID => lc( rm_sp($pub) ),
-					  -INFO_TYPE  => 'DIRECT' );
-			  $phi_dbentry->add_associated_xref( $condition_db_entry,
-									$pub_entry, 'experimental evidence',
-									$group, $rank++ );
-			  $phi_dbentry->add_associated_xref( $host_db_entry,
-									   $pub_entry, 'host', $group, $rank++ );
-			  $phi_dbentry->add_associated_xref( $phenotype_db_entry,
-								  $pub_entry, 'phenotype', $group, $rank++ );
-			}
-		  } ## end if ( !defined $pubs ||...)
-		} ## end for my $ass (@$asses)
+		  }
+		  my $condition_db_entry =
+		      Bio::EnsEMBL::DBEntry->new(
+			  -PRIMARY_ID => $ass->{condition}{id},
+			  -DBNAME     => 'PHIE',
+			  -RELEASE    => 1,
+			  -DISPLAY_ID => $ass->{condition}{label}
+		      );
+		  my $host_db_entry =
+		      Bio::EnsEMBL::DBEntry->new(
+			  -PRIMARY_ID => $ass->{host}{id},
+			  -DBNAME     => 'NCBI_TAXONOMY',
+			  -RELEASE    => 1,
+			  -DISPLAY_ID => $ass->{host}{label}
+		      );
+		  my $phenotype_db_entry =
+		      Bio::EnsEMBL::DBEntry->new(
+			  -PRIMARY_ID => $ass->{phenotype}{id},
+			  -DBNAME     => 'PHIP',
+			  -RELEASE    => 1,
+			  -DISPLAY_ID => $ass->{phenotype}{label}
+		      );
+		  
+		  my $rank = 0;
+		  for my $pub (@$pubs) {
+		      $group++;
+		      my $pub_entry = Bio::EnsEMBL::DBEntry->new(
+			  -PRIMARY_ID => lc( rm_sp($pub) ),
+			  -DBNAME     => $pub_name,
+			  -DISPLAY_ID => lc( rm_sp($pub) ),
+			  -INFO_TYPE  => 'DIRECT' );
+		      $phi_dbentry->add_associated_xref( $condition_db_entry,
+							 $pub_entry, 'experimental evidence',
+							 $group, $rank++ );
+		      $phi_dbentry->add_associated_xref( $host_db_entry,
+							 $pub_entry, 'host', $group, $rank++ );
+		      $phi_dbentry->add_associated_xref( $phenotype_db_entry,
+							 $pub_entry, 'phenotype', $group, $rank++ );		      
+		  }
+		} ## end if ( !defined $pubs ||...)
 		$logger->debug(
-		  "Storing " . $phi_dbentry->display_id() . " on translation " .
-			$translation . " from " . $dba->species() .
-			" from " . $dba->dbc()->dbname() . "/" . $dba->species_id );
+		    "Storing " . $phi_dbentry->display_id() . " on translation " .
+		    $translation . " from " . $dba->species() .
+		    " from " . $dba->dbc()->dbname() . "/" . $dba->species_id );
 		$dbentry_adaptor->store( $phi_dbentry, $translation,
-								 'Translation' );
+					 'Translation' );
+	} ## end while ( my ( $phi, $asses...))
+  } ## end while ( my ( $translation...))
+	$logger->info("Stored ".$xN." xrefs on ".$tN." translations from ".$dba->species());
+} ## end while ( my ( $genome, $translations...))
 
-	  } ## end while ( my ( $phi, $asses...))
-	} ## end while ( my ( $translation...))
-  } ## end while ( my ( $genome, $translations...))
-
-  # now add the colours
+# now add the colours
 
   # last step - apply the colours
   for my $dbc ( values %{$dbcs} ) {
@@ -532,9 +558,10 @@ q/delete from gene_attrib where attrib_type_id=317 and value='PHI'/ );
 	my %gene_color;
 	$dbc->sql_helper()->execute_no_return(
 	  -SQL => q/select t.gene_id, x.display_label 
-	from associated_xref a, object_xref o, xref x, transcript t
+	from associated_xref a, object_xref o, xref x, transcript t, translation tl
 	where a.object_xref_id = o.object_xref_id and condition_type = 'phenotype' 
-	and x.xref_id = a.xref_id and o.ensembl_id = t.canonical_translation_id/,
+        and tl.transcript_id=t.transcript_id
+	and x.xref_id = a.xref_id and o.ensembl_id = tl.translation_id/,
 	  -CALLBACK => sub {
 		my @row   = @{ shift @_ };
 		my $color = lc( $row[1] );
@@ -565,7 +592,7 @@ q/INSERT INTO gene_attrib (gene_id, attrib_type_id, value) VALUES ( ?, 317, 'PHI
 		-PARAMS => [$gene] );
 	}
   } ## end for my $dbc ( values %{...})
-
+  
 } ## end if ( $opts->{write} )
 
 sub rm_sp {
