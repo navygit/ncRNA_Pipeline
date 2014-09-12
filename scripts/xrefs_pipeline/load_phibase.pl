@@ -67,7 +67,7 @@ else {
 }
 $logger->info("Loading helper");
 my $lookup =
-  Bio::EnsEMBL::LookUp::LocalLookUp->new( -SKIP_CONTIGS => 1 );
+  Bio::EnsEMBL::LookUp::LocalLookUp->new( -SKIP_CONTIGS => 1, -NO_CACHE=>1 );
 
 my ($ont_dba_details) =
   @{ $cli_helper->get_dba_args_for_opts( $opts, 1, 'ont' ) };
@@ -423,11 +423,12 @@ if ( $opts->{write} ) {
 	if ( !defined $dbcs->{$dbname} ) {
 	  $logger->info( "Removing existing annotations from " . $dbname );
 	  $dbc->sql_helper()->execute_update(
-		-SQL => q/delete x.*,ox.*,ax.*,ag.* from external_db e 
+		-SQL => q/delete x.*,ox.*,ax.*,ag.*,oox.* from external_db e 
 join xref x using (external_db_id) 
 join object_xref ox using (xref_id) 
 join associated_xref ax using (object_xref_id) 
-left join associated_group ag using (associated_group_id) 
+join associated_group ag using (associated_group_id) 
+join ontology_xref oox using (object_xref_id) 
 where e.db_name='PHI'/ );
 
 	  $dbc->sql_helper()
@@ -497,18 +498,20 @@ q/delete from gene_attrib where attrib_type_id=317 and value='PHI'/ );
 			for my $pub (@$pubs) {
 			  $group++;
 			  print "Storing $pub\n";
-			  my $pub_entry = Bio::EnsEMBL::DBEntry->new(
-					  -PRIMARY_ID => lc( rm_sp($pub) ),
-					  -DBNAME     => $pub_name,
-					  -DISPLAY_ID => lc( rm_sp($pub) ),
-					  -INFO_TYPE  => 'DIRECT' );
+			  my $pub_entry =
+				Bio::EnsEMBL::DBEntry->new(
+									   -PRIMARY_ID => lc( rm_sp($pub) ),
+									   -DBNAME     => $pub_name,
+									   -DISPLAY_ID => lc( rm_sp($pub) ),
+									   -INFO_TYPE  => 'DIRECT' );
 			  $phi_dbentry->add_associated_xref( $condition_db_entry,
 									$pub_entry, 'experimental evidence',
 									$group, $rank++ );
 			  $phi_dbentry->add_associated_xref( $host_db_entry,
-									   $pub_entry, 'host', $group, $rank++ );
+								  $pub_entry, 'host', $group, $rank++ );
 			  $phi_dbentry->add_associated_xref( $phenotype_db_entry,
-								  $pub_entry, 'phenotype', $group, $rank++ );
+							 $pub_entry, 'phenotype', $group, $rank++ );
+			  $phi_dbentry->add_linkage_type( 'ND', $pub_entry );
 			}
 		  } ## end if ( !defined $pubs ||...)
 		} ## end for my $ass (@$asses)
