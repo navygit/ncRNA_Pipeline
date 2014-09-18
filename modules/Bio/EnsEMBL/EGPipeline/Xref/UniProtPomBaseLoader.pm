@@ -211,6 +211,7 @@ sub store_uniprot_xrefs {
 		Bio::EnsEMBL::DBEntry->new(
 								-PRIMARY_ID  => $uniprot->{ac},
 								-DISPLAY_ID  => $uniprot->{name},
+								-VERSION     => $uniprot->{version},
 								-DESCRIPTION => $uniprot->{description},
 								-DBNAME      => $uniprot->{type});
 	}
@@ -258,8 +259,10 @@ sub get_uniprot_for_pombase {
 	  SELECT d.accession,
   d.name,
   REPLACE(NVL(sc1.text,sc3.text),'^'),
-  d.entry_type, gn.name, cgnt.type 
+  d.entry_type, gn.name, cgnt.type,
+  s.version
 FROM SPTR.dbentry d
+JOIN sequence s ON (s.dbentry_id=d.dbentry_id)
 LEFT OUTER JOIN SPTR.dbentry_2_description dd
 ON (dd.dbentry_id         = d.dbentry_id
 AND dd.description_type_id=1)
@@ -282,13 +285,16 @@ WHERE d.accession = ?
 	/,
 	  -PARAMS   => [$ac],
 	  -CALLBACK => sub {
-		my ($ac, $name, $des, $type, $gene_name, $gene_name_type) =
+		my ($ac, $name, $des, $type, $gene_name, $gene_name_type, $version) =
 		  @{$_[0]};
 		if (defined $ac && $ac ne '') {
 		  $uniprot->{ac} = $ac;
 		}
 		if (defined $des && $des ne '') {
 		  $uniprot->{description} = $des;
+		}
+		if ( defined $version && $version ne '' ) {
+		  $uniprot->{version} = $version;
 		}
 		if (defined $name && $name ne '') {
 		  if (defined $uniprot->{name}) {
