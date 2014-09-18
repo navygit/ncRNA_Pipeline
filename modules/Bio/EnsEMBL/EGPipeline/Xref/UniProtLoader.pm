@@ -63,15 +63,16 @@ use Data::Dumper;
 =cut
 
 sub new {
-  my ($proto, @args) = @_;
+  my ( $proto, @args ) = @_;
   my $self = $proto->SUPER::new(@args);
-  ($self->{uniparc_dba}, $self->{uniprot_dba}, $self->{replace_all},
-   $self->{gene_names},  $self->{descriptions})
+  ( $self->{uniparc_dba}, $self->{uniprot_dba},
+	$self->{replace_all}, $self->{gene_names},
+	$self->{descriptions} )
 	= rearrange(
-				['UNIPARC_DBA', 'UNIPROT_DBA',
-				 'REPLACE_ALL', 'GENE_NAMES',
-				 'DESCRIPTIONS'],
-				@args);
+				 [ 'UNIPARC_DBA', 'UNIPROT_DBA',
+				   'REPLACE_ALL', 'GENE_NAMES',
+				   'DESCRIPTIONS' ],
+				 @args );
   return $self;
 }
 
@@ -86,14 +87,14 @@ sub new {
 =cut
 
 sub add_xrefs {
-  my ($self, $dba) = @_;
-  $self->{analysis} = $self->get_analysis($dba, 'xrefuniparc');
-  if (defined $self->{replace_all} && $self->{replace_all} == 1) {
+  my ( $self, $dba ) = @_;
+  $self->{analysis} = $self->get_analysis( $dba, 'xrefuniparc' );
+  if ( defined $self->{replace_all} && $self->{replace_all} == 1 ) {
 	$self->remove_xrefs($dba);
   }
   # get translation_id,UPIs where UniProt not set and UPI is set
   my $translation_upis = $self->get_translation_upis($dba);
-  $self->add_uniprot_xrefs($dba, $translation_upis);
+  $self->add_uniprot_xrefs( $dba, $translation_upis );
   return;
 }
 
@@ -107,7 +108,7 @@ sub add_xrefs {
 =cut
 
 sub get_translation_upis {
-  my ($self, $dba) = @_;
+  my ( $self, $dba ) = @_;
   $self->logger()->info("Finding translation-UPI pairs");
 
   my $translation_upis = {};
@@ -127,15 +128,15 @@ sub get_translation_upis {
 	upie.db_name='UniParc'
 	/,
 	-CALLBACK => sub {
-	  my ($tid, $upi, $gene_id) = @{$_[0]};
-	  $translation_upis->{$tid} = {upi => $upi, gene_id => $gene_id};
+	  my ( $tid, $upi, $gene_id ) = @{ $_[0] };
+	  $translation_upis->{$tid} = { upi => $upi, gene_id => $gene_id };
 	  return;
 	},
-	-PARAMS => [$dba->species_id()]);
+	-PARAMS => [ $dba->species_id() ] );
 
   $self->logger()
-	->info("Found " .
-		   scalar(keys %$translation_upis) . " translation-UPI pairs");
+	->info( "Found " .
+		 scalar( keys %$translation_upis ) . " translation-UPI pairs" );
 
   return $translation_upis;
 } ## end sub get_translation_upis
@@ -151,7 +152,7 @@ sub get_translation_upis {
 =cut
 
 sub add_uniprot_xrefs {
-  my ($self, $dba, $translation_upis) = @_;
+  my ( $self, $dba, $translation_upis ) = @_;
   my $taxid = $dba->get_MetaContainer()->get_taxonomy_id();
   my $ddba  = $dba->get_DBEntryAdaptor();
   my $gdba  = $dba->get_GeneAdaptor();
@@ -160,22 +161,22 @@ sub add_uniprot_xrefs {
   $self->logger()->info("Adding UniProt xrefs");
   # hash of gene names, descriptions
   my $gene_attribs = {};
-  while (my ($tid, $upi) = each %$translation_upis) {
+  while ( my ( $tid, $upi ) = each %$translation_upis ) {
 	$tN++;
-	$self->logger()->debug("Looking up entry for " . $upi->{upi});
-	my $uniprots = $self->get_uniprot_for_upi($taxid, $upi->{upi});
+	$self->logger()->debug( "Looking up entry for " . $upi->{upi} );
+	my $uniprots = $self->get_uniprot_for_upi( $taxid, $upi->{upi} );
 	$uN +=
-	  $self->store_uniprot_xrefs($ddba, $tid, $uniprots,
-								 $upi->{gene_id}, $gene_attribs);
+	  $self->store_uniprot_xrefs( $ddba, $tid, $uniprots,
+								  $upi->{gene_id}, $gene_attribs );
 	$self->logger()->info("Processed $tN translations ($uN xrefs)")
-	  if ($tN % 1000 == 0);
+	  if ( $tN % 1000 == 0 );
   }
 
-  if (defined $self->{gene_names} && $self->{gene_names} == 1) {
-	$self->set_gene_names($ddba, $gene_attribs);
+  if ( defined $self->{gene_names} && $self->{gene_names} == 1 ) {
+	$self->set_gene_names( $ddba, $gene_attribs );
   }
-  if (defined $self->{descriptions} && $self->{descriptions} == 1) {
-	$self->set_descriptions($gdba, $gene_attribs);
+  if ( defined $self->{descriptions} && $self->{descriptions} == 1 ) {
+	$self->set_descriptions( $gdba, $gene_attribs );
   }
   $self->logger()->info("Stored $uN UniProt xrefs on $tN translations");
 } ## end sub add_uniprot_xrefs
@@ -194,7 +195,7 @@ sub add_uniprot_xrefs {
 =cut
 
 sub store_uniprot_xrefs {
-  my ($self, $ddba, $tid, $uniprots, $gene_id, $gene_attribs) = @_;
+  my ( $self, $ddba, $tid, $uniprots, $gene_id, $gene_attribs ) = @_;
   # remove existing uniprots for this translation first
   $ddba->dbc()->sql_helper()->execute_update(
 	-SQL => q/
@@ -208,50 +209,52 @@ sub store_uniprot_xrefs {
 		and ox.ensembl_id = ?
 		and ox.ensembl_object_type = 'Translation'
 	/,
-	-PARAMS => [$tid]);
+	-PARAMS => [$tid] );
 
   my $n = 0;
   return $n if scalar(@$uniprots) == 0;
   for my $uniprot (@$uniprots) {
 
-	if (!$uniprot->{ac} || $uniprot->{ac} eq '') {
+	if ( !$uniprot->{ac} || $uniprot->{ac} eq '' ) {
 	  $self->logger()
 		->warn(
-"Empty $uniprot->{type} accession retrieved from UniProt for translation $tid");
+"Empty $uniprot->{type} accession retrieved from UniProt for translation $tid"
+		);
 	  next;
 	}
 	$self->logger()
-	  ->debug(
-		  "Storing $uniprot->{type} " . $uniprot->{ac} . " on translation $tid");
+	  ->debug( "Storing $uniprot->{type} " .
+			   $uniprot->{ac} . " on translation $tid" );
 	my $dbentry =
-	  $ddba->fetch_by_db_accession($uniprot->{type}, $uniprot->{ac});
-	if (!defined $dbentry) {
-	  $dbentry =
-		Bio::EnsEMBL::DBEntry->new(
-								-PRIMARY_ID  => $uniprot->{ac},
-								-DISPLAY_ID  => $uniprot->{name},
-								-DESCRIPTION => $uniprot->{description},
-								-DBNAME      => $uniprot->{type});
+	  $ddba->fetch_by_db_accession( $uniprot->{type}, $uniprot->{ac} );
+	if ( !defined $dbentry ) {
+	  $dbentry = Bio::EnsEMBL::DBEntry->new(
+				-PRIMARY_ID  => $uniprot->{ac},
+				-DISPLAY_ID  => $uniprot->{name},
+				-DESCRIPTION => $uniprot->{description},
+				-VERSION     => $uniprot->{version},
+				-DBNAME      => $uniprot->{type} );
 	}
-	$dbentry->analysis($self->{analysis});
-	$ddba->store($dbentry, $tid, 'Translation');
+	$dbentry->analysis( $self->{analysis} );
+	$ddba->store( $dbentry, $tid, 'Translation' );
 	# track names and descriptions
-	if (defined $uniprot->{description} &&
-		$uniprot->{type} eq 'Uniprot/SWISSPROT')
+	if ( defined $uniprot->{description} &&
+		 $uniprot->{type} eq 'Uniprot/SWISSPROT' )
 	{
-	  push @{$gene_attribs->{descriptions}->{$gene_id}->{$uniprot->{type}}
-		  ->{$uniprot->{description}}},
+	  push @{ $gene_attribs->{descriptions}->{$gene_id}
+		  ->{ $uniprot->{type} }->{ $uniprot->{description} } },
 		'[Source:' . $uniprot->{type} . ';Acc:' . $uniprot->{ac} . ']';
 	}
-	if (defined $uniprot->{gene_name} &&
-		$uniprot->{type} eq 'Uniprot/SWISSPROT')
+	if ( defined $uniprot->{gene_name} &&
+		 $uniprot->{type} eq 'Uniprot/SWISSPROT' )
 	{
-	  $gene_attribs->{gene_names}->{$gene_id}->{$uniprot->{type}}
-		->{$uniprot->{gene_name}} += 1;
-	  if (defined $uniprot->{synonyms}) {
-		for my $synonym (@{$uniprot->{synonyms}}) {
-		  push(@{$gene_attribs->{synonyms}->{$uniprot->{gene_name}}},
-			   $synonym);
+	  $gene_attribs->{gene_names}->{$gene_id}->{ $uniprot->{type} }
+		->{ $uniprot->{gene_name} } += 1;
+	  if ( defined $uniprot->{synonyms} ) {
+		for my $synonym ( @{ $uniprot->{synonyms} } ) {
+		  push(
+			  @{ $gene_attribs->{synonyms}->{ $uniprot->{gene_name} } },
+			  $synonym );
 		}
 	  }
 	}
@@ -271,23 +274,25 @@ sub store_uniprot_xrefs {
 =cut
 
 sub set_descriptions {
-  my ($self, $gdba, $gene_attribs) = @_;
+  my ( $self, $gdba, $gene_attribs ) = @_;
   my $nDes = 0;
-  while (my ($gid, $descrs) = each %{$gene_attribs->{descriptions}}) {
+  while ( my ( $gid, $descrs ) =
+		  each %{ $gene_attribs->{descriptions} } )
+  {
 	# work out the best description
 
 	my $candidates = $descrs->{'Uniprot/SWISSPROT'};
-	if (!defined $candidates) {
+	if ( !defined $candidates ) {
 	  $candidates = $descrs->{'Uniprot/SPTREMBL'};
 	}
 	my @descs = sort {
-	  scalar @{$candidates->{$b}} <=> scalar @{$candidates->{$a}}
+	  scalar @{ $candidates->{$b} } <=> scalar @{ $candidates->{$a} }
 	} keys %{$candidates};
-	if (scalar @descs > 0) {
+	if ( scalar @descs > 0 ) {
 	  my $description = $descs[0];
-	  if (defined $description) {
+	  if ( defined $description ) {
 		my $src = $candidates->{$description};
-		if (defined $src && scalar @{$src} > 0) {
+		if ( defined $src && scalar @{$src} > 0 ) {
 		  $description .= " " . $src->[0];
 		}
 		# store description for gene
@@ -297,10 +302,10 @@ sub set_descriptions {
 		$nDes++;
 		$gdba->dbc()->sql_helper()->execute_update(
 			   -SQL => q/update gene set description=? where gene_id=?/,
-			   -PARAMS => [$description, $gid]);
+			   -PARAMS => [ $description, $gid ] );
 	  }
 	}
-  } ## end while (my ($gid, $descrs)...)
+  } ## end while ( my ( $gid, $descrs...))
   $self->logger()->info("Stored $nDes descriptions");
   return;
 } ## end sub set_descriptions
@@ -316,52 +321,54 @@ sub set_descriptions {
 =cut
 
 sub set_gene_names {
-  my ($self, $ddba, $gene_attribs) = @_;
+  my ( $self, $ddba, $gene_attribs ) = @_;
   my $nNames = 0;
-  while (my ($gid, $names) = each %{$gene_attribs->{gene_names}}) {
+  while ( my ( $gid, $names ) = each %{ $gene_attribs->{gene_names} } )
+  {
 	# work out the best name
 	my $candidates = $names->{'Uniprot/SWISSPROT'};
-	if (!defined $candidates) {
+	if ( !defined $candidates ) {
 	  $candidates = $names->{'Uniprot/SPTREMBL'};
 	}
 	my @gene_names =
 	  sort { $candidates->{$b} <=> $candidates->{$a} }
 	  keys %{$candidates};
-	if (scalar @gene_names > 0) {
+	if ( scalar @gene_names > 0 ) {
 	  my $gene_name = $gene_names[0];
-	  if (defined $gene_name) {
+	  if ( defined $gene_name ) {
 		# create dbentry
-		my $gd = $ddba->fetch_by_db_accession('Uniprot_gn', $gene_name);
-		if (!defined $gd) {
+		my $gd =
+		  $ddba->fetch_by_db_accession( 'Uniprot_gn', $gene_name );
+		if ( !defined $gd ) {
 		  $gd =
-			Bio::EnsEMBL::DBEntry->new(-PRIMARY_ID => $gene_name,
-									   -DISPLAY_ID => $gene_name,
-									   -DBNAME     => 'Uniprot_gn');
+			Bio::EnsEMBL::DBEntry->new( -PRIMARY_ID => $gene_name,
+										-DISPLAY_ID => $gene_name,
+										-DBNAME     => 'Uniprot_gn' );
 		  # synonyms for this name
 		  my $synonyms = $gene_attribs->{synonyms}->{$gene_name};
-		  if (defined $synonyms) {
-			for my $synonym (uniq @$synonyms) {
+		  if ( defined $synonyms ) {
+			for my $synonym ( uniq @$synonyms ) {
 			  $gd->add_synonym($synonym);
 			}
 		  }
 		  $ddba->store($gd);
-		  if (!defined $gd) {
+		  if ( !defined $gd ) {
 			$self->logger()
 			  ->warn(
-					"Could not store xref for gene name " . $gene_name);
+				   "Could not store xref for gene name " . $gene_name );
 			next;
 		  }
 		}
-		     # set as display_xref_id
+		# set as display_xref_id
 		$self->logger()
 		  ->debug("Setting gene $gene_id name to '$gene_name'");
 		$nNames++;
 		$ddba->dbc()->sql_helper()->execute_update(
 		   -SQL => q/update gene set display_xref_id=? where gene_id=?/,
-		   -PARAMS => [$gd->dbID(), $gid]);
-	  } ## end if (defined $gene_name)
-	} ## end if (scalar @gene_names...)
-  } ## end while (my ($gid, $names) ...)
+		   -PARAMS => [ $gd->dbID(), $gid ] );
+	  } ## end if ( defined $gene_name)
+	} ## end if ( scalar @gene_names...)
+  } ## end while ( my ( $gid, $names...))
   $self->logger()->info("Stored $nNames gene names");
   return;
 } ## end sub set_gene_names
@@ -377,7 +384,7 @@ sub set_gene_names {
 =cut
 
 sub get_uniprot_for_upi {
-  my ($self, $taxid, $upi) = @_;
+  my ( $self, $taxid, $upi ) = @_;
   my @uniprot_acs = @{
 	$self->{uniparc_dba}->dbc()->sql_helper()->execute_simple(
 	  -SQL => q/
@@ -385,7 +392,7 @@ sub get_uniprot_for_upi {
 	  from uniparc.xref x 
 	  join uniparc.cv_database d on (d.id=x.dbid)
 	  where upi=? and taxid=? and descr in ('TREMBL','SWISSPROT') and deleted='N'/,
-	  -PARAMS => [$upi, $taxid])};
+	  -PARAMS => [ $upi, $taxid ] ) };
 
   my $uniprots = [];
 
@@ -396,8 +403,10 @@ sub get_uniprot_for_upi {
 	  SELECT d.accession,
   d.name,
   REPLACE(NVL(sc1.text,sc3.text),'^'),
-  d.entry_type, gn.name, cgnt.type 
+  d.entry_type, gn.name, cgnt.type,
+  s.version
 FROM SPTR.dbentry d
+JOIN sequence s ON (s.dbentry_id=d.dbentry_id)
 LEFT OUTER JOIN SPTR.dbentry_2_description dd
 ON (dd.dbentry_id         = d.dbentry_id
 AND dd.description_type_id=1)
@@ -420,37 +429,41 @@ WHERE d.accession = ?
 	/,
 	  -PARAMS   => [$ac],
 	  -CALLBACK => sub {
-		my ($ac, $name, $des, $type, $gene_name, $gene_name_type) =
-		  @{$_[0]};
-		if (defined $ac && $ac ne '') {
+		my ( $ac, $name, $des, $type, $gene_name, $gene_name_type,
+			 $version )
+		  = @{ $_[0] };
+		if ( defined $ac && $ac ne '' ) {
 		  $uniprot->{ac} = $ac;
 		}
-		if (defined $des && $des ne '') {
+		if ( defined $des && $des ne '' ) {
 		  $uniprot->{description} = $des;
 		}
-		if (defined $name && $name ne '') {
-		  if (defined $uniprot->{name}) {
+		if ( defined $version && $version ne '' ) {
+		  $uniprot->{version} = $version;
+		}
+		if ( defined $name && $name ne '' ) {
+		  if ( defined $uniprot->{name} ) {
 			$uniprot->{name} .= "; $name";
 		  }
 		  else {
 			$uniprot->{name} = $name;
 		  }
 		}
-		if (defined $type && $type ne '') {
+		if ( defined $type && $type ne '' ) {
 		  $uniprot->{type} =
 			$type == 0 ? "Uniprot/SWISSPROT" : "Uniprot/SPTREMBL";
 		}
-		if (defined $gene_name) {
-		  if ($gene_name_type eq 'Name') {
+		if ( defined $gene_name ) {
+		  if ( $gene_name_type eq 'Name' ) {
 			$uniprot->{gene_name} = $gene_name;
 		  }
 		  else {
-			push @{$uniprot->{synonyms}}, $gene_name;
+			push @{ $uniprot->{synonyms} }, $gene_name;
 		  }
 		}
 		return;
-	  });
-	if (defined $uniprot->{ac}) {
+	  } );
+	if ( defined $uniprot->{ac} ) {
 	  push @$uniprots, $uniprot;
 	}
   } ## end for my $ac (@uniprot_acs)
@@ -468,7 +481,7 @@ WHERE d.accession = ?
 =cut
 
 sub remove_xrefs {
-  my ($self, $dba) = @_;
+  my ( $self, $dba ) = @_;
   $self->logger()->info("Removing existing UniProt cross-references");
   $dba->dbc()->sql_helper()->execute_update(
 	-SQL => q/
@@ -485,7 +498,7 @@ sub remove_xrefs {
 		d.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL')
 		and cs.species_id=?
 	/,
-	-PARAMS => [$dba->species_id()]);
+	-PARAMS => [ $dba->species_id() ] );
   return;
 }
 
