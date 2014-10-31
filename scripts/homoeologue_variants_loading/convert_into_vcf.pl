@@ -30,10 +30,9 @@ use warnings;
 use FileHandle;
 use Getopt::Long;
 
-my $variants_text_file = shift;
-my $variants_text_fh = new FileHandle;
+my ($variants_text_file, $groups_text_file);
 
-my $groups_text_file = shift;
+my $variants_text_fh = new FileHandle;
 my $groups_text_fh = new FileHandle;
 
 GetOptions( 
