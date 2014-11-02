@@ -149,7 +149,7 @@ foreach my $group_id (keys (%$attributes_href)) {
 		    warn("loading attrib_type_id, xref_stable_id, $attrib_type_id, $xref_stable_id, for stable_id, $stable_id, from component, $component_genome\n");
 		}
 		
-		# $insert_va_sth->execute($attrib_type_id, $xref_stable_id, $stable_id);
+		$insert_va_sth->execute($attrib_type_id, $xref_stable_id, $stable_id);
 	    }
 	}
 	
