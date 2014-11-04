@@ -29,3 +29,15 @@ INSERT INTO `variation_set` VALUES (10,"Inter-homoeologous variants between A, B
 INSERT INTO `variation_set` VALUES (11,"CerealsDB (all data)",1011);
 INSERT INTO `variation_set` VALUES (12,"All variants classified as inter-homoeologues",1012);
 
+-- variation_set_structure table
+
+INSERT INTO `variation_set_structure` VALUES (11,1);
+INSERT INTO `variation_set_structure` VALUES (11,2);
+INSERT INTO `variation_set_structure` VALUES (11,3);
+INSERT INTO `variation_set_structure` VALUES (12,4);
+INSERT INTO `variation_set_structure` VALUES (12,5);
+INSERT INTO `variation_set_structure` VALUES (12,6);
+INSERT INTO `variation_set_structure` VALUES (12,7);
+INSERT INTO `variation_set_structure` VALUES (12,8);
+INSERT INTO `variation_set_structure` VALUES (12,9);
+INSERT INTO `variation_set_structure` VALUES (12,10);
