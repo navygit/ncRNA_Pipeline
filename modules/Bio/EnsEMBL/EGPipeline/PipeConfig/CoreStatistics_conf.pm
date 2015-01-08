@@ -58,7 +58,7 @@ sub default_options {
     run_all => 0,
     
     release => $self->o('ensembl_release'),
-    bin_count => '150',
+    bin_count => '200',
     max_run => '100',
     
     long_noncoding_density => 0,
@@ -306,6 +306,16 @@ sub pipeline_analyses {
       -max_retry_count  => 2,
       -hive_capacity    => 10,
       -rc_name => 'normal',
+      -flow_into => ['CorrectNcoils'],
+    },
+
+    {
+      -logic_name => 'CorrectNcoils',
+      -module     => 'Bio::EnsEMBL::EGPipeline::CoreStatistics::CorrectNcoils',
+      -parameters => {},
+      -max_retry_count  => 0,
+      -hive_capacity    => 10,
+      -rc_name          => 'normal',
     },
 
     {
