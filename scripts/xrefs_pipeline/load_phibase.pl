@@ -358,9 +358,15 @@ LINE: while ( my $line = <$INP> ) {
 	my %fix_cond_divergences = (
 							'complementation' => 'gene complementation',
 							'mutation'        => 'gene mutation', );
+
+	if(!defined $condition_names || $condition_names eq '') {
+	  $msg = "No conditions supplied";
+	  $logger->warn($msg);
+	  next;
+	} 
 	$logger->debug("Processing condition(s) '$condition_names'");
 	for my $condition_full_name (
-						   split( /;/, lc( rm_sp($condition_names) ) ) )
+						   split( /[;\/]/, lc( rm_sp($condition_names) ) ) )
 	{
 	  my @condition_short_names = split( /:/, $condition_full_name );
 	  my $condition_last_name = rm_sp( $condition_short_names[-1] );
@@ -377,6 +383,12 @@ LINE: while ( my $line = <$INP> ) {
 		  last;
 		}
 	  }
+	}
+
+	if(!defined $translation_ass->{condition}{id} ||!defined $translation_ass->{condition}{label}) {
+	  $msg = "No valid conditions found: ".$condition_names;
+	  $logger->warn($msg);
+	  next;
 	}
 
 	#deal with the publications
@@ -542,8 +554,17 @@ q/delete from gene_attrib where attrib_type_id=317 and value='PHI'/ );
 		    "Storing " . $phi_dbentry->display_id() . " on translation " .
 		    $translation . " from " . $dba->species() .
 		    " from " . $dba->dbc()->dbname() . "/" . $dba->species_id );
+	      eval {
 		$dbentry_adaptor->store( $phi_dbentry, $translation,
 					 'Translation' );
+	      };
+	      if($@) {
+		$logger->debug(
+		    "Storing " . $phi_dbentry->display_id() . " on translation " .
+		    $translation . " from " . $dba->species() .
+		    " from " . $dba->dbc()->dbname() . "/" . $dba->species_id.": ".$@ );
+		print Dumper($asses);
+	      }
 	} ## end while ( my ( $phi, $asses...))
   } ## end while ( my ( $translation...))
 	$logger->info("Stored ".$xN." xrefs on ".$tN." translations from ".$dba->species());
