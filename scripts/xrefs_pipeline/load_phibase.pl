@@ -23,6 +23,7 @@ use Bio::EnsEMBL::OntologyXref;
 use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::LookUp::LocalLookUp;
 use Bio::EnsEMBL::Utils::CliHelper;
+use Bio::EnsEMBL::DBSQL::TaxonomyNodeAdaptor;
 use Carp;
 use Data::Dumper;
 use Log::Log4perl qw(:easy);
@@ -69,29 +70,39 @@ my $lookup =
   Bio::EnsEMBL::LookUp::LocalLookUp->new( -SKIP_CONTIGS => 1,
 										  -NO_CACHE     => 1 );
 
+$logger->info("Loading taxonomy db");
+my ($tax_dba_details) =
+  @{ $cli_helper->get_dba_args_for_opts( $opts, 1, 'tax' ) };
+$tax_dba_details->{-GROUP}   = 'taxonomy';
+
+my $tax_adaptor =
+  Bio::EnsEMBL::DBSQL::TaxonomyNodeAdaptor->new(
+				   Bio::EnsEMBL::DBSQL::DBAdaptor->new( %{$tax_dba_details} ) );
+
+$lookup->taxonomy_adaptor($tax_adaptor);
+
+$logger->info("Loading ontology db");
 my ($ont_dba_details) =
   @{ $cli_helper->get_dba_args_for_opts( $opts, 1, 'ont' ) };
 my $ont_dba =
   new Bio::EnsEMBL::DBSQL::OntologyDBAdaptor(%$ont_dba_details);
 
+$logger->info("Fetching ontologies");
 # Get lists of term names for host, phenotype and condition
 
 my $ont_adaptor = $ont_dba->get_adaptor("OntologyTerm");
 
 my $ident_root_term = $ont_adaptor->fetch_by_accession("PHI:0");
-
 my @ident_terms =
   @{ $ont_adaptor->fetch_all_by_ancestor_term($ident_root_term) };
-
 my $pheno_root_term = $ont_adaptor->fetch_by_accession("PHI:001");
-
 my @pheno_terms =
   @{ $ont_adaptor->fetch_all_by_ancestor_term($pheno_root_term) };
-
 my $cond_root_term = $ont_adaptor->fetch_by_accession("PHI:002");
-
 my @cond_terms =
   @{ $ont_adaptor->fetch_all_by_ancestor_term($cond_root_term) };
+
+$logger->info("Completed fetching ontologies");
 
 #TODO replace with taxonomy adaptor call
 my %ncbi_host = ( 'wheat'                  => '4565',
@@ -127,6 +138,7 @@ my %ncbi_host_ids = reverse %ncbi_host;
 # Get all phibase rows in the cvs file that are also in the core db
 
 my $phibase_file = $opts->{file};
+$logger->info("Reading $phibase_file");
 
 open( my $INP, "<", $phibase_file ) or
   croak "Could not open $phibase_file for reading";
@@ -375,13 +387,11 @@ LINE: while ( my $line = <$INP> ) {
 	for my $condition_full_name (
 						   split( /[;\/]/, lc( rm_sp($condition_names) ) ) )
 	{
-	  my @condition_short_names = split( /:/, $condition_full_name );
-	  my $condition_last_name = rm_sp( $condition_short_names[-1] );
-	  $condition_last_name = $fix_cond_divergences{$condition_last_name}
-		if exists $fix_cond_divergences{$condition_last_name};
+	  $condition_full_name = $fix_cond_divergences{$condition_full_name}
+		if exists $fix_cond_divergences{$condition_full_name};
 	  for my $ont_cond (@cond_terms) {
 		my $ont_cond_name = lc( $ont_cond->name() );
-		if ( $condition_last_name =~ /$ont_cond_name/ ) {
+		if ( $condition_full_name =~ /$ont_cond_name/ ) {
 		  $logger->debug( "Mapped condition to " .
 					 $ont_cond->accession() . "/" . $ont_cond->name() );
 
