@@ -80,8 +80,8 @@ while ( my $line = <$fh> ) {
             );
             
             foreach my $synonym (@{$synonyms[0]}) {
-                $logger->info( "  Old Synonyms");
-                $logger->info(Dumper $synonym);
+                #$logger->info( "  Old Synonyms");
+                #$logger->info(Dumper $synonym);
                 $new_display_xref->add_synonym($synonym);
             }
             
