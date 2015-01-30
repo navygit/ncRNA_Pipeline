@@ -12,12 +12,11 @@ sub default_options {
         # inherit other stuff from the base class
         %{ $self->SUPER::default_options() },
         
-        release  	      => software_version(),
 		registry  	      => '',
 	    # division for GO & GeneName projection
+		
 		division_name     => '', # Eg: protists, fungi, plants, metazoa
-        pipeline_name     => $self->o('ENV','USER').'_PostCompara_'.$self->o('release'),
-        email             => $self->o('ENV', 'USER').'@ebi.ac.uk', 
+        pipeline_name     => $self->o('ENV','USER').'_PostCompara_'.$self->o('ensembl_release'),
         output_dir        => '/nfs/nobackup/ensemblgenomes/'.$self->o('ENV', 'USER').'/workspace/'.$self->o('pipeline_name'),     
 		
 	## Flags controlling sub-pipeline to run
@@ -36,7 +35,7 @@ sub default_options {
 		{ 
 	 	  '1'=>{
 	 	  		# source species to project from 
-	 	  		'source'      => '', # 'schizosaccharomyces_pombe'
+	 	  		'source'      => '', # undef, 'schizosaccharomyces_pombe'
 				# target species to project to
 	 			'species'     => [], # ['puccinia graminis', 'aspergillus_nidulans']
 				# target species to exclude 
@@ -49,15 +48,31 @@ sub default_options {
 				# source species GeneName filter
 				'geneName_source' 			=> ['UniProtKB/Swiss-Prot', 'TAIR_SYMBOL'],
 				# source species GeneDescription filter
-				'geneDesc_rules'   			=> ['hypothetical'] , 
+				'geneDesc_rules'   			=> ['hypothetical', 'putative', 'unknown protein'] , 
 				# target species GeneDescription filter
-				'geneDesc_rules_target'   	=> ['Uncharacterized protein','Predicted protein','Gene of unknown'] , 
+				'geneDesc_rules_target'   	=> ['Uncharacterized protein', 'Predicted protein', 'Gene of unknown'] , 
 		  		# homology types filter
  				'gn_method_link_type'       => 'ENSEMBL_ORTHOLOGUES',
 			    'gn_homology_types_allowed' => ['ortholog_one2one'], 
 		        # homology percentage identity filter 
-        		'gn_percent_id_filter'      => '10', 
+        		'gn_percent_id_filter'      => '30', 
+				'gn_percent_cov_filter'     => '66',
 	 	       }, 
+		 #'2'=>{
+		 	#   'source'		  => '',
+		 	#   'species'	  => [],
+		 	#   'antispecies'  => [],
+		 	#   'division'     => [],
+		 	#   'run_all'      =>  0,
+		 	#   'taxon_filter' => undef,
+			#   'geneName_source' 		   => ['UniProtKB/Swiss-Prot', 'TAIR_SYMBOL'],
+  			#   'geneDesc_rules'   		   => ['hypothetical', 'putative', 'unknown protein'] , 
+  			#   'geneDesc_rules_target'     => ['Uncharacterized protein', 'Predicted protein', 'Gene of unknown'] , 
+ 			#   'gn_method_link_type'       => 'ENSEMBL_ORTHOLOGUES',
+			#   'gn_homology_types_allowed' => ['ortholog_one2one'], 
+        	#   'gn_percent_id_filter'      => '30', 
+			#   'gn_percent_cov_filter'     => '66',
+	 	  #	  }, 
 		},
 
 		#  Off by default. 
@@ -71,7 +86,8 @@ sub default_options {
 		flag_filter   => '0', 
 		
 		#  Off by default.
-		#   To do only GeneDesc projection. Skip GeneName projection
+		#   To do only GeneDesc projection. 
+		#   Skip GeneName projection
 		flag_GeneDesc => '0', 
 
         # Tables to dump
@@ -85,7 +101,7 @@ sub default_options {
 		{ 
 	 	  '1'=>{
 	 	  		# source species to project from 
-	 	  		'source'      => '', # 'schizosaccharomyces_pombe'
+	 	  		'source'      => '', # undef, 'schizosaccharomyces_pombe'
 				# target species to project to
 	 			'species'     => [], # ['puccinia graminis', 'aspergillus_nidulans']
 				# target species to exclude 
@@ -104,19 +120,18 @@ sub default_options {
 				'ensemblObj_type_target'    => 'Translation', # 'Translation'/'Transcript'  
 	 	       }, 
 
-          # Second pair of source-target if required
-		 '2'=>{
-		 	   'source'		 => '',
-		 	   'species'	 => [],
-		 	   'antispecies' => [],
-		 	   'division'    => [],
-		 	   'run_all'     =>  0,
- 			   'go_method_link_type'       => 'ENSEMBL_ORTHOLOGUES',
-			   'go_homology_types_allowed' => ['ortholog_one2one','apparent_ortholog_one2one'], 
-        	   'go_percent_id_filter'      => '10', 
-			   'ensemblObj_type'           => 'Translation', 
-			   'ensemblObj_type_target'    => 'Translation',   
-	 		  }, 		 	   
+		 #'2'=>{
+		  #	   'source'		 => '',
+		  #	   'species'	 => [],
+		  #	   'antispecies' => [],
+		  #	   'division'    => [],
+		  #	   'run_all'     =>  0,
+ 		  #	   'go_method_link_type'       => 'ENSEMBL_ORTHOLOGUES',
+		  #	   'go_homology_types_allowed' => ['ortholog_one2one','apparent_ortholog_one2one'], 
+          #	   'go_percent_id_filter'      => '10', 
+		  #	   'ensemblObj_type'           => 'Translation', 
+		  #	   'ensemblObj_type_target'    => 'Translation',   
+	 	 #	  }, 		 	   
     	},
 		
 	    # This Array of hashes is supplied to the 'AnalysisSetup' Runnable to 
@@ -136,7 +151,7 @@ sub default_options {
     	delete_existing => 1,
     
 		# Delete rows in tables connected to the existing analysis (via analysis_id)
-    	linked_tables => ['analysis_description'], 
+    	linked_tables => [], 
   	        
 	    # Retrieve analsysis descriptions from the production database;
     	# the supplied registry file will need the relevant server details.
@@ -307,7 +322,7 @@ sub pipeline_analyses {
        -module        => 'Bio::EnsEMBL::EGPipeline::PostCompara::RunnableDB::GeneNamesProjection',
        -parameters    => {
 						    'compara'                 => $self->o('division_name'),
-				   		    'release'                 => $self->o('release'),
+				   		    'release'                 => $self->o('ensembl_release'),
 				            'output_dir'              => $self->o('output_dir'),		
 				            'flag_store_projections'  => $self->o('flag_store_projections'),
 				            'flag_filter'             => $self->o('flag_filter'),
@@ -321,9 +336,11 @@ sub pipeline_analyses {
     {  -logic_name    => 'GeneNamesEmailReport',
        -module        => 'Bio::EnsEMBL::EGPipeline::PostCompara::RunnableDB::GeneNamesEmailReport',
        -parameters    => {
-          	'email'      => $self->o('email'),
-          	'subject'    => $self->o('gn_subject'),
-          	'output_dir' => $self->o('output_dir'),
+          	'email'      			 => $self->o('email'),
+          	'subject'    			 => $self->o('gn_subject'),
+          	'output_dir' 			 => $self->o('output_dir'),         	
+ 	 	 	'flag_GeneDesc'          => $self->o('flag_GeneDesc'),          	
+            'flag_store_projections' => $self->o('flag_store_projections'),
        },
     },
     
@@ -396,7 +413,7 @@ sub pipeline_analyses {
        -module        => 'Bio::EnsEMBL::EGPipeline::PostCompara::RunnableDB::GOProjection',
        -parameters    => {
 						    'compara'                => $self->o('division_name'),
-				   		    'release'                => $self->o('release'),
+				   		    'release'                => $self->o('ensembl_release'),
 				            'output_dir'             => $self->o('output_dir'),
 				   		    'evidence_codes'		 => $self->o('evidence_codes'),
 				   		    'goa_webservice'         => $self->o('goa_webservice'),
@@ -465,33 +482,5 @@ sub pipeline_analyses {
 
   ];
 }
-
-sub pipeline_wide_parameters {
-    my ($self) = @_;
-
-    return {
-        %{ $self->SUPER::pipeline_wide_parameters() },  # inherit other stuff from the base class
-    };
-}
-
-sub resource_classes {
-    my $self = shift;
-    return {
-      'default'  	 	=> {'LSF' => '-q production-rh6 -n 4 -M 4000 -R "rusage[mem=4000] select[gpfs]"'},
-      'mem'     	 	=> {'LSF' => '-q production-rh6 -n 4 -M 12000 -R "rusage[mem=12000] select[gpfs]"'},
-      '2Gb_job'      	=> {'LSF' => '-q production-rh6 -C0 -M2000  -R"select[mem>2000]  rusage[mem=2000] select[gpfs]"' },
-      '24Gb_job'     	=> {'LSF' => '-q production-rh6 -C0 -M24000 -R"select[mem>24000] rusage[mem=24000] select[gpfs]"' },
-      '250Mb_job'    	=> {'LSF' => '-q production-rh6 -C0 -M250   -R"select[mem>250]   rusage[mem=250] select[gpfs]"' },
-      '500Mb_job'    	=> {'LSF' => '-q production-rh6 -C0 -M500   -R"select[mem>500]   rusage[mem=500] select[gpfs]"' },
-	  '1Gb_job'      	=> {'LSF' => '-q production-rh6 -C0 -M1000  -R"select[mem>1000]  rusage[mem=1000] select[gpfs]"' },
-	  '2Gb_job'      	=> {'LSF' => '-q production-rh6 -C0 -M2000  -R"select[mem>2000]  rusage[mem=2000] select[gpfs]"' },
-	  '8Gb_job'      	=> {'LSF' => '-q production-rh6 -C0 -M8000  -R"select[mem>8000]  rusage[mem=8000] select[gpfs]"' },
-	  '24Gb_job'     	=> {'LSF' => '-q production-rh6 -C0 -M24000 -R"select[mem>24000] rusage[mem=24000] select[gpfs]"' },
-	  'msa'          	=> {'LSF' => '-q production-rh6 -W 24:00 -R"select[gpfs]"'},
-	  'msa_himem'    	=> {'LSF' => '-q production-rh6 -M 32768 -R"rusage[mem=32768] select[gpfs]" -W 24:00' },
-	  'urgent_hcluster' => {'LSF' => '-q production-rh6 -C0 -M8000  -R"select[mem>8000]  rusage[mem=8000] select[gpfs]"' },
-    }
-}
-
 
 1;
