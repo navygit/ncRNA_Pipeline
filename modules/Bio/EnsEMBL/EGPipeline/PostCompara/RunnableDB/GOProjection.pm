@@ -55,12 +55,12 @@ sub fetch_input {
     $flag_delete_go_terms   = $self->param_required('flag_delete_go_terms');
 
     $to_species             = $self->param_required('species');
-    $from_species           = $self->param_required('from_species');
+    $from_species           = $self->param_required('source');
     $compara                = $self->param_required('compara');
     $release                = $self->param_required('release');
 
     $method_link_type       = $self->param_required('method_link_type');
-    $homology_types_allowed = $self->param_required('homology_types_allowed ');
+    $homology_types_allowed = $self->param_required('homology_types_allowed');
     $percent_id_filter      = $self->param_required('percent_id_filter');
     $log_file               = $self->param_required('output_dir');
     $output_dir             = $self->param_required('output_dir');
@@ -77,8 +77,6 @@ return;
 sub run {
     my ($self) = @_;
 
-#    Bio::EnsEMBL::Registry->set_disconnect_when_inactive(1);
-
     # Connection to Oracle DB for taxon constraint 
     my $dsn_goapro = 'DBI:Oracle:host=ora-vm-026.ebi.ac.uk;sid=goapro;port=1531';
     my $user       = 'goselect';
@@ -92,7 +90,6 @@ sub run {
     my $to_ta      = Bio::EnsEMBL::Registry->get_adaptor($to_species, 'core', 'Transcript');
     my $to_dbea    = Bio::EnsEMBL::Registry->get_adaptor($to_species, 'core', 'DBEntry');
 
-    #$from_ga->dbc->disconnect_when_inactive(1);	
     die("Problem getting DBadaptor(s) - check database connection details\n") if (!$from_ga || !$to_ga || !$to_ta || !$to_dbea);
     
     # Interrogate GOA web service for forbidden GO terms for the given species.
@@ -104,6 +101,16 @@ sub run {
     my $to_latin_species = ucfirst(Bio::EnsEMBL::Registry->get_alias($to_species));
     my $meta_container   = Bio::EnsEMBL::Registry->get_adaptor($to_latin_species,'core','MetaContainer');
     my ($to_taxon_id)    = @{ $meta_container->list_value_by_key('species.taxonomy_id')};
+
+=pod
+    Bio::EnsEMBL::Registry->load_registry_from_db(
+            -host       => 'mysql-eg-mirror.ebi.ac.uk',
+            -port       => 4157,
+            -user       => 'ensrw',
+            -pass       => 'writ3r',
+            -db_version => '78',
+   );
+=cut
 
     # Get Compara adaptors - use the one specified on the command line
     $mlssa = Bio::EnsEMBL::Registry->get_adaptor($compara, 'compara', 'MethodLinkSpeciesSet');
@@ -118,11 +125,8 @@ sub run {
 
     # Write projection info metadata
     print $data "\n\tProjection log :\n";
-    print $data "\t\trelease             :$release\n";
-    print $data "\t\tfrom_db             :".$from_ga->dbc()->dbname()."\n";
-    print $data "\t\tfrom_species_common :$from_species\n";
-    print $data "\t\tto_db               :".$to_ga->dbc()->dbname()."\n";
-    print $data "\t\tto_species_common   :$to_species\n";
+    print $data "\t\tsoftware release:$release\n";
+    print $data "\t\tfrom :".$from_ga->dbc()->dbname()." to :".$to_ga->dbc()->dbname()."\n";
 
     $self->delete_go_terms($to_ga) if($flag_delete_go_terms==1);
 
@@ -227,6 +231,16 @@ return %terms;
 sub get_ontology_terms {
     my @starter_terms    = @_;
 
+=pod
+    Bio::EnsEMBL::Registry->load_registry_from_db(
+            -host       => 'mysql-eg-mirror.ebi.ac.uk',
+            -port       => 4157,
+            -user       => 'ensrw',
+            -pass       => 'writ3r',
+            -db_version => '78',
+   );
+=cut
+
     my %terms;
     my $ontology_adaptor = Bio::EnsEMBL::Registry->get_adaptor('Multi','Ontology','OntologyTerm');
     die "Can't get OntologyTerm Adaptor - check that database exist in the server specified" if (!$ontology_adaptor);
@@ -285,17 +299,7 @@ sub project_go_terms {
        $from_translation   = $from_gene->canonical_transcript();
        $to_translation     = get_canonical_translation($to_gene); 
     }
-=pod
-    if($ensemblObj_type=~/Translation/){ 
-       $from_translation   = get_canonical_translation($from_gene);
-       $to_translation     = get_canonical_translation($to_gene);
-    }    
-    else{ # $ensemblObj_type=~/Transcript/ in the case of ncRNA
-       $from_translation   = $from_gene->canonical_transcript();
-       $to_translation     = $to_gene->canonical_transcript();
-    }
-=cut
-
+    
     return if (!$from_translation || !$to_translation);
 
     my $from_latin_species = ucfirst(Bio::EnsEMBL::Registry->get_alias($from_species));
@@ -374,9 +378,10 @@ sub project_go_terms {
       $to_translation->add_DBEntry($dbEntry);
       $to_dbea->store($dbEntry, $to_translation->dbID(), $ensemblObj_type_target, 1) if ($flag_store_projections==1);
 
-      print $data "\t\tProject from:".$from_translation->stable_id()."\t";
-      print $data "to:".$to_translation->stable_id()."\t";
-      print $data "GO term:".$dbEntry->display_id()."\n";
+
+      print $data "\t\t Project GO term:".$dbEntry->display_id()."\t";
+      print $data "from:".$from_translation->stable_id()."\t";
+      print $data "to:".$to_translation->stable_id()."\n";
     }
 
 return 0;

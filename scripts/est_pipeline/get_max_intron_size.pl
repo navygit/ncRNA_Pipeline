@@ -33,7 +33,7 @@ if (! defined $species || ! defined $release) {
 }
 
 Bio::EnsEMBL::Registry->load_registry_from_db (
-    -host => 'mysql.ebi.ac.uk',
+    -host => 'mysql-eg-publicsql.ebi.ac.uk',
     -user => 'anonymous',
     -port => 4157,
     -db_version => $release

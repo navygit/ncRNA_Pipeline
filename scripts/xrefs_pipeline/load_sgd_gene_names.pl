@@ -79,7 +79,9 @@ while ( my $line = <$fh> ) {
                 -INFO_TYPE   => 'NONE',
             );
             
-            foreach my $synonym (@synonyms) {
+            foreach my $synonym (@{$synonyms[0]}) {
+                #$logger->info( "  Old Synonyms");
+                #$logger->info(Dumper $synonym);
                 $new_display_xref->add_synonym($synonym);
             }
             
