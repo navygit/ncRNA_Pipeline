@@ -39,7 +39,7 @@ sub write_output {
   my $logic_names = $self->param_required('logic_name');
   
   my $logic_name = 'repeatmask';
-  if (exists $$repeatmasker_library{$species}) {
+  if (exists $$repeatmasker_library{$species} || exists $$repeatmasker_library{'all'}) {
     if (exists $$logic_names{$species}) {
       $logic_name = $$logic_names{$species};
     } else {
