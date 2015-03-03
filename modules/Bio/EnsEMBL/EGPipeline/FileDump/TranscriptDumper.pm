@@ -45,14 +45,12 @@ sub run {
   my $species           = $self->param_required('species');
   my $db_type           = 'core';
   my $seqtype           = $self->param_required('seqtype');
-  my $registry          = $self->param_required('registry');
   my $out_file          = $self->param('out_file');
   my $pipeline_dir      = $self->param('pipeline_dir');
 
-  my $reg = 'Bio::EnsEMBL::Registry';
-  $reg->load_all( $registry );
+  my $db = $self->core_dba;
+  my $ta = $db->get_TranscriptAdaptor;
 
-  my $ta = $reg->get_adaptor($species, $db_type, 'Transcript');
 
   if (!defined $out_file) {
     $out_file = $self->generate_filename( $ta );
@@ -79,10 +77,21 @@ sub run {
       if ( $obj ){
 
 	  my $id = undef;
-	  if( $seqtype eq 'transcripts' ){ $id = $t->stable_id() }
-	  elsif( $seqtype eq 'peptides' ){ $id = $t->translation->stable_id() }
+	  my $start = undef;
+	  my $end = undef;
 
-	  $obj->display_id( rename_header( $id, $t ) );
+	  if( $seqtype eq 'transcripts' ){ 
+	      $id = $t->stable_id();
+	      $start = $t->seq_region_start();
+	      $end = $t->seq_region_end();
+	  }
+	  elsif( $seqtype eq 'peptides' ){ 
+	      $id = $t->translation->stable_id() ;
+	      $start = $t->translation->genomic_start();
+	      $end = $t->translation->genomic_end();
+	  }
+
+	  $obj->display_id( rename_header( $id, $t, $start, $end ) );
 	  $serialiser->print_Seq( $obj );
       }
   }
@@ -96,6 +105,8 @@ sub rename_header{
 
     my $id = shift @_;
     my $t = shift @_;
+    my $start = shift @_;
+    my $end = shift @_;
 
     my $descr = $t->get_Gene->description()  ? $t->get_Gene->description() : 'hypothetical protein' ;
     $descr =~ s/\s\[Source.+$//;
@@ -104,7 +115,7 @@ sub rename_header{
     my $header = join('|', 
 		      "$id $descr" , 
 		      $t->biotype() , 
-		      join(":" , $t->seq_region_name() , $t->seq_region_start() ) . '-' . join(':' ,$t->seq_region_end() , $t->strand() ),
+		      join(":" , $t->seq_region_name() , $start ) . '-' . join(':' , $end , $t->strand() ),
 		      'gene:' . $t->get_Gene->stable_id(),
 	); 
 
@@ -129,15 +140,33 @@ sub generate_filename {
   }
   make_path($pipeline_dir);
   
-#    my $dba = $self->dbc;
     my $dba = $adaptor->db;
 
     my $strain = $dba->get_MetaContainer()->single_value_by_key('species.strain');
     my $gene_set = $dba->get_MetaContainer()->single_value_by_key('genebuild.version');
-    my $filename = ucfirst($species). '-' . $strain . '_' . uc($seqtype) . '_' .  $gene_set . '.' . $filetype;
+
+# need to morph the the species string to replace underscores with hypens in filenames
+    my $filename_species = $species;
+    $filename_species =~ s/_/-/;
+
+    my $filename = ucfirst($filename_species). '-' . $strain . '_' . uc($seqtype) . '_' .  $gene_set . '.' . $filetype;
     
     return catdir($pipeline_dir, $filename);
 }
 
+sub get_division {
+  my ($self) = @_;
+  
+  my $dba = $self->core_dba;  
+  my $division;
+  if ($dba->dbc->dbname() =~ /(\w+)\_\d+_collection_/) {
+    $division = $1;
+  } else {
+    $division = $dba->get_MetaContainer->get_division();
+    $division = lc($division);
+    $division =~ s/ensembl//;
+  }
+  return $division;
+}
 
 1;
