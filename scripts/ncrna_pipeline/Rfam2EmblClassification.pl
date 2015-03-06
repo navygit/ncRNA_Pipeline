@@ -41,7 +41,7 @@ my $sRNA_models      = [];
 my $snoRNA_models    = [];
 my $antisense_models = [];
 my $rfam_models      = [];
-my $lincRNA_models   = [];
+my $lncRNA_models   = [];
 
 my $rfam_acc;
 my $rfam_name;
@@ -120,7 +120,7 @@ while (<FULL>) {
 	    push (@$snoRNA_models, $rfam_acc);
 	}
 	elsif ($rfam_type =~ /lncRNA/i) {
-	    push (@$lincRNA_models, $rfam_acc);
+	    push (@$lncRNA_models, $rfam_acc);
         }                    
     }
 
@@ -205,10 +205,10 @@ foreach my $rfam_acc (keys %$rfam_model_name_href) {
 	$biotype = "snoRNA";
 	$kingdom = "eukaryota";
     }
-    elsif (is_in_array ($rfam_acc, $lincRNA_models)) {
+    elsif (is_in_array ($rfam_acc, $lncRNA_models)) {
         $embl_feature_type = "ncRNA";
-        $embl_feature_class = "lincRNA";
-        $biotype = "lincRNA";
+        $embl_feature_class = "lncRNA";
+        $biotype = "lncRNA";
         $kingdom = "eukaryota";
     }
                                         
