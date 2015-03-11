@@ -287,6 +287,7 @@ sub pipeline_analyses {
        -flow_into 	=> { 
 						 '1'=> $pipeline_flow,
        				   },
+       -meadow_type => 'LOCAL',
     },   
 ########################
 ### GeneNamesProjection
@@ -296,6 +297,7 @@ sub pipeline_analyses {
        -flow_into     => {
 							'1' => ['GeneNamesProjectionSourceFactory'] ,
                           },
+       -meadow_type => 'LOCAL',
     },
     
     {  -logic_name    => 'GeneNamesProjectionSourceFactory',
@@ -340,7 +342,7 @@ sub pipeline_analyses {
 				            'taxonomy_db'			  => $self->o('taxonomy_db'),
    	   					  },
        -rc_name       => 'default',
-       -batch_size    =>  10, 
+       -batch_size    =>  2, 
        -analysis_capacity => $self->o('geneNameproj_capacity'),
     },
 
@@ -353,6 +355,7 @@ sub pipeline_analyses {
  	 	 	'flag_GeneDesc'          => $self->o('flag_GeneDesc'),          	
             'flag_store_projections' => $self->o('flag_store_projections'),
        },
+       -meadow_type => 'LOCAL',
     },
     
 ################
@@ -373,7 +376,8 @@ sub pipeline_analyses {
        -flow_into     => {
 		                    '2->A' => ['GOProjectionTargetFactory'],
 		                    'A->2' => ['GOEmailReport'],		                       
-                          },          
+                          }, 
+       -meadow_type => 'LOCAL',         
     },    
    
     {  -logic_name    => 'GOProjectionTargetFactory',
@@ -434,7 +438,7 @@ sub pipeline_analyses {
 				            'flag_full_stats'        => $self->o('flag_full_stats'),
 				       		'flag_delete_go_terms'   => $self->o('flag_delete_go_terms'),
      	 				},
-       -batch_size    =>  10, 
+       -batch_size    =>  1,
        -rc_name       => 'default',
        -analysis_capacity => $self->o('goproj_capacity'),
 	 },
@@ -447,6 +451,7 @@ sub pipeline_analyses {
 				          	'output_dir' 			 => $self->o('output_dir'),
 				            'flag_store_projections' => $self->o('flag_store_projections'),				          	
         				  },
+       -meadow_type => 'LOCAL',
     },
 
 ################
@@ -458,6 +463,7 @@ sub pipeline_analyses {
 		                       'A->1' => ['GeneCoverageEmailReport'],
                           },
        -hive_capacity => -1,
+       -meadow_type => 'LOCAL',
     },
 
     {  -logic_name  => 'GeneCoverageFactory',
@@ -490,8 +496,9 @@ sub pipeline_analyses {
           	'output_dir' => $self->o('output_dir'),
 		    'compara'    => $self->o('division_name'),
        },
-	},
-
+       -meadow_type => 'LOCAL',
+    },
+	
   ];
 }
 
