@@ -228,9 +228,13 @@ sub store_uniprot_xrefs {
 	my $dbentry =
 	  $ddba->fetch_by_db_accession( $uniprot->{type}, $uniprot->{ac} );
 	if ( !defined $dbentry ) {
+            my $nom;
+            if(defined $uniprot->{name} && scalar keys %{$uniprot->{name}}>0) {
+                $nom = join "; ", keys %{$uniprot->{name}};
+            }
 	  $dbentry = Bio::EnsEMBL::DBEntry->new(
 				-PRIMARY_ID  => $uniprot->{ac},
-				-DISPLAY_ID  => $uniprot->{name},
+				-DISPLAY_ID  => $nom,
 				-DESCRIPTION => $uniprot->{description},
 				-VERSION     => $uniprot->{version},
 				-DBNAME      => $uniprot->{type} );
@@ -442,12 +446,7 @@ WHERE d.accession = ?
 		  $uniprot->{version} = $version;
 		}
 		if ( defined $name && $name ne '' ) {
-		  if ( defined $uniprot->{name} ) {
-			$uniprot->{name} .= "; $name";
-		  }
-		  else {
-			$uniprot->{name} = $name;
-		  }
+                    $uniprot->{name}->{$name} = 1;
 		}
 		if ( defined $type && $type ne '' ) {
 		  $uniprot->{type} =
