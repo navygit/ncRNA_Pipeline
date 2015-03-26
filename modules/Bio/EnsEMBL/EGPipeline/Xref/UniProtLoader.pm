@@ -196,6 +196,10 @@ sub add_uniprot_xrefs {
 
 sub store_uniprot_xrefs {
   my ( $self, $ddba, $tid, $uniprots, $gene_id, $gene_attribs ) = @_;
+
+  my $n = 0;
+  return $n if scalar(@$uniprots) == 0;
+
   # remove existing uniprots for this translation first
   $ddba->dbc()->sql_helper()->execute_update(
 	-SQL => q/
@@ -211,8 +215,6 @@ sub store_uniprot_xrefs {
 	/,
 	-PARAMS => [$tid] );
 
-  my $n = 0;
-  return $n if scalar(@$uniprots) == 0;
   for my $uniprot (@$uniprots) {
 
 	if ( !$uniprot->{ac} || $uniprot->{ac} eq '' ) {
