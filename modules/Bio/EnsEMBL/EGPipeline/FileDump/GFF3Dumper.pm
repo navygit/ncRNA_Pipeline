@@ -86,7 +86,7 @@ sub run {
   
   foreach my $slice (@$slices) {
     if ($include_scaffold) {
-      my $feature = Bio::EnsEMBL::EGPipeline::FileDump::SeqRegion->new($slice);
+      my $feature = Bio::EnsEMBL::EGPipeline::FileDump::SeqRegion->new($slice, $provider);
       $serializer->print_feature($feature);
     }
     
@@ -125,6 +125,10 @@ sub transcript_features {
   foreach my $transcript (@$features) {
     my $five_prime = $transcript->five_prime_utr_Feature;
     if ($five_prime) {
+      # This isn't good enough if the UTR spans multiple exons
+      # need to use the bounds of the UTR feature to generate new features
+      # based on $exon_features
+      
       bless $five_prime, 'Bio::EnsEMBL::EGPipeline::FileDump::UTR';
       $five_prime->assign_transcript($transcript, 'five_prime_UTR');
       push @utr_features, $five_prime;

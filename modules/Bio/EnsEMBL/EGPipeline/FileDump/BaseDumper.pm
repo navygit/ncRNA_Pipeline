@@ -98,7 +98,7 @@ sub generate_vb_filename {
   my $dba = $self->core_dba;
   my $strain = $dba->get_MetaContainer()->single_value_by_key('species.strain');
   my $gene_set = $dba->get_MetaContainer()->single_value_by_key('genebuild.version');
-  my $filename = ucfirst($species).".$strain.".uc($data_type).".$gene_set.$file_type";
+  my $filename = ucfirst($species).'-'.$strain.'_'.uc($data_type).'_'.$gene_set.$file_type";
   
   return $filename;
 }

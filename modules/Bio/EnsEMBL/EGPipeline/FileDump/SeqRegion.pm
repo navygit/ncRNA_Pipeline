@@ -23,7 +23,7 @@ use warnings;
 use base ('Bio::EnsEMBL::Feature');
 
 sub new {
-  my ($caller, $slice) = @_;
+  my ($caller, $slice, $source) = @_;
   my $class = ref($caller) || $caller;
   
   my $self = bless
@@ -34,7 +34,7 @@ sub new {
       'start'   => $slice->start,
       'end'     => $slice->end,
       'strand'  => 0,
-      'source'  => $slice->coord_system->version,
+      'source'  => $source || $slice->coord_system->version,
     },
     $class
   );
