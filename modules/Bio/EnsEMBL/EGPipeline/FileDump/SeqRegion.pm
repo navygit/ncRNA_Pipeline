@@ -50,7 +50,7 @@ sub new {
   
   return $self;
 }
-        
+
 sub SO_term {
   my ($self, $so_term) = @_;
   $self->{'SO_term'} = $so_term if defined $so_term;
