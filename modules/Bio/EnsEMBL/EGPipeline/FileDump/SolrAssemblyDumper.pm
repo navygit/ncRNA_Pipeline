@@ -80,6 +80,7 @@ sub run{
 	my $url = $species_url . "/Location/View?r=" . $t->seq_region_name . ':' . 1 . '-' . $t->length ;
 
 	my $top_seq = {
+	    'id' => 'Genome/assembly/sequence/' . $t->seq_region_name,
 	    'site' => 'Genome', #required field
 	    'bundle_name' => 'Sequence assembly', #required field
 	    'label' => $t->seq_region_name, #required field
@@ -117,6 +118,7 @@ sub run{
 		    my $child_url = $species_url . "/Location/View?r=" . $l->seq_region_name . ':' . 1 . '-' . $l->length ;
 
 		    my $child_obj = {
+			'id' => 'Genome/assembly/sequence/' . $l->seq_region_name,
 			'site' => 'Genome', #required field
 			'bundle_name' => 'Sequence assembly', #required field
 			'label' => $l->seq_region_name, #required field
