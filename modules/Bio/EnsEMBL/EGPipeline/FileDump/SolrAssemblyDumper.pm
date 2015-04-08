@@ -82,14 +82,15 @@ sub run{
 	my $top_seq = {
 	    'id' => 'Genome/assembly/sequence/' . $t->seq_region_name,
 	    'site' => 'Genome', #required field
-	    'bundle_name' => 'Sequence assembly', #required field
+	    'bundle_name' => 'Genomic sequence assembly', #required field
 	    'label' => $t->seq_region_name, #required field
 	    'species' => $scientific_name, #required field
 	    'description' => $descr, #required field 
 	    'url' => $url, #required field
-	    'sequence_type' => $t->coord_system_name,	      
-	    'length' => $t->length,
-	    'insdc' => $insdc,
+	    'seq_type' => $t->coord_system_name,	      
+	    'seq_length' => $t->length,
+	    'seq_region_name' => $t->seq_region_name,
+	    'accession_insdc' => $insdc,
 	    'assembly_version' => $current_assembly,
 	} ;
 
@@ -120,19 +121,20 @@ sub run{
 		    my $child_obj = {
 			'id' => 'Genome/assembly/sequence/' . $l->seq_region_name,
 			'site' => 'Genome', #required field
-			'bundle_name' => 'Sequence assembly', #required field
+			'bundle_name' => 'Genomic sequence assembly', #required field
 			'label' => $l->seq_region_name, #required field
 			'species' => $scientific_name, #required field
 			'description' => $child_descr, #required field 
 			'url' => $child_url, #required field
-			'parent_sequence' =>  $t->seq_region_name , 
-			'sequence_type' => $l->coord_system_name,
+			'parent_seq' =>  $t->seq_region_name , 
+			'parent_seq_start' => $p->from_start, 
+			'parent_seq_end' => $p->from_end,
+			'seq_region_name' => $l->seq_region_name,
+			'seq_type' => $l->coord_system_name,
 			'id' => $l->seq_region_name,
-			'length' => $l->length , 
-			'parent_start' => $p->from_start, 
-			'parent_end' => $p->from_end,
+			'seq_length' => $l->length , 
 			'species' => $scientific_name,
-			'insdc' => $insdc,
+			'accession_insdc' => $insdc,
 			'assembly_version' => $current_assembly,
 		    };
 
