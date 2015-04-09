@@ -129,8 +129,18 @@ sub store_xref {
   my ($self, $ddba, $tid, $uniprot) = @_;
   # get xrefs we're interested in
   my @xrefs = @{$self->get_xrefs_for_uniprot($uniprot->primary_id())};
-  my @xrefs = grep { defined $self->{dbnames}{$_->{DBNAME}} }
-	@xrefs;
+  
+  ## Dump some info about what we're (potentially) ignoring...
+  for( @xrefs ){
+      $self->logger->debug(
+          join("\t", $tid, $_->{DBNAME}, $_->{PRIMARY_ID})
+      );
+  }
+  
+  ## Trim out all but the list of what we want
+  @xrefs = grep { defined $self->{dbnames}{$_->{DBNAME}} }
+       @xrefs;
+  
   # special rules for ENA - we don't want genomic references where we have the CDS
   @xrefs = 
 	map {
