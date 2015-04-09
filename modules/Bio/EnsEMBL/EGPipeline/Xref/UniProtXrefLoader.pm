@@ -177,7 +177,7 @@ sub store_xref {
 =cut
 sub get_xrefs_for_uniprot {
   my ($self, $ac) = @_;
-  $self->logger()->info("Getting xrefs for $ac");
+  $self->logger()->debug("Getting xrefs for $ac");
   my $xrefs = $self->{uniprot_dba}->dbc()->sql_helper()->execute(
 	-USE_HASHREFS => 1,
 	-SQL          => q/
