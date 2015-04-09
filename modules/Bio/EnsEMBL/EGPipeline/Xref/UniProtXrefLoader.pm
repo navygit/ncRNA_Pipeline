@@ -44,7 +44,7 @@ use Data::Dumper;
   Arg [-UNIPROT_DBA]  : 
        string - adaptor for UniProt Oracle database (e.g. SWPREAD)
   Arg [-DBNAMES]    : 
-       array - array of database names to process (default is ArrayExpress, PDB, EMBL)
+       array - array of database names to process (default is ArrayExpress, PDB, EMBL, ChEMBL)
 
   Example    : $ldr = Bio::EnsEMBL::EGPipeline::Xref::UniProtGOLoader->new(...);
   Description: Creates a new loader object
@@ -60,7 +60,7 @@ sub new {
   ($self->{uniprot_dba}, $self->{dbnames}) =
 	rearrange(['UNIPROT_DBA', 'DBNAMES'], @args);
   if (!defined $self->{dbnames}) {
-	$self->{dbnames} = qw/ArrayExpress PDB EMBL/;
+	$self->{dbnames} = qw/ArrayExpress PDB EMBL ChEMBL/;
   }
   $self->{dbnames} = {%hash = map { $_ => 1 } @{$self->{dbnames}}};
   return $self;
