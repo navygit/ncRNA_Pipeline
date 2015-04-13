@@ -42,11 +42,18 @@ sub run{
 
     my $meta_container = $reg->get_adaptor( $species, 'Core', 'MetaContainer' );
 
-    my $insdc =  $meta_container->single_value_by_key('assembly.accession') ;
     my $current_assembly = $meta_container->single_value_by_key('assembly.default') ;
     my $scientific_name = $meta_container->get_scientific_name();
     my $species_url = $meta_container->single_value_by_key('species.url') ;
 
+#need to allow for the possibility that the insdc value has not been added to the database
+
+    my $insdc =  $meta_container->single_value_by_key('assembly.accession') ;
+    unless( $insdc ){ 
+	warn "INSDC accession missing for $scientific_name - will enter value \'unknown\'";
+	$insdc = 'unknown'; 
+    }
+ 
     my $csa = Bio::EnsEMBL::Registry->get_adaptor( $species, "core", "coordsystem" );
 
     my $coord_sys_names = [];
