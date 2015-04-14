@@ -38,7 +38,6 @@ sub run{
 
 #write a list of XML format objects
     my $fh_out = IO::File->new( $out_file , ">" ) or die "unable to open output file $out_file\n";
-    $fh_out->print( "<add>\n" );
 
     my $meta_container = $reg->get_adaptor( $species, 'Core', 'MetaContainer' );
 
@@ -155,7 +154,6 @@ sub run{
 
     }
 
-    $fh_out->print( "</add>" );
     $fh_out->close();
 
 }
