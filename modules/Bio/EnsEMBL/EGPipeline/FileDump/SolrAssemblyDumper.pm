@@ -41,7 +41,7 @@ sub run{
 
     my $meta_container = $reg->get_adaptor( $species, 'Core', 'MetaContainer' );
 
-    my $current_assembly = $meta_container->single_value_by_key('assembly.default') ;
+    my $current_assembly = $meta_container->single_value_by_key('assembly.name') ;
     my $scientific_name = $meta_container->get_scientific_name();
     my $species_url = $meta_container->single_value_by_key('species.url') ;
 
