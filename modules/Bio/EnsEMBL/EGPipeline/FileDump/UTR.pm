@@ -22,15 +22,32 @@ use strict;
 use warnings;
 use base ('Bio::EnsEMBL::Feature');
 
-sub assign_transcript {
-  my ($self, $transcript, $utr_type) = @_;
-  if ($utr_type eq 'five_prime_UTR') {
+sub new {
+  my ($caller, %params) = @_;
+  my $class = ref($caller) || $caller;
+  
+  my $slice = $params{'slice'};
+  my $self = bless
+  (
+    {
+      'slice'           => $slice,
+      'seq_region_name' => $slice->seq_region_name,
+      'start'           => $params{'start'},
+      'end'             => $params{'end'},
+      'strand'          => $params{'strand'},
+      'source'          => $params{'source'},
+      'parent_id'       => $params{'parent_id'},
+    },
+    $class
+  );
+  
+  if ($params{'utr_type'} eq 'five_prime_UTR') {
     $self->SO_term('SO:0000204');
-  } elsif ($utr_type eq 'three_prime_UTR') {
+  } elsif ($params{'utr_type'} eq 'three_prime_UTR') {
     $self->SO_term('SO:0000205');
   }
-  $self->source($transcript->source);
-  $self->parent_id($transcript->stable_id);
+  
+  return $self;
 }
 
 sub SO_term {
@@ -53,16 +70,16 @@ sub parent_id {
 
 sub summary_as_hash {
   my $self = shift;
-	my %summary;
+  my %summary;
   
-	$summary{'seq_region_name'} = $self->seq_region_name;
+  $summary{'seq_region_name'} = $self->seq_region_name;
+  $summary{'start'}           = $self->start;
+  $summary{'end'}             = $self->end;
+  $summary{'strand'}          = $self->strand;
   $summary{'source'}          = $self->source;
-	$summary{'start'}           = $self->seq_region_start;
-	$summary{'end'}             = $self->seq_region_end;
-	$summary{'strand'}          = $self->strand;
-	$summary{'Parent'}          = $self->parent_id;
+  $summary{'Parent'}          = $self->parent_id;
   
-	return \%summary;
+  return \%summary;
 }
 
 1;

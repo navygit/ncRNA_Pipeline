@@ -125,24 +125,87 @@ sub transcript_features {
   foreach my $transcript (@$features) {
     my $five_prime = $transcript->five_prime_utr_Feature;
     if ($five_prime) {
-      # This isn't good enough if the UTR spans multiple exons
-      # need to use the bounds of the UTR feature to generate new features
-      # based on $exon_features
-      
-      bless $five_prime, 'Bio::EnsEMBL::EGPipeline::FileDump::UTR';
-      $five_prime->assign_transcript($transcript, 'five_prime_UTR');
-      push @utr_features, $five_prime;
+      my $utrs = $self->utr_features($five_prime, 'five_prime_UTR', $transcript);
+      push @utr_features, @$utrs;
     }
     
     my $three_prime  = $transcript->three_prime_utr_Feature;
     if ($three_prime) {
-      bless $three_prime, 'Bio::EnsEMBL::EGPipeline::FileDump::UTR';
-      $three_prime->assign_transcript($transcript, 'three_prime_UTR');
-      push @utr_features, $three_prime;
+      my $utrs = $self->utr_features($three_prime, 'three_prime_UTR', $transcript);
+      push @utr_features, @$utrs;
     }
   }
   
   return [@$features, @$exon_features, @$cds_features, @utr_features];
+}
+
+sub utr_features {
+  my ($self, $utr, $utr_type, $transcript) = @_;
+  my @utrs;
+  
+  my $exons = $transcript->get_all_Exons();
+  
+  foreach my $exon (@$exons) {
+    my $strand = $exon->strand;
+    
+    my %params = (
+      slice     => $exon->slice,
+      strand    => $strand,
+      source    => $transcript->source,
+      parent_id => $transcript->stable_id,
+      utr_type  => $utr_type,
+    );
+    
+    if ($utr->start <= $exon->start && $utr->end >= $exon->end) {
+      # Whole exon is UTR
+      $params{start} = $exon->start;
+      $params{end} = $exon->end;
+      
+    } else {
+      if ($utr_type eq 'five_prime_UTR') {
+        if ($strand == -1) {
+          if (is_between($utr->start, $exon->start, $exon->end)) {
+            $params{start} = $utr->start;
+            $params{end} = $exon->end;
+          }
+        } else {
+          if (is_between($utr->end, $exon->start, $exon->end)) {
+            $params{start} = $exon->start;
+            $params{end} = $utr->end;
+          }
+        }
+      } elsif ($utr_type eq 'three_prime_UTR') {
+        if ($strand == -1) {
+          if (is_between($utr->end, $exon->start, $exon->end)) {
+            $params{start} = $exon->start;
+            $params{end} = $utr->end;
+          }
+        } else {
+          if (is_between($utr->start, $exon->start, $exon->end)) {
+            $params{start} = $utr->start;
+            $params{end} = $exon->end;
+          }
+        }
+      }
+    }
+    
+    if (defined $params{start} && defined $params{end}) {
+      my $utr = Bio::EnsEMBL::EGPipeline::FileDump::UTR->new(%params);
+      push @utrs, $utr;
+    }
+  }
+  
+  return \@utrs;
+}
+
+sub is_between {
+  my ($a, $x, $y) = @_;
+  
+  if ($a >= $x && $a <= $y) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 sub chr_serializer {
@@ -172,33 +235,33 @@ sub chr_serializer {
 
 sub Bio::EnsEMBL::Gene::summary_as_hash {
   my $self = shift;
-	my %summary;
+  my %summary;
   
-	$summary{'seq_region_name'} = $self->seq_region_name;
+  $summary{'seq_region_name'} = $self->seq_region_name;
   $summary{'source'}          = $self->source;
-	$summary{'start'}           = $self->seq_region_start;
-	$summary{'end'}             = $self->seq_region_end;
-	$summary{'strand'}          = $self->strand;
+  $summary{'start'}           = $self->seq_region_start;
+  $summary{'end'}             = $self->seq_region_end;
+  $summary{'strand'}          = $self->strand;
   $summary{'id'}              = $self->display_id;
   $summary{'Name'}            = $self->external_name;
   $summary{'biotype'}         = $self->biotype;
   $summary{'description'}     = $self->description;
   $summary{'version'}         = $self->version;
   
-	return \%summary;
+  return \%summary;
 }
 
 sub Bio::EnsEMBL::Transcript::summary_as_hash {
   my $self = shift;
-	my %summary;
+  my %summary;
   
   my $parent_gene = $self->get_Gene();
   
-	$summary{'seq_region_name'} = $self->seq_region_name;
+  $summary{'seq_region_name'} = $self->seq_region_name;
   $summary{'source'}          = $parent_gene->source;
-	$summary{'start'}           = $self->seq_region_start;
-	$summary{'end'}             = $self->seq_region_end;
-	$summary{'strand'}          = $self->strand;
+  $summary{'start'}           = $self->seq_region_start;
+  $summary{'end'}             = $self->seq_region_end;
+  $summary{'strand'}          = $self->strand;
   $summary{'id'}              = $self->display_id;
   $summary{'Parent'}          = $parent_gene->stable_id;
   $summary{'biotype'}         = $self->biotype;
@@ -221,56 +284,56 @@ sub Bio::EnsEMBL::Transcript::summary_as_hash {
   $summary{'Dbxref'} = \@db_xrefs if scalar(@db_xrefs);
   $summary{'Ontology_term'} = \@go_xrefs if scalar(@go_xrefs);
   
-	return \%summary;
+  return \%summary;
 }
 
 sub Bio::EnsEMBL::Exon::summary_as_hash {
   my $self = shift;
-	my %summary;
+  my %summary;
   
-	$summary{'seq_region_name'} = $self->seq_region_name;
-	$summary{'start'}           = $self->seq_region_start;
-	$summary{'end'}             = $self->seq_region_end;
-	$summary{'strand'}          = $self->strand;
+  $summary{'seq_region_name'} = $self->seq_region_name;
+  $summary{'start'}           = $self->seq_region_start;
+  $summary{'end'}             = $self->seq_region_end;
+  $summary{'strand'}          = $self->strand;
   $summary{'id'}              = $self->display_id;
   $summary{'constitutive'}    = $self->is_constitutive;
   
-	return \%summary;
+  return \%summary;
 }
 
 sub EnsEMBL::REST::EnsemblModel::CDS::summary_as_hash {
   my ($self) = @_;
-	my %summary;
+  my %summary;
   
-	$summary{'seq_region_name'} = $self->seq_region_name;
-	$summary{'start'}           = $self->seq_region_start;
-	$summary{'end'}             = $self->seq_region_end;
-	$summary{'strand'}          = $self->strand;
+  $summary{'seq_region_name'} = $self->seq_region_name;
+  $summary{'start'}           = $self->seq_region_start;
+  $summary{'end'}             = $self->seq_region_end;
+  $summary{'strand'}          = $self->strand;
   $summary{'Parent'}          = $self->parent_id;
   $summary{'phase'}           = $self->phase;
   $summary{'source'}          = $self->source;
   
-	return \%summary;
+  return \%summary;
 }
 
 sub Bio::EnsEMBL::RepeatFeature::summary_as_hash {
   my $self = shift;
-	my %summary;
+  my %summary;
   
-	$summary{'seq_region_name'} = $self->seq_region_name;
-	$summary{'start'}           = $self->seq_region_start;
-	$summary{'end'}             = $self->seq_region_end;
-	$summary{'strand'}          = $self->strand;
+  $summary{'seq_region_name'} = $self->seq_region_name;
+  $summary{'start'}           = $self->seq_region_start;
+  $summary{'end'}             = $self->seq_region_end;
+  $summary{'strand'}          = $self->strand;
   
   my $rc = $self->repeat_consensus;
-	$summary{'Name'}  = $rc->name;
-	$summary{'type'}  = $rc->repeat_type;
-	$summary{'class'} = $rc->repeat_class;
-	if ($rc->repeat_consensus =~ /^[^N]\S*/) {
-	  $summary{'repeat_consensus'} = $rc->repeat_consensus;
-	}
+  $summary{'Name'}  = $rc->name;
+  $summary{'type'}  = $rc->repeat_type;
+  $summary{'class'} = $rc->repeat_class;
+  if ($rc->repeat_consensus =~ /^[^N]\S*/) {
+    $summary{'repeat_consensus'} = $rc->repeat_consensus;
+  }
   
-	return \%summary;
+  return \%summary;
 }
 
 1;
