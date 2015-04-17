@@ -51,7 +51,7 @@ sub generate_filename {
   
   my $species            = $self->param('species');
   my $file_type          = $self->param('file_type');
-  my $results_dir       = $self->param('results_dir');
+  my $results_dir        = $self->param('results_dir');
   my $eg_dir_structure   = $self->param('eg_dir_structure');
   my $eg_filename_format = $self->param('eg_filename_format');
   

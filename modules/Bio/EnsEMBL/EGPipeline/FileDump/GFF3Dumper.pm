@@ -39,7 +39,7 @@ sub param_defaults {
   
   return {
     %{$self->SUPER::param_defaults},
-    'feature_types'    => ['Gene', 'Transcript'],
+    'feature_type'     => ['Gene', 'Transcript'],
     'data_type'        => 'basefeatures',
     'file_type'        => 'gff3',
     'per_chromosome'   => 0,
@@ -54,7 +54,7 @@ sub run {
   my $db_type          = $self->param_required('db_type');
   my $out_file         = $self->param_required('out_file');
   my $out_fh           = $self->param_required('out_fh');
-  my $feature_types    = $self->param_required('feature_types');
+  my $feature_types    = $self->param_required('feature_type');
   my $per_chromosome   = $self->param_required('per_chromosome');
   my $include_scaffold = $self->param_required('include_scaffold');
   my $logic_names      = $self->param_required('logic_name');
