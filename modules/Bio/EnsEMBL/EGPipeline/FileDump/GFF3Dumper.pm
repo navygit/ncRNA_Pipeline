@@ -178,7 +178,7 @@ sub utr_features {
       slice     => $exon->slice,
       strand    => $strand,
       source    => $transcript->source,
-      parent_id => $transcript->stable_id,
+      parent_id => 'transcript:'.$transcript->stable_id,
       utr_type  => $utr_type,
     );
     
