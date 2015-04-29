@@ -35,13 +35,19 @@ sub param_defaults {
 
 sub fetch_input {
   my ($self) = @_;
-  my $out_file = $self->param('out_file');
+  my $species       = $self->param('species');
+  my $results_dir   = $self->param('results_dir');
+  my $out_file_stem = $self->param('out_file_stem');
   
-  if (!defined $out_file) {
+  my $out_file;
+  if (defined $out_file_stem) {
+    $out_file = catdir($results_dir, "$species.$out_file_stem");
+  } else {
     $out_file = $self->generate_filename();
-    $self->param('out_file', $out_file);
-    $self->param('out_files', [$out_file]);
   }
+  
+  $self->param('out_file', $out_file);
+  $self->param('out_files', [$out_file]);
   open(my $fh, '>', $out_file) or $self->throw("Cannot open file $out_file: $!");
   $self->param('out_fh', $fh);
 }
