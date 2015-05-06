@@ -65,7 +65,8 @@ sub run {
   my $slices = $sa->fetch_all('toplevel');
   
   my $oa = $reg->get_adaptor('multi', 'ontology', 'OntologyTerm');
-  
+  die "Can't get OntologyTerm Adaptor - check that database exist in the server specified" if (!$oa);
+ 
   my $serializer = Bio::EnsEMBL::Utils::IO::GFFSerializer->new($oa, $out_fh);
   $serializer->print_main_header($slices);
   
