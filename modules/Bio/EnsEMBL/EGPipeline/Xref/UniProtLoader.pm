@@ -20,14 +20,11 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::EGPipeline::Xref::UniProtLoader
+Bio::EnsEMBL::EGPipeline::Xref::LoadUniProtGO
 
 =head1 DESCRIPTION
 
-Module for adding UniProt cross-references based on UPI identity. 
-Note that where matches are found, existing cross-references for that translation are removed. 
-This allows imperfect matches to be replaced with exact matches as they become available
-in UniProt
+Runnable that invokes LoadUniProtGO on a core database
 
 =head1 Author
 
@@ -42,7 +39,6 @@ use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Digest::MD5;
 use List::MoreUtils qw/uniq/;
 use Data::Dumper;
-use Bio::EnsEMBL::IdentityXref;
 
 =head1 CONSTRUCTOR
 =head2 new
@@ -51,7 +47,7 @@ use Bio::EnsEMBL::IdentityXref;
   Arg [-UNIPARC_DBA]  : 
        string - adaptor for UniParc Oracle database (e.g. UAPRO)
   Arg [-REPLACE_ALL]    : 
-       boolean - remove all UniProt references first
+       boolean - remove all GO references first
   Arg [-GENE_NAMES]    : 
        boolean - add gene names from SwissProt
   Arg [-DESCRIPTIONS]    : 
@@ -96,13 +92,13 @@ sub add_xrefs {
   if ( defined $self->{replace_all} && $self->{replace_all} == 1 ) {
 	$self->remove_xrefs($dba);
   }
-  $self->add_uniprot_xrefs( $dba,
-							$self->get_translation_upis($dba),
-							$self->get_translation_lengths($dba) );
+  # get translation_id,UPIs where UniProt not set and UPI is set
+  my $translation_upis = $self->get_translation_upis($dba);
+  $self->add_uniprot_xrefs( $dba, $translation_upis );
   return;
 }
 
-=head2 get_translation_upis
+=head2 get_translation_uniprot
   Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
   Description: Get mapping of UniParc to translation
   Returntype : Hash of translation IDs to UniParc accessions
@@ -145,41 +141,6 @@ sub get_translation_upis {
   return $translation_upis;
 } ## end sub get_translation_upis
 
-sub get_translation_lengths {
-  my ( $self, $dba ) = @_;
-
-  $self->logger()->info("Finding translation lengths");
-
-  my $translation_lengths = {};
-  $dba->dbc()->sql_helper()->execute_no_return(
-	-SQL => q/
-		select tl.translation_id,ta.value
-	from translation tl
-	join translation_attrib ta using (translation_id)
-	join attrib_type a using (attrib_type_id)
-	join transcript tr using (transcript_id)
-	join seq_region sr using (seq_region_id)
-	join coord_system cs using (coord_system_id)
-        where
-        tr.biotype='protein_coding' and
-	cs.species_id=? and 
-	a.code='NumResidues'
-	/,
-	-CALLBACK => sub {
-	  my ( $tid, $len ) = @{ $_[0] };
-	  $translation_lens->{$tid} = $len;
-	  return;
-	},
-	-PARAMS => [ $dba->species_id() ] );
-
-  $self->logger()
-	->info( "Found " .
-		   scalar( keys %$translation_lens ) . " translation lengths" );
-
-  return $translation_lens;
-
-} ## end sub get_translation_lengths
-
 =head2 add_uniprot_xrefs
   Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor for core database to write to
   Arg        : hashref of translation ID to UniParc accessions
@@ -191,7 +152,7 @@ sub get_translation_lengths {
 =cut
 
 sub add_uniprot_xrefs {
-  my ( $self, $dba, $translation_upis, $translation_lengths ) = @_;
+  my ( $self, $dba, $translation_upis ) = @_;
   my $taxid = $dba->get_MetaContainer()->get_taxonomy_id();
   my $ddba  = $dba->get_DBEntryAdaptor();
   my $gdba  = $dba->get_GeneAdaptor();
@@ -201,17 +162,12 @@ sub add_uniprot_xrefs {
   # hash of gene names, descriptions
   my $gene_attribs = {};
   while ( my ( $tid, $upi ) = each %$translation_upis ) {
-
 	$tN++;
 	$self->logger()->debug( "Looking up entry for " . $upi->{upi} );
 	my $uniprots = $self->get_uniprot_for_upi( $taxid, $upi->{upi} );
 	$uN +=
-	  $self->store_uniprot_xrefs( $ddba,
-								  $tid,
-								  $uniprots,
-								  $upi->{gene_id},
-								  $gene_attribs,
-								  $translation_lengths->{$tid} );
+	  $self->store_uniprot_xrefs( $ddba, $tid, $uniprots,
+								  $upi->{gene_id}, $gene_attribs );
 	$self->logger()->info("Processed $tN translations ($uN xrefs)")
 	  if ( $tN % 1000 == 0 );
   }
@@ -231,7 +187,6 @@ sub add_uniprot_xrefs {
   Arg        : Bio::EnsEMBL::DBEntry for UniProt record
   Arg        : Corresponding gene dbID
   Arg        : Hash of gene-related identifiers
-  Arg        : Length of translation
   Description: Add UniProt xrefs to specified translation
   Returntype : none
   Exceptions : none
@@ -250,14 +205,15 @@ sub store_uniprot_xrefs {
 	-SQL => q/
 		delete ox.*,ix.*
 		from object_xref ox
-		join xref x using (xref_id)
+		join  xref x using (xref_id)
 		join external_db d using (external_db_id)
 		left join identity_xref ix using (object_xref_id)
 		where
-		d.db_name in (?,?)
+		d.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL')
 		and ox.ensembl_id = ?
-		and ox.ensembl_object_type = 'Translation'/,
-	-PARAMS => ['Uniprot/SWISSPROT','Uniprot/SPTREMBL',$tid] );
+		and ox.ensembl_object_type = 'Translation'
+	/,
+	-PARAMS => [$tid] );
 
   for my $uniprot (@$uniprots) {
 
@@ -271,7 +227,6 @@ sub store_uniprot_xrefs {
 	$self->logger()
 	  ->debug( "Storing $uniprot->{type} " .
 			   $uniprot->{ac} . " on translation $tid" );
-
 	my $dbentry =
 	  $ddba->fetch_by_db_accession( $uniprot->{type}, $uniprot->{ac} );
 	if ( !defined $dbentry ) {
@@ -541,10 +496,10 @@ sub remove_xrefs {
 		join coord_system cs using (coord_system_id)
 		left join identity_xref ix using (object_xref_id)
 		where
-		d.db_name in (?,?)
+		d.db_name in ('Uniprot\/SWISSPROT','Uniprot\/SPTREMBL')
 		and cs.species_id=?
 	/,
-	-PARAMS => [ 'Uniprot/SWISSPROT','Uniprot/SPTREMBL', $dba->species_id() ] );
+	-PARAMS => [ $dba->species_id() ] );
   return;
 }
 
