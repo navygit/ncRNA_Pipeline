@@ -21,7 +21,6 @@ limitations under the License.
 =pod
 
 =head1 NAME
-
 Bio::EnsEMBL::EGPipeline::PipeConfig::DNAFeatures_conf
 
 =head1 DESCRIPTION
@@ -87,7 +86,8 @@ sub default_options {
     # parameter is added when the program is called within the pipeline.
     repeatmasker_default_lib => '/nfs/panda/ensemblgenomes/external/RepeatMasker/Libraries/RepeatMaskerLib.embl',
     repeatmasker_library     => {},
-    repeatmasker_parameters  => '-nolow -s -gccalc',
+    # Supported alignment engine: [crossmatch,ncbi]
+    repeatmasker_parameters  => '-nolow -s -gccalc -engine crossmatch',
     logic_name               => {},
     always_use_repbase       => 0,
 
@@ -374,6 +374,7 @@ sub pipeline_analyses {
       -parameters        => {
                               repeatmasker_library => $self->o('repeatmasker_library'),
                               logic_name           => $self->o('logic_name'),
+                              always_use_repbase   => $self->o('always_use_repbase'),
                               queryfile            => $file_name,
                               max_seq_length       => $self->o('max_seq_length'),
                             },

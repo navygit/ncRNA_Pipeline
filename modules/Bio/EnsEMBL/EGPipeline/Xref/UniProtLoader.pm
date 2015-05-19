@@ -348,8 +348,8 @@ sub set_gene_names {
 		if ( !defined $gd ) {
 		  $gd =
 			Bio::EnsEMBL::DBEntry->new( -PRIMARY_ID => $gene_name,
-										-DISPLAY_ID => $gene_name,
-										-DBNAME     => 'Uniprot_gn' );
+                                                    -DISPLAY_ID => $gene_name,
+                                                    -DBNAME     => 'Uniprot_gn' );
 		  # synonyms for this name
 		  my $synonyms = $gene_attribs->{synonyms}->{$gene_name};
 		  if ( defined $synonyms ) {
