@@ -66,14 +66,6 @@ sub generate_filename {
     my ($division, $collection) = $self->get_division();
     $results_dir = catdir($results_dir, $division, $collection, $file_type, $species);
     $self->param('results_dir', $results_dir);
- 
-    my $dba = $self->core_dba;
-
-    if($dba->is_multispecies()==1){
-      my ($results_dir1, $results_dir2) = split(/gff3\//, $results_dir); 
-      my $collection_db=$1 if($dba->dbc->dbname()=~/(.+)\_core/);
-      $results_dir = $results_dir1."gff3/".$collection_db."/".$results_dir2;
-    }
   }
 
   make_path($results_dir);
