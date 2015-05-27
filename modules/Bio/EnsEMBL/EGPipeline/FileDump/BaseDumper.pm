@@ -58,21 +58,23 @@ sub generate_filename {
   my $species            = $self->param('species');
   my $file_type          = $self->param('file_type');
   my $results_dir        = $self->param('results_dir');
+  my $filename           = $self->param('filename');
   my $eg_dir_structure   = $self->param('eg_dir_structure');
   my $eg_filename_format = $self->param('eg_filename_format');
   
   if ($eg_dir_structure) {
-    my $division = $self->get_division();
-    $results_dir = catdir($results_dir, $division, $file_type, $species);
+    my ($division, $collection) = $self->get_division();
+    $results_dir = catdir($results_dir, $division, $collection, $file_type, $species);
     $self->param('results_dir', $results_dir);
   }
   make_path($results_dir);
   
-  my $filename;
-  if ($eg_filename_format) {
-    $filename = $self->generate_eg_filename();
-  } else {
-    $filename = $self->generate_vb_filename();
+  if (!$filename) {
+    if ($eg_filename_format) {
+      $filename = $self->generate_eg_filename();
+    } else {
+      $filename = $self->generate_vb_filename();
+    }
   }
   
   return catdir($results_dir, $filename);
@@ -113,15 +115,16 @@ sub get_division {
   my ($self) = @_;
   
   my $dba = $self->core_dba;  
-  my $division;
-  if ($dba->dbc->dbname() =~ /(\w+)\_\d+_collection_/) {
+  my ($division, $collection);
+  if ($dba->dbc->dbname() =~ /(\w+)(\_\d+_collection)_/) {
     $division = $1;
+    $collection = "$division$2";
   } else {
     $division = $dba->get_MetaContainer->get_division();
     $division = lc($division);
     $division =~ s/ensembl//;
   }
-  return $division;
+  return ($division, $collection);
 }
 
 sub has_chromosome {
