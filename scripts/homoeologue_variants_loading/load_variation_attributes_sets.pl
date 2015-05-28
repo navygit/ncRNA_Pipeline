@@ -90,9 +90,9 @@ print STDERR "Parsing mapping done\n";
 
 # Todo: Make sure these IDs are right
 
-my $A_attrib_type_id = 420;
-my $B_attrib_type_id = 421;
-my $D_attrib_type_id = 422;
+my $A_attrib_type_id = 450;
+my $B_attrib_type_id = 451;
+my $D_attrib_type_id = 452;
 
 my $vs_AB = 4;
 my $vs_AD = 5;
