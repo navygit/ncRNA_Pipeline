@@ -149,7 +149,7 @@ foreach my $group_id (keys (%$attributes_href)) {
 		    warn("loading attrib_type_id, xref_stable_id, $attrib_type_id, $xref_stable_id, for stable_id, $stable_id, from component, $component_genome\n");
 		}
 		
-		$insert_va_sth->execute($attrib_type_id, $xref_stable_id, $stable_id);
+		#$insert_va_sth->execute($attrib_type_id, $xref_stable_id, $stable_id);
 	    }
 	}
 	
@@ -201,11 +201,17 @@ foreach my $group_id (keys (%$attributes_href)) {
 	$get_variation_id_sth->execute($stable_id);
 	my ($variation_id) = $get_variation_id_sth->fetchrow_array();
 
-	if ($verbose) {
-	    print STDERR "inserting vvs row with variation_id, variation_set_id, $variation_id, $vs_id\n";
+	if (!defined $variation_id) {
+	    warn "Failed to fetch variant with stable_id, '$stable_id'!\n";
 	}
+	else {
 
-	$insert_vsv_sth->execute($variation_id,$vs_id);
+	    if ($verbose) {
+		print STDERR "inserting vvs row with variation_id, variation_set_id, $variation_id, $vs_id\n";
+	    }
+	    
+	    $insert_vsv_sth->execute($variation_id,$vs_id);
+	}
     }
 
 }
