@@ -116,7 +116,7 @@ sub get_division {
   
   my $dba = $self->core_dba;  
   my ($division, $collection);
-  if ($dba->dbc->dbname() =~ /(\w+)(\_\d+_collection)_/) {
+  if ($dba->dbc->dbname() =~ /(\w+)(\_[0-9a-zA-Z]+_collection)_/) {
     $division = $1;
     $collection = "$division$2";
   } else {
