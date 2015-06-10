@@ -64,7 +64,7 @@ sub generate_filename {
   
   if ($eg_dir_structure) {
     my ($division, $collection) = $self->get_division();
-    $results_dir = catdir($results_dir, $division, $collection, $file_type, $species);
+    $results_dir = catdir($results_dir, $division, $file_type, $collection, $species);
     $self->param('results_dir', $results_dir);
   }
 
