@@ -51,6 +51,7 @@ sub write_output {
        my $antispecies  = $sp_config->{$pair}->{'antispecies'};
        my $division     = $sp_config->{$pair}->{'division'};
        my $run_all      = $sp_config->{$pair}->{'run_all'};       
+       my $ml_typ       = $sp_config->{$pair}->{'method_link_type'};
 
       $self->dataflow_output_id(
 		{
@@ -60,6 +61,7 @@ sub write_output {
 		 'antispecies' => $antispecies, 
   		 'division'    => $division, 
 		 'run_all'     => $run_all,
+                 'ml_typ'      => $ml_typ,
 		},2); 
       }
 

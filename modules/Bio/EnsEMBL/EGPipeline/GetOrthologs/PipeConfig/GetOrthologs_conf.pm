@@ -22,7 +22,7 @@ sub default_options {
         'email_subject'     => $self->o('pipeline_name').' pipeline has completed',
 
         # hive_capacity values for some analyses:
-	    'getOrthologs_capacity'  => '20',
+	    'getOrthologs_capacity'  => '50',
 
 	 	'species_config' => 
 		{ 
@@ -32,47 +32,32 @@ sub default_options {
 	 	  		# source species to project from 
 	 	  		'source'      => 'arabidopsis_thaliana',  	  		
 				# target species to project to
-	 			'species'     => ['musa_acuminata'],  			
-				# target species to exclude
-				#  remember to add the 'source' species if 
-				#  'division' or 'run_all' is used
-	 			'antispecies' => [],
-	 			# target division to project to
-	 			'division'    => [], 
-	 			'run_all'     =>  0, # 1/0
-	 	       }, 
-
-	 	  '2'=>{
-	 	  		# compara database to get orthologs from
-	 	  		'compara'     => 'fungi', # 'plants', 'protists', 'fungi', 'metazoa', 'multi'
-	 	  		# source species to project from 
-	 	  		'source'      => 'saccharomyces_cerevisiae',  	  		
-				# target species to project to
-	 			'species'     => ['puccinia_graminis'],  			
-				# target species to exclude
-				#  remember to add the 'source' species if 
-				#  'division' or 'run_all' is used
-	 			'antispecies' => [],
-	 			# target division to project to
-	 			'division'    => [], 
-	 			'run_all'     =>  0, # 1/0
-	 	       }, 
-
-	 	  '3'=>{
-	 	  		# compara database to get orthologs from
-	 	  		'compara'     => 'fungi', # 'plants', 'protists', 'fungi', 'metazoa', 'multi'
-	 	  		# source species to project from 
-	 	  		'source'      => 'saccharomyces_cerevisiae',  	  		
-				# target species to project to
 	 			'species'     => [],  			
 				# target species to exclude
 				#  remember to add the 'source' species if 
 				#  'division' or 'run_all' is used
-	 			'antispecies' => ['saccharomyces_cerevisiae'],
+	 			'antispecies' => ['arabidopsis_thaliana'],
 	 			# target division to project to
-	 			'division'    => ['fungi'], 
+	 			'division'    => ['plants'], 
 	 			'run_all'     =>  0, # 1/0
+				'method_link_type' => $self->o('method_link_type'),
 	 	       }, 
+
+#	 	  '2'=>{
+	 	  		# compara database to get orthologs from
+#	 	  		'compara'     => 'fungi', # 'plants', 'protists', 'fungi', 'metazoa', 'multi'
+	 	  		# source species to project from 
+#	 	  		'source'      => 'saccharomyces_cerevisiae',  	  		
+				# target species to project to
+#	 			'species'     => ['penicillium_digitatum_pd1', 'mixia_osmundae_iam_14324_gca_000708205', 'cryptococcus_gattii_wm276'],  			
+				# target species to exclude
+				#  remember to add the 'source' species if 
+				#  'division' or 'run_all' is used
+#	 			'antispecies' => [],
+	 			# target division to project to
+#	 			'division'    => [], 
+#	 			'run_all'     =>  0, # 1/0
+#	 	       }, 
     	},
 
        'pipeline_db' => {  
@@ -131,11 +116,20 @@ sub pipeline_analyses {
        					   'species_config'  => $self->o('species_config'), 
        					 }, 
        -flow_into     => {
-		                    '2' => ['TargetFactory'],
+		                    '2' => ['MLSSJobFactory'],
                          },          
        -rc_name       => 'default',
     },    
-   
+ 
+    {  -logic_name    => 'MLSSJobFactory',
+       -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::MLSSJobFactory',
+       -max_retry_count => 1,
+       -flow_into     => {
+                                    '2' => ['GetOrthologs'],
+                         },
+       -rc_name       => 'default',
+    },
+  
     {  -logic_name    => 'TargetFactory',
        -module        => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::EGSpeciesFactory',
        -max_retry_count => 1,

@@ -62,12 +62,10 @@ sub run {
 
     my $to_sp          = $self->param('to_species');
     my $to_ga          = Bio::EnsEMBL::Registry->get_adaptor($to_sp, 'core', 'Gene');
-    my $to_ta          = Bio::EnsEMBL::Registry->get_adaptor($to_sp, 'core', 'Transcript');
-    my $to_dbea        = Bio::EnsEMBL::Registry->get_adaptor($to_sp, 'core', 'DBEntry');
     my $to_meta        = Bio::EnsEMBL::Registry->get_adaptor($to_sp,'core','MetaContainer');
     my ($to_prod_sp)   = @{ $to_meta->list_value_by_key('species.production_name')};
 
-    die("Problem getting DBadaptor(s) - check database connection details\n") if (!$from_ga || !$to_ga || !$to_ta || !$to_dbea);
+    die("Problem getting DBadaptor(s) - check database connection details\n") if (!$from_ga || !$to_ga);
 
     # Create Compara adaptors
     my $compara = $self->param('compara');
@@ -81,14 +79,14 @@ sub run {
     my $ml_type  = $self->param('ml_type');
     my $from_gdb = $gdba->fetch_by_registry_name($from_sp);
     my $to_gdb   = $gdba->fetch_by_registry_name($to_sp);
-    my $mlss     = $mlssa->fetch_by_method_link_type_GenomeDBs($ml_type, [$from_gdb, $to_gdb]);
+   
+    die "No orthologs generated between species $from_sp and $to_sp\n" if(!$to_gdb);
 
-    throw "Failed to fetch mlss for method_link_type, $ml_type, for pair of species, $from_sp, $to_sp\n" if(!defined $mlss);
-
-    # Create output file, add header
-    my $datestring  = localtime();
+    my $mlss        = $mlssa->fetch_by_method_link_type_GenomeDBs($ml_type, [$from_gdb, $to_gdb]);
     my $output_dir  = $self->param('output_dir');
     my $output_file = $output_dir."/orthologs-$from_prod_sp-$to_prod_sp.tsv";
+    my $datestring  = localtime();
+    
     open FILE , ">$output_file" or die "couldn't open file " . $output_file . " $!";
     print FILE "## " . $datestring . "\n";
     print FILE "## orthologs from $from_prod_sp to $to_prod_sp\n";
@@ -149,6 +147,16 @@ sub run {
      }
    }
    close FILE;
+
+   $self->dbc->disconnect_if_idle(); 
+
+   $from_ga->dbc->disconnect_if_idle();
+   $from_meta->dbc->disconnect_if_idle();
+   $to_ga->dbc->disconnect_if_idle();
+   $to_meta->dbc->disconnect_if_idle();
+   $mlssa->dbc->disconnect_if_idle();
+   $ha->dbc->disconnect_if_idle();
+   $gdba->dbc->disconnect_if_idle();
 
 return;
 }
