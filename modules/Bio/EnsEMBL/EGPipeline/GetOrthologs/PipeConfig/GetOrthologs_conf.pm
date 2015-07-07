@@ -18,46 +18,23 @@ sub default_options {
         'output_dir'        => '/nfs/nobackup/ensemblgenomes/'.$self->o('ENV', 'USER').'/workspace/'.$self->o('pipeline_name'),     
 		'method_link_type'  => 'ENSEMBL_ORTHOLOGUES',
 
-		# Email Report subject
-        'email_subject'     => $self->o('pipeline_name').' pipeline has completed',
-
-        # hive_capacity values for some analyses:
+        # hive_capacity values for analysis
 	    'getOrthologs_capacity'  => '50',
 
 	 	'species_config' => 
 		{ 
 	 	  '1'=>{
 	 	  		# compara database to get orthologs from
-	 	  		'compara'     => 'plants', # 'plants', 'protists', 'fungi', 'metazoa', 'multi'
+	 	  		#  'plants', 'protists', 'fungi', 'metazoa', 'multi' 
+	 	  		'compara' => '',
 	 	  		# source species to project from 
-	 	  		'source'      => 'arabidopsis_thaliana',  	  		
-				# target species to project to
-	 			'species'     => [],  			
-				# target species to exclude
-				#  remember to add the 'source' species if 
-				#  'division' or 'run_all' is used
-	 			'antispecies' => ['arabidopsis_thaliana'],
-	 			# target division to project to
-	 			'division'    => ['plants'], 
-	 			'run_all'     =>  0, # 1/0
-				'method_link_type' => $self->o('method_link_type'),
+	 	  		'source'  => '',  	  		
 	 	       }, 
 
 #	 	  '2'=>{
-	 	  		# compara database to get orthologs from
-#	 	  		'compara'     => 'fungi', # 'plants', 'protists', 'fungi', 'metazoa', 'multi'
-	 	  		# source species to project from 
-#	 	  		'source'      => 'saccharomyces_cerevisiae',  	  		
-				# target species to project to
-#	 			'species'     => ['penicillium_digitatum_pd1', 'mixia_osmundae_iam_14324_gca_000708205', 'cryptococcus_gattii_wm276'],  			
-				# target species to exclude
-				#  remember to add the 'source' species if 
-				#  'division' or 'run_all' is used
-#	 			'antispecies' => [],
-	 			# target division to project to
-#	 			'division'    => [], 
-#	 			'run_all'     =>  0, # 1/0
-#	 	       }, 
+#	 	  		'compara'  => '',
+#	 	  		'source'   => '',  	
+#	 	  	    },  		
     	},
 
        'pipeline_db' => {  
@@ -106,47 +83,29 @@ sub pipeline_analyses {
     {  -logic_name    => 'backbone_fire_GetOrthologs',
        -module        => 'Bio::EnsEMBL::Hive::RunnableDB::Dummy',
        -input_ids     => [ {} ] , 
-	   -meadow_type   => 'LOCAL',
        -flow_into 	  => { '1' => ['SourceFactory'], }
     },   
  
     {  -logic_name    => 'SourceFactory',
        -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::SourceFactory',
-       -parameters    => { 
-       					   'species_config'  => $self->o('species_config'), 
-       					 }, 
-       -flow_into     => {
-		                    '2' => ['MLSSJobFactory'],
-                         },          
+       -parameters    => { 'species_config'  => $self->o('species_config'), }, 
+       -flow_into     => { '2' => ['MLSSJobFactory'], },          
        -rc_name       => 'default',
     },    
  
     {  -logic_name    => 'MLSSJobFactory',
        -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::MLSSJobFactory',
-       -max_retry_count => 1,
-       -flow_into     => {
-                                    '2' => ['GetOrthologs'],
-                         },
+       -parameters    => { 'method_link_type' => $self->o('method_link_type'), },
+       -flow_into     => { '2' => ['GetOrthologs'], },
        -rc_name       => 'default',
     },
   
-    {  -logic_name    => 'TargetFactory',
-       -module        => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::EGSpeciesFactory',
-       -max_retry_count => 1,
-       -flow_into     => {  
-       						'2' => ['GetOrthologs'],
-       					  },
-       -rc_name       => 'default',
-    },
-
     {  -logic_name    => 'GetOrthologs',
        -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::GetOrthologs',
-       -parameters    => {
-				   		    'release'                => $self->o('ensembl_release'),
-				            'output_dir'             => $self->o('output_dir'),
+       -parameters    => {	'output_dir'             => $self->o('output_dir'),
 							'method_link_type'       => $self->o('method_link_type'),
     	 				 },
-       -batch_size    =>  5,
+       -batch_size    =>  1,
        -rc_name       => 'default',
 	   -hive_capacity => $self->o('getOrthologs_capacity'), 
 	 },
