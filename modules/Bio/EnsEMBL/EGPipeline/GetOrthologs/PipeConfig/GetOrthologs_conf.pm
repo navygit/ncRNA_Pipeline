@@ -108,7 +108,30 @@ sub pipeline_analyses {
        -batch_size    =>  1,
        -rc_name       => 'default',
 	   -hive_capacity => $self->o('getOrthologs_capacity'), 
+	   -flow_into     => { '-1' => 'GetOrthologs_16GB', }, 
 	 },
+	 
+    {  -logic_name    => 'GetOrthologs_16GB',
+       -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::GetOrthologs',
+       -parameters    => {	'output_dir'             => $self->o('output_dir'),
+							'method_link_type'       => $self->o('method_link_type'),
+    	 				 },
+       -batch_size    =>  1,
+       -rc_name       => '16Gb_mem',
+	   -hive_capacity => $self->o('getOrthologs_capacity'), 
+	   -flow_into     => { '-1' => 'GetOrthologs_32GB', }, 
+	 },
+
+    {  -logic_name    => 'GetOrthologs_32GB',
+       -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::GetOrthologs',
+       -parameters    => {	'output_dir'             => $self->o('output_dir'),
+							'method_link_type'       => $self->o('method_link_type'),
+    	 				 },
+       -batch_size    =>  1,
+       -rc_name       => '32Gb_mem',
+	   -hive_capacity => $self->o('getOrthologs_capacity'), 
+	 },
+	 	 
   ];
 }
 
