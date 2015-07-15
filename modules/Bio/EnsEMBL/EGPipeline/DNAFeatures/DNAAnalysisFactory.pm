@@ -58,15 +58,19 @@ sub run {
         # given then use that setting, otherwise the default is 'medium'.
         
         if ($always_use_repbase || (! exists $$rm_library{$species} && ! exists $$rm_library{'all'})) {
-          if (exists $$rm_sensitivity{$species} && $$rm_sensitivity{$species} !~ /^automatic$/i) {
-            $$analysis{'parameters'} .= $self->rm_engine_params($$rm_sensitivity{$species});
-          } else {
-            $$analysis{'parameters'} .= $self->rm_engine_params('medium');
-          }
-          
           if ($self->check_repeatmasker($analysis, $species_rm, $pipeline_dir)) {
             $$analysis{'parameters'} .= " -species \"$species_rm\" ";
           }
+          
+          my $sensitivity = 'automatic';
+          if (exists $$rm_sensitivity{$species} || exists $$rm_sensitivity{'all'}) {
+            $sensitivity = $$rm_sensitivity{$species} || $$rm_sensitivity{'all'};
+          }
+          if ($sensitivity =~ /^automatic$/i) {
+            $sensitivity = 'medium';
+          }
+          $self->warning("Sensitivity for $species set to $sensitivity for RepBase library");
+          $$analysis{'parameters'} .= $self->rm_engine_params($sensitivity);
           
           push @$filtered_analyses, $analysis;
         }
@@ -95,7 +99,7 @@ sub run {
           if ($sensitivity =~ /^automatic$/i) {
             $sensitivity = $self->set_sensitivity($library);
           }
-          $self->warning("Sensitivity for $species set to $sensitivity");
+          $self->warning("Sensitivity for $species set to $sensitivity for library '$library'");
           $$analysis{'parameters'} .= $self->rm_engine_params($sensitivity);
           
           if (exists $$rm_logic_name{$species} || exists $$rm_logic_name{'all'}) {
