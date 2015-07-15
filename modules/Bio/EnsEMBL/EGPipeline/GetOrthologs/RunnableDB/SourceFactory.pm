@@ -30,11 +30,22 @@ package Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::SourceFactory;
 use strict;
 use Data::Dumper;
 use Bio::EnsEMBL::Registry;
-#use base ('Bio::EnsEMBL::EGPipeline::PostCompara::RunnableDB::Base');
 use base ('Bio::EnsEMBL::Hive::Process');
+
+sub param_defaults {
+    return {
+
+           };
+}
 
 sub fetch_input {
     my ($self) 	= @_;
+
+return 0;
+}
+
+sub run {
+    my ($self) = @_;
 
 return 0;
 }
@@ -47,30 +58,17 @@ sub write_output {
     foreach my $pair (keys $sp_config){
        my $compara	= $sp_config->{$pair}->{'compara'};
        my $source       = $sp_config->{$pair}->{'source'};
-       my $species      = $sp_config->{$pair}->{'species'};
-       my $antispecies  = $sp_config->{$pair}->{'antispecies'};
-       my $division     = $sp_config->{$pair}->{'division'};
-       my $run_all      = $sp_config->{$pair}->{'run_all'};       
 
       $self->dataflow_output_id(
 		{
 		 'compara'     => $compara,
 		 'source'      => $source, 
-		 'species'     => $species, 
-		 'antispecies' => $antispecies, 
-  		 'division'    => $division, 
-		 'run_all'     => $run_all,
 		},2); 
       }
 
 return 0;
 }
 
-sub run {
-    my ($self)  = @_;
-
-return 0;
-}
 
 
 1;

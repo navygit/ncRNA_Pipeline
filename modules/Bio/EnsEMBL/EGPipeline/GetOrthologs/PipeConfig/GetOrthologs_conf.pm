@@ -15,64 +15,27 @@ sub default_options {
         
 		'registry'  	    => '',
         'pipeline_name'     => $self->o('ENV','USER').'_GetOrthologs_'.$self->o('ensembl_release'),
-        'output_dir'        => '/nfs/nobackup/ensemblgenomes/'.$self->o('ENV', 'USER').'/workspace/'.$self->o('pipeline_name'),     
+        'output_dir'        => '/nfs/ftp/pub/databases/ensembl/projections/'.$self->o('ENV', 'USER').'/workspace/'.$self->o('pipeline_name'),     
+
 		'method_link_type'  => 'ENSEMBL_ORTHOLOGUES',
 
-		# Email Report subject
-        'email_subject'     => $self->o('pipeline_name').' pipeline has completed',
-
-        # hive_capacity values for some analyses:
-	    'getOrthologs_capacity'  => '20',
+        # hive_capacity values for analysis
+	    'getOrthologs_capacity'  => '50',
 
 	 	'species_config' => 
 		{ 
 	 	  '1'=>{
 	 	  		# compara database to get orthologs from
-	 	  		'compara'     => 'plants', # 'plants', 'protists', 'fungi', 'metazoa', 'multi'
+	 	  		#  'plants', 'protists', 'fungi', 'metazoa', 'multi' 
+	 	  		'compara' => '',
 	 	  		# source species to project from 
-	 	  		'source'      => 'arabidopsis_thaliana',  	  		
-				# target species to project to
-	 			'species'     => ['musa_acuminata'],  			
-				# target species to exclude
-				#  remember to add the 'source' species if 
-				#  'division' or 'run_all' is used
-	 			'antispecies' => [],
-	 			# target division to project to
-	 			'division'    => [], 
-	 			'run_all'     =>  0, # 1/0
+	 	  		'source'  => '',  	  		
 	 	       }, 
 
-	 	  '2'=>{
-	 	  		# compara database to get orthologs from
-	 	  		'compara'     => 'fungi', # 'plants', 'protists', 'fungi', 'metazoa', 'multi'
-	 	  		# source species to project from 
-	 	  		'source'      => 'saccharomyces_cerevisiae',  	  		
-				# target species to project to
-	 			'species'     => ['puccinia_graminis'],  			
-				# target species to exclude
-				#  remember to add the 'source' species if 
-				#  'division' or 'run_all' is used
-	 			'antispecies' => [],
-	 			# target division to project to
-	 			'division'    => [], 
-	 			'run_all'     =>  0, # 1/0
-	 	       }, 
-
-	 	  '3'=>{
-	 	  		# compara database to get orthologs from
-	 	  		'compara'     => 'fungi', # 'plants', 'protists', 'fungi', 'metazoa', 'multi'
-	 	  		# source species to project from 
-	 	  		'source'      => 'saccharomyces_cerevisiae',  	  		
-				# target species to project to
-	 			'species'     => [],  			
-				# target species to exclude
-				#  remember to add the 'source' species if 
-				#  'division' or 'run_all' is used
-	 			'antispecies' => ['saccharomyces_cerevisiae'],
-	 			# target division to project to
-	 			'division'    => ['fungi'], 
-	 			'run_all'     =>  0, # 1/0
-	 	       }, 
+#	 	  '2'=>{
+#	 	  		'compara'  => '',
+#	 	  		'source'   => '',  	
+#	 	  	    },  		
     	},
 
        'pipeline_db' => {  
@@ -121,41 +84,55 @@ sub pipeline_analyses {
     {  -logic_name    => 'backbone_fire_GetOrthologs',
        -module        => 'Bio::EnsEMBL::Hive::RunnableDB::Dummy',
        -input_ids     => [ {} ] , 
-	   -meadow_type   => 'LOCAL',
        -flow_into 	  => { '1' => ['SourceFactory'], }
     },   
  
     {  -logic_name    => 'SourceFactory',
        -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::SourceFactory',
-       -parameters    => { 
-       					   'species_config'  => $self->o('species_config'), 
-       					 }, 
-       -flow_into     => {
-		                    '2' => ['TargetFactory'],
-                         },          
+       -parameters    => { 'species_config'  => $self->o('species_config'), }, 
+       -flow_into     => { '2' => ['MLSSJobFactory'], },          
        -rc_name       => 'default',
     },    
-   
-    {  -logic_name    => 'TargetFactory',
-       -module        => 'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::EGSpeciesFactory',
-       -max_retry_count => 1,
-       -flow_into     => {  
-       						'2' => ['GetOrthologs'],
-       					  },
+ 
+    {  -logic_name    => 'MLSSJobFactory',
+       -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::MLSSJobFactory',
+       -parameters    => { 'method_link_type' => $self->o('method_link_type'), },
+       -flow_into     => { '2' => ['GetOrthologs'], },
        -rc_name       => 'default',
     },
-
+  
     {  -logic_name    => 'GetOrthologs',
        -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::GetOrthologs',
-       -parameters    => {
-				   		    'release'                => $self->o('ensembl_release'),
-				            'output_dir'             => $self->o('output_dir'),
+       -parameters    => {	'output_dir'             => $self->o('output_dir'),
 							'method_link_type'       => $self->o('method_link_type'),
     	 				 },
-       -batch_size    =>  5,
+       -batch_size    =>  1,
        -rc_name       => 'default',
 	   -hive_capacity => $self->o('getOrthologs_capacity'), 
+	   -flow_into     => { '-1' => 'GetOrthologs_16GB', }, 
 	 },
+	 
+    {  -logic_name    => 'GetOrthologs_16GB',
+       -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::GetOrthologs',
+       -parameters    => {	'output_dir'             => $self->o('output_dir'),
+							'method_link_type'       => $self->o('method_link_type'),
+    	 				 },
+       -batch_size    =>  1,
+       -rc_name       => '16Gb_mem',
+	   -hive_capacity => $self->o('getOrthologs_capacity'), 
+	   -flow_into     => { '-1' => 'GetOrthologs_32GB', }, 
+	 },
+
+    {  -logic_name    => 'GetOrthologs_32GB',
+       -module        => 'Bio::EnsEMBL::EGPipeline::GetOrthologs::RunnableDB::GetOrthologs',
+       -parameters    => {	'output_dir'             => $self->o('output_dir'),
+							'method_link_type'       => $self->o('method_link_type'),
+    	 				 },
+       -batch_size    =>  1,
+       -rc_name       => '32Gb_mem',
+	   -hive_capacity => $self->o('getOrthologs_capacity'), 
+	 },
+	 	 
   ];
 }
 
