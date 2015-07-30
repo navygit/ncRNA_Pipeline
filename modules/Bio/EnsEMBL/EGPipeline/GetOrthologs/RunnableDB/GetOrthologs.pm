@@ -111,9 +111,8 @@ sub run {
     open FILE , ">$output_file" or die "couldn't open file " . $output_file . " $!";
     print FILE "## " . $datestring . "\n";
     print FILE "## orthologs from $from_prod_sp to $to_prod_sp\n";
-    print FILE "## division " . $compara . "\n";
     print FILE "## compara db " . $mlssa->dbc->dbname() . "\n";
-    print FILE "## Division " . $division . "\n"; 
+    print FILE "## division " . $division . "\n"; 
 
     # Fetch homologies, returntype - hash of arrays
     my $from_sp_alias = $gdba->fetch_by_registry_name($from_sp)->name();
