@@ -119,16 +119,20 @@ sub run {
     my $homologies    = $ha->fetch_all_by_MethodLinkSpeciesSet($mlss);
     my $homologies_ct = scalar(@$homologies);
 
-    my $mod_identifier = $division;
-
     $self->warning("Retrieving $homologies_ct homologies of method link type $ml_type for mlss_id $mlss_id\n");
 
     foreach my $homology (@{$homologies}) {
        # 'from' member
        my $from_member      = $homology->get_Member_by_GenomeDB($from_gdb)->[0];
-       my $from_stable_id   = $mod_identifier . ":" . $from_member->stable_id();
        my $from_perc_id     = $from_member->perc_id();
        my $from_gene        = $from_member->get_Transcript->get_Gene();
+
+       ## Fully qualified identifiers with annotation source
+       ## Havana genes are merged, so source is Ensembl
+       my $from_mod_identifier = $from_gene->source();
+       if ($from_mod_identifier =~ /havana/) { $from_mod_identifier = 'ensembl'; }
+
+       my $from_stable_id   = $from_mod_identifier . ":" . $from_member->stable_id();
        my $from_translation = $from_member->get_Translation();
 
        if (!$from_translation) { next; }
@@ -140,16 +144,22 @@ sub run {
        my $to_members        = $homology->get_Member_by_GenomeDB($to_gdb);
 
        foreach my $to_member (@$to_members) {
-          my $to_stable_id   = $mod_identifier . ":" . $to_member->stable_id();
           my $to_perc_id     = $to_member->perc_id();
           my $to_gene        = $to_member->get_Transcript->get_Gene();
+
+          ## Fully qualified identifiers with annotation source
+          ## Havana genes are merged, so source is Ensembl
+          my $to_mod_identifier = $to_gene->source();
+          if ($to_mod_identifier =~ /havana/) { $to_mod_identifier = 'ensembl'; }
+          my $to_stable_id   = $to_mod_identifier . ":" . $to_member->stable_id();
           my $to_translation = $to_member->get_Translation();
+
 
           next if (!$to_translation);
           my $to_uniprot     = get_uniprot($to_translation);
 
-          my $from_identifier = $mod_identifier . ":" . $from_gene->stable_id;
-          my $to_identifier = $mod_identifier . ":" . $to_gene->stable_id;
+          my $from_identifier = $from_mod_identifier . ":" . $from_gene->stable_id;
+          my $to_identifier = $to_mod_identifier . ":" . $to_gene->stable_id;
 
           if (scalar(@$from_uniprot) == 0 && scalar(@$to_uniprot) == 0) {
              print FILE "$from_prod_sp\t" . $from_identifier . "\t$from_stable_id\tno_uniprot\t$from_perc_id\t";
