@@ -53,6 +53,10 @@ sub param_defaults {
       'gff3_genes',
     ],
     
+    'drupal_species' => {
+      'Anopheles culicifacies' => 'Anopheles culicifacies A',
+    },
+    
     'staging_dir'  => 'sites/default/files/ftp/staging',
   };
 }
@@ -105,15 +109,16 @@ sub process_file {
   my ($species, $strain, $data_type, $assembly, $geneset, $dump_type) =
     $self->parse_filename($file_name);
   
-  my $file_type = $self->file_type($dump_type);
-  my $file_format = $self->file_format($data_type);
+  my $organism = $self->organism($species);
+  my $file_type = $self->file_type($data_type);
+  my $file_format = $self->file_format($dump_type);
   my $description = $self->description($dump_type, $data_type, $species, $strain, $assembly, $geneset);
   my $display_version = $self->display_version($dump_type, $assembly, $geneset);
   my $xgrid = $self->xgrid($dump_type);
   
   push $$data{'GUID'}, $guid;
   push $$data{'File'}, catdir($staging_dir, $file_name);
-  push $$data{'Organism'}, $species;
+  push $$data{'Organism'}, $organism;
   push $$data{'File Type'},$file_type ;
   push $$data{'File Format'},$file_format ;
   push $$data{'Status'}, 'Current';
@@ -177,37 +182,49 @@ sub parse_filename {
   return ($species, $strain, $data_type, $assembly, $geneset, $dump_type);
 }
 
-sub file_type {
-  my ($self, $dump_type) = @_;
+sub organism {
+  my ($self, $species) = @_;
   
-  my ($file_type) = $dump_type =~ /^([a-z]+)/;
-  if ($file_type eq 'fasta') {
-    $file_type = ucfirst($file_type);
-  } else {
-    $file_type = uc($file_type);
+  my $drupal_species = $self->param_required('drupal_species');
+  my $organism = $species;
+  if (exists $$drupal_species{$species}) {
+    $organism = $$drupal_species{$species};
   }
+  
+  return $organism;
+}
+
+sub file_type {
+  my ($self, $data_type) = @_;
+  
+  my $file_type;
+  if ($data_type eq 'REPEATFEATURES') {
+    $file_type = 'Repeat features';
+  } elsif ($data_type =~ /(CONTIG|SCAFFOLD)2(SCAFFOLD|CHROMOSOME)/) {
+    $file_type = ucfirst(lc($1)) . ' to ' . ucfirst(lc($2)) . ' mapping';
+  } else {
+    $file_type = ucfirst(lc($data_type));
+  } 
   return $file_type;
 }
 
 sub file_format {
-  my ($self, $data_type) = @_;
+  my ($self, $dump_type) = @_;
   
-  my $file_format;
-  if ($data_type eq 'REPEATFEATURES') {
-    $file_format = 'Repeat features';
-  } elsif ($data_type =~ /(CONTIG|SCAFFOLD)2(SCAFFOLD|CHROMOSOME)/) {
-    $file_format = ucfirst(lc($1)) . ' to ' . ucfirst(lc($2)) . ' mapping';
+  my ($file_format) = $dump_type =~ /^([a-z]+)/;
+  if ($file_format eq 'fasta') {
+    $file_format = ucfirst($file_format);
   } else {
-    $file_format = ucfirst(lc($data_type));
-  } 
+    $file_format = uc($file_format);
+  }
   return $file_format;
 }
 
 sub description {
   my ($self, $dump_type, $data_type, $species, $strain, $assembly, $geneset) = @_;
   
-  my $drupal_desc           = $self->param_required('drupal_desc'),
-  my $drupal_desc_exception = $self->param_required('drupal_desc_exception'),
+  my $drupal_desc           = $self->param_required('drupal_desc');
+  my $drupal_desc_exception = $self->param_required('drupal_desc_exception');
   
   my $description;
   if (exists $$drupal_desc_exception{$dump_type}{$species}) {
