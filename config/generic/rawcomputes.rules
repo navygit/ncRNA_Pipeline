@@ -1,0 +1,11 @@
+[eponine]
+condition=SubmitSlice
+
+[trf]
+condition=SubmitSlice
+
+[dust]
+condition=SubmitSlice
+
+[repeatmask]
+condition=SubmitSlice

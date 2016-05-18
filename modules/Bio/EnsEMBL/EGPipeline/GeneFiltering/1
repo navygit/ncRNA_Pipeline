@@ -1,0 +1,26 @@
+use strict;
+use warnings;
+use Bio::EnsEMBL::DBSQL::DBAdaptor;
+use Bio::EnsEMBL::Registry;
+use Bio::EnsEMBL::Gene;
+use Bio::EnsEMBL::Exon;
+use Bio::EnsEMBL::Transcript;
+
+my $registry = 'Bio::EnsEMBL::Registry';
+
+$registry->load_registry_from_db(
+    -host => 'mysql-eg-prod-2.ebi.ac.uk',
+    -user => 'ensrw',
+    -port => 4239,
+    -pass => 'writ3rp2',
+    -db_version => '82',
+);
+
+my $slice_adaptor = $registry->get_adaptor( 'arabidopsis_thaliana', 'Core', 'Slice' );
+my $slice_list = $slice_adaptor->fetch_all('toplevel');
+foreach my $slice (@$slice_list){
+  my @features = @{ $slice->get_all_DnaAlignFeatures('cmscan_rfam_12') };
+  foreach my $feature(@$features){
+    print $feature;
+  };
+};
