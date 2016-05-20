@@ -1,0 +1,5 @@
+language: perl
+perl:
+  - "5.010"
+script:
+  prove -l t/01_compute.t
